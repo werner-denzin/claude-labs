@@ -1,0 +1,266 @@
+{
+  "_comment": "Catalogo de fontes do radar de IA. Editavel: acrescente, remova ou mude o peso das fontes conforme o interesse da sua audiencia. Campos: id (unico), name, feed (RSS/Atom), site (fallback para leitura via WebFetch quando o feed morre), lang, category, weight (1-5, usado para ordenar a triagem: 5 = fonte primaria, quase sempre relevante). Feeds mudam de endereco com o tempo; fetch_feeds.py reporta os que falharam para voce corrigir aqui.",
+  "sources": [
+    {
+      "id": "openai",
+      "name": "OpenAI News",
+      "feed": "https://openai.com/news/rss.xml",
+      "site": "https://openai.com/news/",
+      "lang": "en",
+      "category": "lab",
+      "weight": 5
+    },
+    {
+      "id": "anthropic",
+      "name": "Anthropic News",
+      "feed": "https://www.anthropic.com/rss.xml",
+      "site": "https://www.anthropic.com/news",
+      "lang": "en",
+      "category": "lab",
+      "weight": 5
+    },
+    {
+      "id": "deepmind",
+      "name": "Google DeepMind Blog",
+      "feed": "https://deepmind.google/blog/rss.xml",
+      "site": "https://deepmind.google/discover/blog/",
+      "lang": "en",
+      "category": "lab",
+      "weight": 5
+    },
+    {
+      "id": "google-ai",
+      "name": "Google - The Keyword (AI)",
+      "feed": "https://blog.google/technology/ai/rss/",
+      "site": "https://blog.google/technology/ai/",
+      "lang": "en",
+      "category": "lab",
+      "weight": 4
+    },
+    {
+      "id": "meta-ai",
+      "name": "Meta AI Blog",
+      "feed": "https://ai.meta.com/blog/rss/",
+      "site": "https://ai.meta.com/blog/",
+      "lang": "en",
+      "category": "lab",
+      "weight": 4
+    },
+    {
+      "id": "microsoft-ai",
+      "name": "Microsoft AI Blog",
+      "feed": "https://blogs.microsoft.com/ai/feed/",
+      "site": "https://blogs.microsoft.com/ai/",
+      "lang": "en",
+      "category": "lab",
+      "weight": 4
+    },
+    {
+      "id": "mistral",
+      "name": "Mistral AI News",
+      "feed": "https://mistral.ai/news/feed.xml",
+      "site": "https://mistral.ai/news/",
+      "lang": "en",
+      "category": "lab",
+      "weight": 3
+    },
+    {
+      "id": "nvidia",
+      "name": "NVIDIA Blog",
+      "feed": "https://blogs.nvidia.com/feed/",
+      "site": "https://blogs.nvidia.com/",
+      "lang": "en",
+      "category": "infra",
+      "weight": 3
+    },
+    {
+      "id": "aws-ml",
+      "name": "AWS Machine Learning Blog",
+      "feed": "https://aws.amazon.com/blogs/machine-learning/feed/",
+      "site": "https://aws.amazon.com/blogs/machine-learning/",
+      "lang": "en",
+      "category": "infra",
+      "weight": 3
+    },
+    {
+      "id": "huggingface",
+      "name": "Hugging Face Blog",
+      "feed": "https://huggingface.co/blog/feed.xml",
+      "site": "https://huggingface.co/blog",
+      "lang": "en",
+      "category": "open-source",
+      "weight": 4
+    },
+    {
+      "id": "techcrunch-ai",
+      "name": "TechCrunch AI",
+      "feed": "https://techcrunch.com/category/artificial-intelligence/feed/",
+      "site": "https://techcrunch.com/category/artificial-intelligence/",
+      "lang": "en",
+      "category": "news",
+      "weight": 4
+    },
+    {
+      "id": "verge-ai",
+      "name": "The Verge AI",
+      "feed": "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml",
+      "site": "https://www.theverge.com/ai-artificial-intelligence",
+      "lang": "en",
+      "category": "news",
+      "weight": 4
+    },
+    {
+      "id": "arstechnica-ai",
+      "name": "Ars Technica AI",
+      "feed": "https://arstechnica.com/ai/feed/",
+      "site": "https://arstechnica.com/ai/",
+      "lang": "en",
+      "category": "news",
+      "weight": 4
+    },
+    {
+      "id": "venturebeat-ai",
+      "name": "VentureBeat AI",
+      "feed": "https://venturebeat.com/category/ai/feed/",
+      "site": "https://venturebeat.com/category/ai/",
+      "lang": "en",
+      "category": "news",
+      "weight": 3
+    },
+    {
+      "id": "wired-ai",
+      "name": "WIRED AI",
+      "feed": "https://www.wired.com/feed/tag/ai/latest/rss",
+      "site": "https://www.wired.com/tag/artificial-intelligence/",
+      "lang": "en",
+      "category": "news",
+      "weight": 3
+    },
+    {
+      "id": "mit-tech-review",
+      "name": "MIT Technology Review - AI",
+      "feed": "https://www.technologyreview.com/topic/artificial-intelligence/feed",
+      "site": "https://www.technologyreview.com/topic/artificial-intelligence/",
+      "lang": "en",
+      "category": "analysis",
+      "weight": 4
+    },
+    {
+      "id": "the-decoder",
+      "name": "The Decoder",
+      "feed": "https://the-decoder.com/feed/",
+      "site": "https://the-decoder.com/",
+      "lang": "en",
+      "category": "news",
+      "weight": 3
+    },
+    {
+      "id": "the-register-ai",
+      "name": "The Register - AI/ML",
+      "feed": "https://www.theregister.com/software/ai_ml/headlines.atom",
+      "site": "https://www.theregister.com/software/ai_ml/",
+      "lang": "en",
+      "category": "news",
+      "weight": 3
+    },
+    {
+      "id": "zdnet-ai",
+      "name": "ZDNET AI",
+      "feed": "https://www.zdnet.com/topic/artificial-intelligence/rss.xml",
+      "site": "https://www.zdnet.com/topic/artificial-intelligence/",
+      "lang": "en",
+      "category": "news",
+      "weight": 2
+    },
+    {
+      "id": "marktechpost",
+      "name": "MarkTechPost",
+      "feed": "https://www.marktechpost.com/feed/",
+      "site": "https://www.marktechpost.com/",
+      "lang": "en",
+      "category": "news",
+      "weight": 2
+    },
+    {
+      "id": "simonwillison",
+      "name": "Simon Willison's Weblog",
+      "feed": "https://simonwillison.net/atom/everything/",
+      "site": "https://simonwillison.net/",
+      "lang": "en",
+      "category": "practitioner",
+      "weight": 4
+    },
+    {
+      "id": "import-ai",
+      "name": "Import AI (Jack Clark)",
+      "feed": "https://importai.substack.com/feed",
+      "site": "https://importai.substack.com/",
+      "lang": "en",
+      "category": "analysis",
+      "weight": 3
+    },
+    {
+      "id": "raschka",
+      "name": "Ahead of AI (Sebastian Raschka)",
+      "feed": "https://magazine.sebastianraschka.com/feed",
+      "site": "https://magazine.sebastianraschka.com/",
+      "lang": "en",
+      "category": "practitioner",
+      "weight": 3
+    },
+    {
+      "id": "hn-ai",
+      "name": "Hacker News (AI/LLM, alta pontuacao)",
+      "feed": "https://hnrss.org/newest?q=AI+OR+LLM+OR+GPT&points=150",
+      "site": "https://news.ycombinator.com/",
+      "lang": "en",
+      "category": "community",
+      "weight": 3
+    },
+    {
+      "id": "arxiv-ai",
+      "name": "arXiv cs.AI",
+      "feed": "https://export.arxiv.org/rss/cs.AI",
+      "site": "https://arxiv.org/list/cs.AI/recent",
+      "lang": "en",
+      "category": "research",
+      "weight": 2
+    },
+    {
+      "id": "arxiv-cl",
+      "name": "arXiv cs.CL (NLP/LLMs)",
+      "feed": "https://export.arxiv.org/rss/cs.CL",
+      "site": "https://arxiv.org/list/cs.CL/recent",
+      "lang": "en",
+      "category": "research",
+      "weight": 2
+    },
+    {
+      "id": "olhar-digital",
+      "name": "Olhar Digital",
+      "feed": "https://olhardigital.com.br/feed/",
+      "site": "https://olhardigital.com.br/",
+      "lang": "pt-BR",
+      "category": "news",
+      "weight": 2
+    },
+    {
+      "id": "tecmundo",
+      "name": "TecMundo",
+      "feed": "https://www.tecmundo.com.br/feed",
+      "site": "https://www.tecmundo.com.br/",
+      "lang": "pt-BR",
+      "category": "news",
+      "weight": 2
+    },
+    {
+      "id": "canaltech",
+      "name": "Canaltech",
+      "feed": "https://canaltech.com.br/rss/",
+      "site": "https://canaltech.com.br/inteligencia-artificial/",
+      "lang": "pt-BR",
+      "category": "news",
+      "weight": 2
+    }
+  ]
+}
