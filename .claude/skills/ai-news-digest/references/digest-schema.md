@@ -15,7 +15,7 @@ The file the triage step writes and `build_card.py` consumes. UTF-8 JSON.
       "title": "NVIDIA acquires Hugging Face for $12.9 billion",
       "description": "3 to 5 lines (~200-400 chars). What happened, the number that matters, why the committee should care. In English -- unless the main source is a Brazilian one, in which case this card stays in Portuguese.",
       "temperature": "HIGH",          // HIGH | MEDIUM | LOW (ALTA/MEDIA/BAIXA accepted as aliases)
-      "lens": "engineering",          // engineering (~8 of 15) | strategy | regulation | research
+      "lens": "engineering",          // strategy (~6 of 15) | engineering (~4) | research (~3) | regulation (~2)
       "source_name": "NVIDIA Blog",   // main source: prefer the primary one
       "source_url": "https://blogs.nvidia.com/...",
       "also_covered_by": [            // optional; the card shows up to 3

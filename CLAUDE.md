@@ -5,14 +5,19 @@ A lab for Claude Code experiments.
 ## The `ai-news-digest` skill
 
 A daily radar on **software engineering with AI** for SiDi's AI strategy
-committee: it collects the last 24h from ~20 sources, classifies each item by
-temperature (HIGH/MEDIUM/LOW), selects 15 with roughly half on engineering, and
-publishes a card-format newsletter to a Teams channel.
+committee: it collects the last 24h from 20 sources, classifies each item by
+temperature (HIGH/MEDIUM/LOW), selects 15, and publishes a card-format newsletter
+to a Teams channel.
 
-The engineering half covers coding agents (Claude Code, Cline, Cursor, Codex,
-Gemini CLI, Zed, opencode, goose), MCP and eval infrastructure, platform and IDE
-changes, practice writeups and `arXiv cs.SE`. The other half is strategy and
-regulation.
+The lens shares follow what the catalog can actually supply — strategy 6,
+engineering 4, research 3, regulation 2 of the 15. Engineering reaches the radar
+through Latent Space, GitHub Changelog and `arXiv cs.SE`; there is no coding-agent
+release feed, because the cloud sandbox scopes GitHub access to the cloned
+repository and returns 403 for every other repo. Strategy and regulation come
+from the labs themselves, the press covering them, and the investors.
+
+`assets/sources.json` is the base of truth for all of this. When it changes,
+`CLAUDE.md`, `README.md`, `SKILL.md` and `references/sources.md` change with it.
 
 - Skill: `.claude/skills/ai-news-digest/SKILL.md`
 - Published newsletters: `reports/`
@@ -46,17 +51,20 @@ Rules that hold for any change to the skill:
 
 - Read the previous day's `reports/` entry to say what changed since yesterday.
 - Add Brazilian regulatory sources (PL 2338, ANPD) once that agenda heats up.
+  Nothing in the catalog covers regulation directly today; it arrives only when
+  Ars Technica or TechCrunch reports it.
 - Run the `type: judgment` evals with an LLM judge over the published newsletter.
 
 ## User preferences
 
 - English, everywhere: conversation, repository files, and the newsletter.
 - **One exception, in the newsletter only:** cards whose main source is Brazilian
-  (`"lang": "pt-BR"` in the catalog — Olhar Digital, TecMundo, Canaltech, Mobile
-  Time) keep their title and description in Portuguese, because they are
-  local-market stories written for that market.
+  (`"lang": "pt-BR"` in the catalog) keep their title and description in
+  Portuguese, because they are local-market stories written for that market. The
+  rule stands, but no `pt-BR` source is in the catalog today — the Brazilian
+  press left it when the catalog was cut — so nothing triggers it right now.
 - The `TOPIC_RE` regex in `fetch_feeds.py` also keeps Portuguese terms on
-  purpose: it has to match the content of Brazilian sources.
+  purpose: it has to go on matching the day a Brazilian source returns.
 
 ## Voice dictation
 

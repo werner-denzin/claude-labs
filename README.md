@@ -28,7 +28,7 @@ flowchart TD
     ITEMS[("items.json<br>~12 candidates a day<br>+ failures + duplicate hints")]
     SITEMAP["sitemap.xml<br>sources with no feed:<br>Anthropic, a16z, The Batch"]
 
-    TRIAGE{"Claude triage<br>consolidate duplicates and releases<br>score temperature<br>select 15, ~8 engineering<br>write descriptions"}
+    TRIAGE{"Claude triage<br>consolidate duplicates<br>score temperature<br>select 15: 6 strategy · 4 engineering<br>3 research · 2 regulation<br>write descriptions"}
     DIGEST[("digest.json<br>the editorial product")]
 
     BUILD["scripts/build_card.py<br>Adaptive Card<br>trims to the Teams size limit"]
@@ -85,7 +85,7 @@ reports why it failed.
 | Path | What it is |
 | --- | --- |
 | `SKILL.md` | The entry point. Claude reads this to run the newsletter: the seven-step flow, the temperature rubric, the four committee lenses, and the writing rules. Everything else in the folder is referenced from here. |
-| `assets/sources.json` | The source catalog, and the file you edit most. Each entry carries a feed, a weight, a language, and optional flags. `lang` decides the card's language; `kind: release` marks a version feed. |
+| `assets/sources.json` | The source catalog, the base of truth for everything else in this repo, and the file you edit most. Each entry carries a feed or a sitemap, a weight, a language, and optional flags. `lang` decides the card's language; `kind: release` marks a version feed. When it changes, `CLAUDE.md`, this file, `SKILL.md` and `references/sources.md` change with it. |
 | `assets/report-template.md` | Shape of the markdown newsletter archived in `reports/`. |
 | `scripts/fetch_feeds.py` | Collector. Fetches every feed in parallel, filters to the time window, drops off-topic items from general sources and alpha/beta/nightly builds from release feeds, deduplicates, and reports every failure. Standard library only. |
 | `scripts/build_card.py` | Renderer. Turns `digest.json` into a Teams Adaptive Card, validates the digest, and drops the coldest items if the card would exceed the Teams size limit. |
@@ -129,12 +129,14 @@ python3 evals/run_script_evals.py --offline  # skips the one that hits the netwo
   not either, so the scripts add no dependencies.
 - **A source that failed is reported, never hidden.** The reader has to know when
   a collection was partial.
-- **The quiet feeds win ties.** Release feeds, MCP and `arXiv cs.SE` publish far
-  less than the AI press, so the triage step targets a share of engineering items
-  rather than picking by volume or recency.
+- **The quiet feeds win ties.** Latent Space, GitHub Changelog and `arXiv cs.SE`
+  publish far less than the AI press, so the triage step targets a share of
+  engineering items — four of the fifteen — rather than picking by volume or
+  recency.
 - **English everywhere**, with one exception: cards whose main source is a
   Brazilian outlet keep their title and description in Portuguese, because they
-  are local-market stories written for that market.
+  are local-market stories written for that market. No `pt-BR` source is in the
+  catalog today, so the rule is currently inert.
 
 ## Status
 
