@@ -54,18 +54,19 @@ Read `items.json`. Besides the items it carries:
   hints, not verdicts: it is where the same story in English and in Portuguese
   shows up.
 
-### 2. Fill in the feedless sources
+### 2. Sources with no feed
 
-Sources with `"feed": null` in the catalog (Anthropic, Meta AI, MarkTechPost)
-only have a site. Read each one with WebFetch and take what was published inside
-the window:
+Anthropic and a16z publish no RSS. The collector reads them from their sitemaps
+instead, so they arrive like any other item and need no extra step.
 
-```
-WebFetch(url=<site>, prompt="List the posts published in the last 24h with title, date and URL. If none, say 'none'.")
-```
+Two things to know when one of them is a candidate: the **title is derived from
+the URL slug**, so it is close to the headline but not it, and there is **no
+summary**. Read the page with WebFetch before writing that card, and use the real
+headline.
 
-Skip this step if the environment's network blocks the domain — and record the
-block in the digest's `sources_failed`.
+If a source ever appears in `sources_failed` with "no RSS feed declared", it has
+neither a feed nor a sitemap configured — read its `site` with WebFetch and note
+any that the environment blocks.
 
 ### 3. Triage and assign temperature
 

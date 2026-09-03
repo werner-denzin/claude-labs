@@ -18,7 +18,11 @@
       "lang": "en",
       "category": "lab",
       "weight": 5,
-      "note": "No public RSS (checked 2026-09-03: /rss.xml, /news/rss.xml, /feed.xml, /engineering/rss.xml all 404). Read the site with WebFetch."
+      "note": "No public RSS (11 paths checked 2026-09-03, all 404). Read via the sitemap, which carries /news/ URLs with lastmod dates. Titles come from the URL slug and have no summary, so read the page before writing a card.",
+      "sitemap": {
+        "url": "https://www.anthropic.com/sitemap.xml",
+        "contains": "/news/"
+      }
     },
     {
       "id": "deepmind",
@@ -86,7 +90,11 @@
       "lang": "en",
       "category": "investor",
       "weight": 3,
-      "note": "No RSS at any conventional path (checked 2026-09-03: /feed/, /rss/, /feed, /blog/feed/ all 404). Read the site with WebFetch."
+      "note": "No RSS at any conventional path (checked 2026-09-03). Read via post-sitemap.xml, which carries lastmod dates. Titles come from the URL slug and have no summary.",
+      "sitemap": {
+        "url": "https://a16z.com/post-sitemap.xml",
+        "contains": "a16z.com/"
+      }
     },
     {
       "id": "ycombinator",

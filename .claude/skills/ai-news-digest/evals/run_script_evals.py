@@ -81,11 +81,17 @@ def eval_collect_window(tmp: str) -> None:
         "every item is dated inside the window",
         all(i["published"] >= data["window_start"] for i in data["items"]),
     )
-    no_feed = {f["id"] for f in data["sources_failed"] if "no RSS feed" in f["error"]}
     check(
-        "feedless sources appear in sources_failed with a reason",
-        no_feed >= {"anthropic", "a16z"},
-        f"got {no_feed}",
+        "every failure carries a reason",
+        all(f.get("error") for f in data["sources_failed"]),
+        f'got {[f.get("error") for f in data["sources_failed"]]}',
+    )
+    sitemap_ids = {"anthropic", "a16z"}
+    failed_ids = {f["id"] for f in data["sources_failed"]}
+    check(
+        "sitemap sources are read, not reported as failures",
+        not (sitemap_ids & failed_ids),
+        f"these failed: {sitemap_ids & failed_ids}",
     )
     filtered = [s for s in data["sources_ok"] if s.get("off_topic", 0) > 0]
     check("the topic filter dropped items", bool(filtered))

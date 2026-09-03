@@ -260,6 +260,51 @@ def parse_feed(raw: bytes) -> list[dict]:
     return out
 
 
+def parse_sitemap(raw: bytes, contains: str) -> list[dict]:
+    """Turns a sitemap.xml into items.
+
+    Some sources publish no feed but do publish a sitemap carrying <lastmod>
+    dates, which is enough to know what is new. The title comes from the URL
+    slug and there is no summary, so triage should read the page before writing
+    a card.
+
+    <lastmod> is usually a date with no time, so those items are marked
+    date_only and the window comparison is made on whole days.
+    """
+    root = ET.fromstring(raw)
+    out = []
+    for url in root.iter():
+        if url.tag.rsplit("}", 1)[-1] != "url":
+            continue
+        loc = mod = ""
+        for child in url:
+            tag = child.tag.rsplit("}", 1)[-1]
+            if tag == "loc":
+                loc = (child.text or "").strip()
+            elif tag == "lastmod":
+                mod = (child.text or "").strip()
+        if not loc or contains not in loc:
+            continue
+        published = parse_date(mod)
+        if published is None:
+            continue
+        slug = loc.rstrip("/").rsplit("/", 1)[-1]
+        title = slug.replace("-", " ").replace("_", " ").strip()
+        if not title:
+            continue
+        out.append(
+            {
+                "title": title[:1].upper() + title[1:],
+                "url": loc,
+                "summary": "",
+                "published": published.astimezone(timezone.utc).isoformat(),
+                "_published_dt": published,
+                "_date_only": len(mod) <= 10,
+            }
+        )
+    return out
+
+
 # --------------------------------------------------------------------------- #
 # Normalization and deduplication
 # --------------------------------------------------------------------------- #
@@ -361,12 +406,17 @@ def collect_source(source: dict, cutoff: datetime, max_per_source: int, timeout:
         "prerelease": 0,
     }
     feed = source.get("feed")
-    if not feed:
+    sitemap = source.get("sitemap")
+    if not feed and not sitemap:
         result["error"] = "no RSS feed declared (read the 'site' field via WebFetch)"
         return result
     try:
-        raw = fetch_url(feed, timeout)
-        entries = parse_feed(raw)
+        if feed:
+            raw = fetch_url(feed, timeout)
+            entries = parse_feed(raw)
+        else:
+            raw = fetch_url(sitemap["url"], timeout)
+            entries = parse_sitemap(raw, sitemap.get("contains", ""))
     except urllib.error.HTTPError as exc:
         result["error"] = f"HTTP {exc.code}"
         return result
@@ -387,7 +437,13 @@ def collect_source(source: dict, cutoff: datetime, max_per_source: int, timeout:
         if published is None:
             result["undated"] += 1
             continue
-        if published < cutoff:
+        # Um item so-data cai a meia-noite, o que descartaria um post de ontem
+        # a tarde. Para esses, a comparacao e por dia inteiro.
+        if entry.pop("_date_only", False):
+            too_old = published.date() < cutoff.date()
+        else:
+            too_old = published < cutoff
+        if too_old:
             result["skipped_old"] += 1
             continue
         if drop_pre and PRERELEASE_RE.search(entry["title"]):

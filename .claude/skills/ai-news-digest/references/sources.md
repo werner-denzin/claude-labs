@@ -6,7 +6,8 @@ Edit `assets/sources.json`. Each entry:
 | --- | --- |
 | `id` | Unique key. Used by `--only` and in failure reports. |
 | `name` | The name shown on the card. |
-| `feed` | RSS/Atom. `null` when the source publishes no feed — the skill then reads `site` with WebFetch. |
+| `feed` | RSS/Atom. `null` when the source publishes no feed — then use `sitemap`, or fall back to reading `site` with WebFetch. |
+| `sitemap` | Optional, for sources with no feed: `{"url": "...", "contains": "/news/"}`. The collector reads the sitemap, keeps URLs containing that substring, and dates them by `<lastmod>`. |
 | `site` | Human-facing page. Fallback when the feed dies, and the WebFetch target. |
 | `lang` | `en` or `pt-BR`. **Decides the card's language**: an item whose main source is `pt-BR` stays in Portuguese; the rest of the newsletter is English. |
 | `category` | `lab`, `infra`, `open-source`, `news`, `analysis`, `engineering`, `research`, `regulation`, `community`. |
@@ -66,7 +67,30 @@ All four committee lenses (strategy, regulation, engineering, research) are
 covered. `regulation` holds only the EU AI Act: if the Brazilian regulatory
 agenda heats up (PL 2338, ANPD), it is worth adding local sources.
 
-## Feedless sources
+## Sources with no feed
+
+Three ways to cover a source that publishes no RSS, best first.
+
+**A sitemap with `<lastmod>`.** Many sites publish one even when they publish no
+feed, and it carries exactly what the window filter needs: a URL and a date. Set
+`sitemap` and leave `feed` null. Anthropic and a16z are read this way, which is
+why neither appears in the failure line any more.
+
+Two caveats. The title is derived from the URL slug, so
+`/news/enterprise-frontier-safeguards` becomes "Enterprise frontier safeguards" —
+close to the real headline but not it, and there is no summary at all. Triage
+should read the page before writing a card. And `<lastmod>` usually carries a
+date with no time, so those items would land at midnight and a post from
+yesterday afternoon would fall outside a 24h window; the collector marks them
+`date_only` and compares whole days instead.
+
+**WebFetch on the `site`.** Works, but costs a model call per source and returned
+empty content for two sites in a cloud run. Use it when there is no sitemap.
+
+**Drop the source.** A source that appears in the failure line every single day
+trains the reader to ignore failure lines.
+
+## Historical note: feedless sources
 
 Three entries carry `"feed": null` and therefore always show up in
 `sources_failed` with "no RSS feed declared". That is not a defect — it is the
