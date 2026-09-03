@@ -1,0 +1,99 @@
+{
+  "_comment": "Casos de teste da skill ai-news-digest. Os tres primeiros nao dependem de rede nem de LLM e podem rodar em CI; os demais avaliam o julgamento editorial.",
+  "evals": [
+    {
+      "id": "collect-window",
+      "type": "script",
+      "description": "A coleta respeita a janela de tempo e nao quebra com feed fora do ar.",
+      "run": "python3 scripts/fetch_feeds.py --hours 24 --out /tmp/eval-items.json",
+      "expect": [
+        "sai com codigo 0 mesmo com fontes falhando",
+        "counts.items_deduped > 0",
+        "todo item tem published dentro da janela",
+        "as tres fontes com feed:null aparecem em sources_failed com motivo explicito",
+        "sources_ok[].off_topic > 0 para Canaltech e TecMundo"
+      ]
+    },
+    {
+      "id": "card-size-limit",
+      "type": "script",
+      "description": "O cartao nunca estoura o limite do Teams: corta os itens mais frios primeiro.",
+      "run": "python3 scripts/build_card.py --in evals/fixtures/digest-15.json --out /tmp/eval-card.json --max-bytes 6000",
+      "expect": [
+        "payload compacto <= 6000 bytes",
+        "os itens ALTA sobrevivem ao corte",
+        "o rodape avisa quantos itens sairam"
+      ]
+    },
+    {
+      "id": "digest-validation",
+      "type": "script",
+      "description": "Digest malformado falha com mensagem util, nao com traceback.",
+      "run": "python3 scripts/build_card.py --in evals/fixtures/digest-invalida.json --out /dev/null",
+      "expect": [
+        "codigo de saida != 0",
+        "a mensagem nomeia o card e o campo que faltou",
+        "temperatura fora de ALTA/MEDIA/BAIXA e recusada com mensagem legivel",
+        "HIGH/MEDIUM/LOW sao aceitos como alias"
+      ]
+    },
+    {
+      "id": "webhook-secret",
+      "type": "script",
+      "description": "A URL do webhook nunca vaza.",
+      "run": "TEAMS_WEBHOOK_URL='https://exemplo/x?sig=SEGREDO' python3 scripts/post_to_teams.py --payload evals/fixtures/card.json --dry-run",
+      "expect": [
+        "a saida nao contem a query string nem 'SEGREDO'",
+        "--dry-run nao faz nenhuma requisicao de rede",
+        "sem webhook configurado, o erro diz como configurar"
+      ]
+    },
+    {
+      "id": "dedup-cross-language",
+      "type": "judgment",
+      "description": "A mesma noticia em varios veiculos vira um card so.",
+      "scenario": "A aquisicao da Hugging Face pela NVIDIA sai em 7 fontes, incluindo NVIDIA Blog (en) e TecMundo (pt-BR).",
+      "expect": [
+        "um unico card, nao sete",
+        "a fonte principal e o NVIDIA Blog (primaria), nao o veiculo que cobriu",
+        "os outros veiculos aparecem em also_covered_by",
+        "o card em portugues nao vira um item separado"
+      ]
+    },
+    {
+      "id": "temperature-calibration",
+      "type": "judgment",
+      "description": "Temperatura mede relevancia para o comite, nao popularidade.",
+      "scenario": "Dia com: (a) aquisicao bilionaria que muda o mercado de ferramentas, (b) lancamento de GPU de consumo, (c) paper de arXiv sobre memoria de agentes, (d) prazo de vigencia do EU AI Act.",
+      "expect": [
+        "(a) ALTA e (d) ALTA",
+        "(b) nao e ALTA, apesar do volume de cobertura",
+        "(c) BAIXA, com a lente pesquisa",
+        "entre 2 e 5 itens ALTA no total"
+      ]
+    },
+    {
+      "id": "honest-failure",
+      "type": "judgment",
+      "description": "Falha declarada, nunca silencio.",
+      "scenario": "Metade das fontes retorna 403 porque o ambiente esta com Network access = Trusted.",
+      "expect": [
+        "o boletim avisa no topo que a coleta foi parcial",
+        "as fontes que falharam sao listadas com o motivo",
+        "o numero de cards e menor em vez de completado com ruido",
+        "a resposta aponta o ajuste de Network access"
+      ]
+    },
+    {
+      "id": "thin-day",
+      "type": "judgment",
+      "description": "Dia fraco nao vira boletim inflado.",
+      "scenario": "So 6 itens sobrevivem a triagem.",
+      "expect": [
+        "publica 6 cards, nao 15",
+        "diz explicitamente que o dia foi fraco",
+        "nao promove item BAIXA a MEDIA para encher"
+      ]
+    }
+  ]
+}

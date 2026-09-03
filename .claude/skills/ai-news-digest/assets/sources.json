@@ -1,5 +1,5 @@
 {
-  "_comment": "Catalogo de fontes do radar de IA. Editavel: acrescente, remova ou mude o peso das fontes conforme o interesse da sua audiencia. Campos: id (unico), name, feed (RSS/Atom), site (fallback para leitura via WebFetch quando o feed morre), lang, category, weight (1-5, usado para ordenar a triagem: 5 = fonte primaria, quase sempre relevante). Feeds mudam de endereco com o tempo; fetch_feeds.py reporta os que falharam para voce corrigir aqui.",
+  "_comment": "Catalogo de fontes do radar de IA. Editavel: acrescente, remova ou mude o peso conforme o interesse da audiencia. Campos: id (unico), name, feed (RSS/Atom; null quando a fonte nao publica feed), site (leitura via WebFetch, tambem usada como fallback quando o feed morre), lang, category, weight (1-5; 5 = fonte primaria, quase sempre relevante). Opcionais: topic_filter (true = fonte de tecnologia em geral, so passam itens que mencionem IA) e max_items (teto proprio de itens, menor que o global). Feeds mudam de endereco: fetch_feeds.py reporta os que falharam para voce corrigir aqui. Validado contra a rede em 2026-09-03.",
   "sources": [
     {
       "id": "openai",
@@ -13,11 +13,12 @@
     {
       "id": "anthropic",
       "name": "Anthropic News",
-      "feed": "https://www.anthropic.com/rss.xml",
+      "feed": null,
       "site": "https://www.anthropic.com/news",
       "lang": "en",
       "category": "lab",
-      "weight": 5
+      "weight": 5,
+      "note": "Sem RSS publico (2026-09-03: /rss.xml, /news/rss.xml, /feed.xml todos 404). Ler o site via WebFetch."
     },
     {
       "id": "deepmind",
@@ -31,8 +32,8 @@
     {
       "id": "google-ai",
       "name": "Google - The Keyword (AI)",
-      "feed": "https://blog.google/technology/ai/rss/",
-      "site": "https://blog.google/technology/ai/",
+      "feed": "https://blog.google/innovation-and-ai/technology/ai/rss/",
+      "site": "https://blog.google/innovation-and-ai/technology/ai/",
       "lang": "en",
       "category": "lab",
       "weight": 4
@@ -40,25 +41,36 @@
     {
       "id": "meta-ai",
       "name": "Meta AI Blog",
-      "feed": "https://ai.meta.com/blog/rss/",
+      "feed": null,
       "site": "https://ai.meta.com/blog/",
       "lang": "en",
       "category": "lab",
-      "weight": 4
+      "weight": 4,
+      "note": "ai.meta.com devolve 400 para qualquer caminho de feed. Ler o site via WebFetch; ver tambem meta-engineering."
+    },
+    {
+      "id": "meta-engineering",
+      "name": "Meta Engineering - ML Applications",
+      "feed": "https://engineering.fb.com/category/ml-applications/feed/",
+      "site": "https://engineering.fb.com/category/ml-applications/",
+      "lang": "en",
+      "category": "lab",
+      "weight": 3
     },
     {
       "id": "microsoft-ai",
-      "name": "Microsoft AI Blog",
-      "feed": "https://blogs.microsoft.com/ai/feed/",
-      "site": "https://blogs.microsoft.com/ai/",
+      "name": "Microsoft - Official Blog",
+      "feed": "https://blogs.microsoft.com/feed/",
+      "site": "https://blogs.microsoft.com/",
       "lang": "en",
       "category": "lab",
-      "weight": 4
+      "weight": 4,
+      "topic_filter": true
     },
     {
       "id": "mistral",
       "name": "Mistral AI News",
-      "feed": "https://mistral.ai/news/feed.xml",
+      "feed": "https://mistral.ai/rss.xml",
       "site": "https://mistral.ai/news/",
       "lang": "en",
       "category": "lab",
@@ -71,7 +83,8 @@
       "site": "https://blogs.nvidia.com/",
       "lang": "en",
       "category": "infra",
-      "weight": 3
+      "weight": 3,
+      "topic_filter": true
     },
     {
       "id": "aws-ml",
@@ -89,7 +102,8 @@
       "site": "https://huggingface.co/blog",
       "lang": "en",
       "category": "open-source",
-      "weight": 4
+      "weight": 4,
+      "max_items": 12
     },
     {
       "id": "techcrunch-ai",
@@ -121,7 +135,7 @@
     {
       "id": "venturebeat-ai",
       "name": "VentureBeat AI",
-      "feed": "https://venturebeat.com/category/ai/feed/",
+      "feed": "https://venturebeat.com/category/ai/feed",
       "site": "https://venturebeat.com/category/ai/",
       "lang": "en",
       "category": "news",
@@ -134,7 +148,8 @@
       "site": "https://www.wired.com/tag/artificial-intelligence/",
       "lang": "en",
       "category": "news",
-      "weight": 3
+      "weight": 3,
+      "topic_filter": true
     },
     {
       "id": "mit-tech-review",
@@ -161,25 +176,27 @@
       "site": "https://www.theregister.com/software/ai_ml/",
       "lang": "en",
       "category": "news",
-      "weight": 3
+      "weight": 3,
+      "topic_filter": true
     },
     {
-      "id": "zdnet-ai",
-      "name": "ZDNET AI",
-      "feed": "https://www.zdnet.com/topic/artificial-intelligence/rss.xml",
-      "site": "https://www.zdnet.com/topic/artificial-intelligence/",
+      "id": "infoq-ai",
+      "name": "InfoQ - AI, ML & Data Engineering",
+      "feed": "https://feed.infoq.com/ai-ml-data-eng/",
+      "site": "https://www.infoq.com/ai-ml-data-eng/",
       "lang": "en",
-      "category": "news",
-      "weight": 2
+      "category": "engineering",
+      "weight": 3,
+      "topic_filter": true
     },
     {
-      "id": "marktechpost",
-      "name": "MarkTechPost",
-      "feed": "https://www.marktechpost.com/feed/",
-      "site": "https://www.marktechpost.com/",
+      "id": "latent-space",
+      "name": "Latent Space",
+      "feed": "https://www.latent.space/feed",
+      "site": "https://www.latent.space/",
       "lang": "en",
-      "category": "news",
-      "weight": 2
+      "category": "engineering",
+      "weight": 4
     },
     {
       "id": "simonwillison",
@@ -187,8 +204,29 @@
       "feed": "https://simonwillison.net/atom/everything/",
       "site": "https://simonwillison.net/",
       "lang": "en",
-      "category": "practitioner",
-      "weight": 4
+      "category": "engineering",
+      "weight": 4,
+      "topic_filter": true
+    },
+    {
+      "id": "marktechpost",
+      "name": "MarkTechPost",
+      "feed": null,
+      "site": "https://www.marktechpost.com/",
+      "lang": "en",
+      "category": "news",
+      "weight": 2,
+      "note": "Feed responde 403 mesmo com User-Agent de navegador (WAF). Fonte opcional, ler pelo site."
+    },
+    {
+      "id": "hn-ai",
+      "name": "Hacker News (AI/LLM, alta pontuacao)",
+      "feed": "https://hnrss.org/newest?q=AI+OR+LLM+OR+GPT&points=150",
+      "site": "https://news.ycombinator.com/",
+      "lang": "en",
+      "category": "community",
+      "weight": 3,
+      "topic_filter": true
     },
     {
       "id": "import-ai",
@@ -205,17 +243,27 @@
       "feed": "https://magazine.sebastianraschka.com/feed",
       "site": "https://magazine.sebastianraschka.com/",
       "lang": "en",
-      "category": "practitioner",
+      "category": "research",
       "weight": 3
     },
     {
-      "id": "hn-ai",
-      "name": "Hacker News (AI/LLM, alta pontuacao)",
-      "feed": "https://hnrss.org/newest?q=AI+OR+LLM+OR+GPT&points=150",
-      "site": "https://news.ycombinator.com/",
+      "id": "google-research",
+      "name": "Google Research Blog",
+      "feed": "https://research.google/blog/rss/",
+      "site": "https://research.google/blog/",
       "lang": "en",
-      "category": "community",
+      "category": "research",
       "weight": 3
+    },
+    {
+      "id": "mit-news-ai",
+      "name": "MIT News - Artificial Intelligence",
+      "feed": "https://news.mit.edu/topic/mitartificial-intelligence2-rss.xml",
+      "site": "https://news.mit.edu/topic/artificial-intelligence2",
+      "lang": "en",
+      "category": "research",
+      "weight": 2,
+      "topic_filter": true
     },
     {
       "id": "arxiv-ai",
@@ -224,7 +272,8 @@
       "site": "https://arxiv.org/list/cs.AI/recent",
       "lang": "en",
       "category": "research",
-      "weight": 2
+      "weight": 2,
+      "max_items": 10
     },
     {
       "id": "arxiv-cl",
@@ -233,7 +282,17 @@
       "site": "https://arxiv.org/list/cs.CL/recent",
       "lang": "en",
       "category": "research",
-      "weight": 2
+      "weight": 2,
+      "max_items": 10
+    },
+    {
+      "id": "eu-ai-act",
+      "name": "EU AI Act Newsroom",
+      "feed": "https://artificialintelligenceact.eu/feed/",
+      "site": "https://artificialintelligenceact.eu/",
+      "lang": "en",
+      "category": "regulation",
+      "weight": 4
     },
     {
       "id": "olhar-digital",
@@ -242,16 +301,18 @@
       "site": "https://olhardigital.com.br/",
       "lang": "pt-BR",
       "category": "news",
-      "weight": 2
+      "weight": 2,
+      "topic_filter": true
     },
     {
       "id": "tecmundo",
       "name": "TecMundo",
-      "feed": "https://www.tecmundo.com.br/feed",
+      "feed": "https://rss.tecmundo.com.br/feed",
       "site": "https://www.tecmundo.com.br/",
       "lang": "pt-BR",
       "category": "news",
-      "weight": 2
+      "weight": 2,
+      "topic_filter": true
     },
     {
       "id": "canaltech",
@@ -260,7 +321,18 @@
       "site": "https://canaltech.com.br/inteligencia-artificial/",
       "lang": "pt-BR",
       "category": "news",
-      "weight": 2
+      "weight": 2,
+      "topic_filter": true
+    },
+    {
+      "id": "mobile-time",
+      "name": "Mobile Time",
+      "feed": "https://www.mobiletime.com.br/feed/",
+      "site": "https://www.mobiletime.com.br/",
+      "lang": "pt-BR",
+      "category": "news",
+      "weight": 2,
+      "topic_filter": true
     }
   ]
 }
