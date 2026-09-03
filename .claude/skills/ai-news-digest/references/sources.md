@@ -7,7 +7,7 @@ Edit `assets/sources.json`. Each entry:
 | `id` | Unique key. Used by `--only` and in failure reports. |
 | `name` | The name shown on the card. |
 | `feed` | RSS/Atom. `null` when the source publishes no feed — then use `sitemap`, or fall back to reading `site` with WebFetch. |
-| `sitemap` | Optional, for sources with no feed: `{"url": "...", "contains": "/news/"}`. The collector reads the sitemap, keeps URLs containing that substring, and dates them by `<lastmod>`. |
+| `sitemap` | Optional, for sources with no feed: `{"url": "...", "contains": "/news/"}`. The collector reads the sitemap, keeps URLs containing that substring, and dates them by `<lastmod>`. Add `"excludes": ["/tag/"]` to drop index pages that share the path. |
 | `site` | Human-facing page. Fallback when the feed dies, and the WebFetch target. |
 | `lang` | `en` or `pt-BR`. **Decides the card's language**: an item whose main source is `pt-BR` stays in Portuguese; the rest of the newsletter is English. |
 | `category` | `lab`, `infra`, `open-source`, `news`, `analysis`, `engineering`, `research`, `regulation`, `community`. |
@@ -56,6 +56,9 @@ carries the source's link.
 **Weight 4 — strong press and engineering sources.** TechCrunch, The Verge, Ars
 Technica, MIT Tech Review, Hugging Face, Latent Space, Simon Willison, Google/
 Microsoft/Meta, EU AI Act. They bring context and reporting the lab's blog omits.
+The Batch belongs here too: Andrew Ng's weekly letter is one of the few places
+where someone with a practitioner's standing says what a week of releases means,
+and DeepLearning.AI's roundup around it is written for engineers.
 
 **Weight 3 — broad coverage.** The Decoder, VentureBeat, WIRED, The Register,
 InfoQ, NVIDIA, AWS, Mistral, Import AI, Raschka, Google Research, HN.
@@ -75,16 +78,23 @@ Three ways to cover a source that publishes no RSS, best first.
 
 **A sitemap with `<lastmod>`.** Many sites publish one even when they publish no
 feed, and it carries exactly what the window filter needs: a URL and a date. Set
-`sitemap` and leave `feed` null. Anthropic and a16z are read this way, which is
-why neither appears in the failure line any more.
+`sitemap` and leave `feed` null. Anthropic, a16z and The Batch are read this way,
+which is why none of them appears in the failure line any more.
 
-Two caveats. The title is derived from the URL slug, so
+Three caveats. The title is derived from the URL slug, so
 `/news/enterprise-frontier-safeguards` becomes "Enterprise frontier safeguards" —
 close to the real headline but not it, and there is no summary at all. Triage
 should read the page before writing a card. And `<lastmod>` usually carries a
 date with no time, so those items would land at midnight and a post from
 yesterday afternoon would fall outside a 24h window; the collector marks them
 `date_only` and compares whole days instead.
+
+And a sitemap mixes articles with index pages living under the same path, all
+touched whenever an article is: `/the-batch/` covers 2298 articles but also 381
+tag listings and 383 weekly roundups, and every one of them would have come out
+as an item. `excludes` drops them by substring. For The Batch the roundup
+(`/the-batch/issue-368`) is excluded on purpose and loses nothing — it only
+collects the same week's stories, and Andrew Ng's letter has its own URL.
 
 **WebFetch on the `site`.** Works, but costs a model call per source and returned
 empty content for two sites in a cloud run. Use it when there is no sitemap.
@@ -94,15 +104,18 @@ trains the reader to ignore failure lines.
 
 ## Historical note: feedless sources
 
-Three entries carry `"feed": null` and therefore always show up in
-`sources_failed` with "no RSS feed declared". That is not a defect — it is the
-catalog telling you to read them from the site:
+Some entries carry `"feed": null` because the source publishes no RSS at all.
+Where a sitemap exists the collector uses it and the source behaves like any
+other; where it does not, the entry shows up in `sources_failed` with "no RSS
+feed declared", which is not a defect — it is the catalog telling you to read it
+from the site:
 
 | Source | Situation as of 2026-09-03 |
 | --- | --- |
 | Anthropic News | Publishes no RSS. `/rss.xml`, `/news/rss.xml`, `/feed.xml` and `/engineering/rss.xml` all 404. |
 | Meta AI Blog | `ai.meta.com` returns 400 for every feed path. The `engineering.fb.com` feed (ML Applications) is in the catalog as `meta-engineering` and works. |
 | MarkTechPost | The feed returns 403 even with a browser User-Agent (WAF). Optional source. |
+| DeepLearning.AI | `/feed/`, `/rss.xml` and `/the-batch/rss.xml` all 404. Read via the sitemap as `the-batch`. `andrewng.org` has neither feed nor sitemap, so Andrew Ng is covered here rather than as a source of his own. |
 
 ## Validating the feeds
 

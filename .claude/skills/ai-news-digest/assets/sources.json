@@ -73,6 +73,22 @@
       "note": "Claude Code. Low volume; most output is on X, which cannot be fetched."
     },
     {
+      "id": "the-batch",
+      "name": "The Batch (Andrew Ng / DeepLearning.AI)",
+      "feed": null,
+      "site": "https://www.deeplearning.ai/the-batch/",
+      "lang": "en",
+      "category": "people",
+      "weight": 4,
+      "max_items": 8,
+      "note": "Andrew Ng's weekly letter plus DeepLearning.AI's news roundup. No RSS (/feed/, /rss.xml and /the-batch/rss.xml all 404 on 2026-09-03); read via the sitemap, which carries full timestamps. andrewng.org is not a separate source: it publishes no feed and no sitemap, and the letters land here. Titles come from the URL slug and have no summary, so read the page before writing a card.",
+      "sitemap": {
+        "url": "https://www.deeplearning.ai/sitemap.xml",
+        "contains": "/the-batch/",
+        "excludes": ["/the-batch/tag/", "/the-batch/issue-"]
+      }
+    },
+    {
       "id": "sam-altman",
       "name": "Sam Altman",
       "feed": "https://blog.samaltman.com/posts.atom",

@@ -260,7 +260,7 @@ def parse_feed(raw: bytes) -> list[dict]:
     return out
 
 
-def parse_sitemap(raw: bytes, contains: str) -> list[dict]:
+def parse_sitemap(raw: bytes, contains: str, excludes: tuple[str, ...] = ()) -> list[dict]:
     """Turns a sitemap.xml into items.
 
     Some sources publish no feed but do publish a sitemap carrying <lastmod>
@@ -270,6 +270,11 @@ def parse_sitemap(raw: bytes, contains: str) -> list[dict]:
 
     <lastmod> is usually a date with no time, so those items are marked
     date_only and the window comparison is made on whole days.
+
+    A sitemap mixes articles with index pages that live under the same path --
+    The Batch keeps its tag listings and its weekly roundup under /the-batch/,
+    and both are touched whenever an article is. `excludes` drops those URLs
+    before they become items.
     """
     root = ET.fromstring(raw)
     out = []
@@ -284,6 +289,8 @@ def parse_sitemap(raw: bytes, contains: str) -> list[dict]:
             elif tag == "lastmod":
                 mod = (child.text or "").strip()
         if not loc or contains not in loc:
+            continue
+        if any(bad in loc for bad in excludes):
             continue
         published = parse_date(mod)
         if published is None:
@@ -416,7 +423,11 @@ def collect_source(source: dict, cutoff: datetime, max_per_source: int, timeout:
             entries = parse_feed(raw)
         else:
             raw = fetch_url(sitemap["url"], timeout)
-            entries = parse_sitemap(raw, sitemap.get("contains", ""))
+            entries = parse_sitemap(
+                raw,
+                sitemap.get("contains", ""),
+                tuple(sitemap.get("excludes", ())),
+            )
     except urllib.error.HTTPError as exc:
         result["error"] = f"HTTP {exc.code}"
         return result

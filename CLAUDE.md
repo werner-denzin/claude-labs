@@ -5,7 +5,7 @@ A lab for Claude Code experiments.
 ## The `ai-news-digest` skill
 
 A daily radar on **software engineering with AI** for SiDi's AI strategy
-committee: it collects the last 24h from ~56 sources, classifies each item by
+committee: it collects the last 24h from ~20 sources, classifies each item by
 temperature (HIGH/MEDIUM/LOW), selects 15 with roughly half on engineering, and
 publishes a card-format newsletter to a Teams channel.
 
