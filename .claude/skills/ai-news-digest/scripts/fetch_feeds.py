@@ -427,7 +427,20 @@ def collect_source(source: dict, cutoff: datetime, max_per_source: int, timeout:
         result["error"] = f"{type(exc).__name__}: {exc}"
         return result
 
-    topic_filter = bool(source.get("topic_filter"))
+    # A source can narrow the gate to its own vocabulary, and can exclude its own
+    # off-topic beat. NVIDIA is the case that needs both: its name is itself a
+    # topic keyword, so without an exclusion every gaming post would pass.
+    topic_filter = bool(source.get("topic_filter") or source.get("topic_terms"))
+    include_re = (
+        re.compile(source["topic_terms"], re.IGNORECASE)
+        if source.get("topic_terms")
+        else TOPIC_RE
+    )
+    exclude_re = (
+        re.compile(source["topic_exclude"], re.IGNORECASE)
+        if source.get("topic_exclude")
+        else None
+    )
     is_release = source.get("kind") == "release"
     drop_pre = is_release and not source.get("prereleases")
     cap = min(max_per_source, source.get("max_items", max_per_source))
@@ -449,7 +462,11 @@ def collect_source(source: dict, cutoff: datetime, max_per_source: int, timeout:
         if drop_pre and PRERELEASE_RE.search(entry["title"]):
             result["prerelease"] += 1
             continue
-        if topic_filter and not TOPIC_RE.search(f"{entry['title']} {entry['summary']}"):
+        haystack = f"{entry['title']} {entry['summary']}"
+        if topic_filter and not include_re.search(haystack):
+            result["off_topic"] += 1
+            continue
+        if exclude_re is not None and exclude_re.search(haystack):
             result["off_topic"] += 1
             continue
         entry.update(

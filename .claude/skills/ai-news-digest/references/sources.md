@@ -13,7 +13,9 @@ Edit `assets/sources.json`. Each entry:
 | `category` | `lab`, `infra`, `open-source`, `news`, `analysis`, `engineering`, `research`, `regulation`, `community`. |
 | `weight` | 1-5. Breaks ties in triage and picks the representative during deduplication. 5 = primary source. |
 | `kind` | Optional. `release` = a version feed. Pre-releases are dropped automatically and triage folds a day's releases per tool into one card. |
-| `topic_filter` | Optional. `true` = general source; only items mentioning AI or coding agents get through. |
+| `topic_filter` | Optional. `true` = general source; only items matching the global `TOPIC_RE` get through. |
+| `topic_terms` | Optional regex replacing `TOPIC_RE` for this source, when its vocabulary differs from the global one. Implies filtering. |
+| `topic_exclude` | Optional regex dropping items even when they matched, for a source whose off-topic beat shares vocabulary with its on-topic one. |
 | `prereleases` | Optional. `true` on a `release` source keeps alpha/beta/rc/nightly builds. Off by default. |
 | `max_items` | Optional. Its own ceiling, lower than the global one. |
 | `note` | Optional. Why the source is configured this way. |
@@ -128,6 +130,24 @@ coverage.
 The term list lives in `TOPIC_RE`, at the top of `fetch_feeds.py`. It carries
 Portuguese terms on purpose, since it has to match Brazilian sources. A new model
 name that is not there yet (the market invents one a month) should be added.
+
+**One global list does not fit every source**, and two cases in this catalog show
+both failure directions.
+
+*Too permissive.* `nvidia` is itself a topic term, so every post on NVIDIA's own
+blog matched and the gate passed its entire gaming beat -- `'NBA 2K27' With
+NVIDIA DLSS 5`, `Leading Publishers Bring Blockbuster PC Games`. Fixed with
+`topic_exclude`, which drops GeForce NOW, DLSS, Gamescom and the rest.
+
+*Too strict.* GitHub Changelog covers all of GitHub, and the global list rejected
+`Enterprise-managed settings support any default model` -- a real Copilot
+governance change that had already earned a card in a published newsletter. It
+contains no global keyword. Fixed with `topic_terms`, a per-source vocabulary
+that includes bare `model`, `agent` and `premium request`.
+
+The lesson generalises: when a source's on-topic and off-topic output share
+vocabulary, reach for `topic_exclude`; when its on-topic vocabulary is narrower
+than the world's, reach for `topic_terms`.
 
 ## Release feeds
 

@@ -122,7 +122,9 @@
       "lang": "en",
       "category": "hardware",
       "weight": 4,
-      "topic_filter": true
+      "topic_filter": true,
+      "topic_exclude": "geforce now|dlss|gamescom|\\bgames?\\b|gaming|blockbuster|rtx remix|\\bplay\\b|steam deck|shield tv",
+      "note": "NVIDIA's own name is a topic keyword, so the global filter passes everything. The exclusion drops its gaming beat, which is most of the feed."
     },
     {
       "id": "nvidia-newsroom",
@@ -132,7 +134,9 @@
       "lang": "en",
       "category": "hardware",
       "weight": 4,
-      "topic_filter": true
+      "topic_filter": true,
+      "topic_exclude": "geforce now|dlss|gamescom|\\bgames?\\b|gaming|blockbuster|rtx remix|\\bplay\\b|steam deck|shield tv",
+      "note": "NVIDIA's own name is a topic keyword, so the global filter passes everything. The exclusion drops its gaming beat, which is most of the feed."
     },
     {
       "id": "techcrunch-ai",
@@ -193,7 +197,8 @@
       "category": "engineering",
       "weight": 3,
       "topic_filter": true,
-      "note": "Copilot enterprise controls and model deprecations. github.blog is unaffected by the sandbox's GitHub API restriction."
+      "note": "Covers all of GitHub, so it needs a gate. Uses its own vocabulary: the global filter dropped 'Enterprise-managed settings support any default model', a real Copilot governance change.",
+      "topic_terms": "copilot|\\bagent|\\bmcp\\b|model context protocol|\\bmodels?\\b|\\bllm\\b|\\bai\\b|code review|codespaces|premium request"
     }
   ]
 }
