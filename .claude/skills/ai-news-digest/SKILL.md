@@ -158,6 +158,16 @@ publishing, publish four and let the rest of the day fill the newsletter.
 Write `digest.json` in the format of `references/digest-schema.md`. Writing
 rules:
 
+- **Label: one or two words**, between the title and the description, naming
+  what kind of news the card carries — `Acquisition`, `Model launch`, `Security`,
+  `Funding`, `Regulation`, `Benchmark`, `Research`, `Pricing`, `Deprecation`,
+  `Outage`, `Partnership`. That list is a starting point, not a closed set. It is
+  required on every card, and `build_card.py` refuses a third word.
+  The label is not the `lens`: the lens is one of four committee interests, the
+  label is what actually happened. Two `strategy` cards can read `Acquisition`
+  and `Pricing`, and the reader learns something from the difference. Reuse the
+  same label across days for the same kind of story, so the vocabulary stays
+  small enough to scan. It follows the card's language.
 - **Description: 3 to 5 lines** (roughly 200-400 characters), in the language set
   by the rule above. Say what happened, the number that matters, and why the
   committee should care. One sentence of context beats three of narrative.

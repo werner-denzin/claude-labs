@@ -122,7 +122,23 @@ def eval_card_size_limit(tmp: str) -> None:
 
     full = os.path.join(tmp, "full.json")
     run(["scripts/build_card.py", "--in", "evals/fixtures/digest-15.json", "--out", full])
-    check("with no trim, all 15 items fit", len(temperatures(json.load(open(full)))) == 15)
+    payload = json.load(open(full))
+    check("with no trim, all 15 items fit", len(temperatures(payload)) == 15)
+
+    texts = [b.get("text", "") for b in text_blocks(payload["attachments"][0]["content"])]
+    check(
+        "every card renders its label, uppercased",
+        sum(t == "ACQUISITION" for t in texts) == 4 and "MODEL LAUNCH" in texts,
+        f"labels seen: {[t for t in texts if t.isupper()][:6]}",
+    )
+    check(
+        "the label sits between the title and the description",
+        all(
+            texts[i - 1].startswith("**") and texts[i - 1].endswith("**")
+            for i, t in enumerate(texts)
+            if t == "ACQUISITION"
+        ),
+    )
 
 
 def eval_digest_validation(tmp: str) -> None:
@@ -142,6 +158,23 @@ def eval_digest_validation(tmp: str) -> None:
     check("invalid temperature rejected without a traceback",
           proc.returncode != 0 and "Traceback" not in combined, combined[-200:])
     check("the message lists the accepted values", "HIGH" in combined)
+
+    for name, mutation, expected in (
+        ("no-label", lambda c: c.pop("label"), "label"),
+        ("long-label", lambda c: c.update(label="a much too long label"), "at most 2"),
+        ("blank-label", lambda c: c.update(label="   "), "label"),
+    ):
+        bad = os.path.join(tmp, f"{name}.json")
+        digest = json.load(open(os.path.join(FIXTURES, "digest-15.json"), encoding="utf-8"))
+        mutation(digest["cards"][0])
+        json.dump(digest, open(bad, "w", encoding="utf-8"), ensure_ascii=False)
+        proc = run(["scripts/build_card.py", "--in", bad, "--out", os.path.devnull])
+        combined = proc.stdout + proc.stderr
+        check(
+            f"{name} rejected with a useful message",
+            proc.returncode != 0 and "Traceback" not in combined and expected in combined,
+            combined[-200:],
+        )
 
     alias = os.path.join(tmp, "alias.json")
     digest = json.load(open(os.path.join(FIXTURES, "digest-15.json"), encoding="utf-8"))

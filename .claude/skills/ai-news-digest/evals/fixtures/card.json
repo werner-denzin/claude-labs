@@ -55,6 +55,15 @@
               },
               {
                 "type": "TextBlock",
+                "text": "SECURITY",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "isSubtle": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
                 "text": "Proactive cyber defense for governments and enterprises",
                 "wrap": true,
                 "size": "Small",
@@ -88,6 +97,15 @@
                 "type": "TextBlock",
                 "text": "**2. Introducing Gemini 3.8 Flash and 3.8 Flash Cyber**",
                 "wrap": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "MODEL LAUNCH",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "isSubtle": true,
                 "spacing": "Small"
               },
               {
@@ -129,6 +147,15 @@
               },
               {
                 "type": "TextBlock",
+                "text": "ACQUISITION",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "isSubtle": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
                 "text": "Nvidia says Hugging Face will stay open even as the chipmaker takes control of a key AI hub.",
                 "wrap": true,
                 "size": "Small",
@@ -162,6 +189,15 @@
                 "type": "TextBlock",
                 "text": "**4. NeoMME: an efficient Multimodal-native and Multilingual Encoder**",
                 "wrap": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "RESEARCH",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "isSubtle": true,
                 "spacing": "Small"
               },
               {
@@ -203,6 +239,15 @@
               },
               {
                 "type": "TextBlock",
+                "text": "ACQUISITION",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "isSubtle": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
                 "text": "Nvidia said Hugging Face hosts over 3 million models and is used by over 18 million developers.",
                 "wrap": true,
                 "size": "Small",
@@ -236,6 +281,15 @@
                 "type": "TextBlock",
                 "text": "**6. Nvidia is buying Hugging Face for almost $13 billion**",
                 "wrap": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "ACQUISITION",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "isSubtle": true,
                 "spacing": "Small"
               },
               {
@@ -277,6 +331,15 @@
               },
               {
                 "type": "TextBlock",
+                "text": "BENCHMARK",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "isSubtle": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
                 "text": "an epic comeback story for Meta",
                 "wrap": true,
                 "size": "Small",
@@ -310,6 +373,15 @@
                 "type": "TextBlock",
                 "text": "**8. Fine-tuning a 350M Model for Better Structured Outputs in 100 GRPO Steps**",
                 "wrap": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "FINE-TUNING",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "isSubtle": true,
                 "spacing": "Small"
               },
               {
@@ -351,6 +423,15 @@
               },
               {
                 "type": "TextBlock",
+                "text": "AGENT MEMORY",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "isSubtle": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
                 "text": "Give Your Coding Agents a Memory You Own",
                 "wrap": true,
                 "size": "Small",
@@ -384,6 +465,15 @@
                 "type": "TextBlock",
                 "text": "**10. Training a coding model to paint watercolours with TRL and OpenEnv**",
                 "wrap": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "TRAINING",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "isSubtle": true,
                 "spacing": "Small"
               },
               {
@@ -425,6 +515,15 @@
               },
               {
                 "type": "TextBlock",
+                "text": "EVENT",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "isSubtle": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
                 "text": "The Builders Stage is returning to TechCrunch Disrupt, bringing together founders, startup operators, and investors for practical conversations on what it takes to build and scale.",
                 "wrap": true,
                 "size": "Small",
@@ -458,6 +557,15 @@
                 "type": "TextBlock",
                 "text": "**12. Palo Alto Networks paid $500M for Thrive-backed Console, sources say**",
                 "wrap": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "ACQUISITION",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "isSubtle": true,
                 "spacing": "Small"
               },
               {
@@ -499,6 +607,15 @@
               },
               {
                 "type": "TextBlock",
+                "text": "EVENT",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "isSubtle": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
                 "text": "On our new Real World AI stage, we’ll be focusing on the intersection between the digital and physical, and all the ways we’ll continue to see a blending of the two.",
                 "wrap": true,
                 "size": "Small",
@@ -536,6 +653,15 @@
               },
               {
                 "type": "TextBlock",
+                "text": "SAFETY",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "isSubtle": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
                 "text": "OpenAI’s new Astra model will use “recurrent depth,” a technique that allows the model to operate outside of the sequential thinking that characterizes most reasoning models.",
                 "wrap": true,
                 "size": "Small",
@@ -569,6 +695,15 @@
                 "type": "TextBlock",
                 "text": "**15. Google says its new Gemini 3.8 Flash model ‘works harder’ but might cost more**",
                 "wrap": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "MODEL LAUNCH",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "isSubtle": true,
                 "spacing": "Small"
               },
               {

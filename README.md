@@ -28,7 +28,7 @@ flowchart TD
     ITEMS[("items.json<br>~12 candidates a day<br>+ failures + duplicate hints")]
     SITEMAP["sitemap.xml<br>sources with no feed:<br>Anthropic, a16z, The Batch"]
 
-    TRIAGE{"Claude triage<br>consolidate duplicates<br>score temperature<br>select 15: 6 strategy · 4 engineering<br>3 research · 2 regulation<br>write descriptions"}
+    TRIAGE{"Claude triage<br>consolidate duplicates<br>score temperature<br>select 15: 6 strategy · 4 engineering<br>3 research · 2 regulation<br>write label + description"}
     DIGEST[("digest.json<br>the editorial product")]
 
     BUILD["scripts/build_card.py<br>Adaptive Card<br>trims to the Teams size limit"]
@@ -95,7 +95,7 @@ reports why it failed.
 | `references/teams-delivery.md` | How to create the channel webhook, the payload format, and the limits the code handles for you. |
 | `references/scheduling.md` | Running it daily at 08:00 BRT: the cloud routine, plus local systemd and GitHub Actions as alternatives. Includes cost and the network setting that silently empties the newsletter if missed. |
 | `evals/evals.json` | Eight test cases. Four are mechanical; four judge editorial quality and need a human or an LLM judge. |
-| `evals/run_script_evals.py` | Runs the four mechanical cases as 24 assertions over collection, size trimming, digest validation, and secret handling. |
+| `evals/run_script_evals.py` | Runs the four mechanical cases as 29 assertions over collection, size trimming, digest validation, and secret handling. |
 | `evals/fixtures/` | Sample `digest.json` and `card.json` used by those assertions. |
 
 ## Running it by hand
@@ -116,7 +116,7 @@ In practice you just ask Claude for the AI radar and it walks the whole flow.
 Run the checks with:
 
 ```bash
-python3 evals/run_script_evals.py            # 24 assertions
+python3 evals/run_script_evals.py            # 29 assertions
 python3 evals/run_script_evals.py --offline  # skips the one that hits the network
 ```
 

@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from datetime import date, datetime
 
@@ -29,6 +30,13 @@ TEMPERATURES = {
 }
 # Portuguese labels accepted as aliases, so older digests still build.
 ALIASES = {"ALTA": "HIGH", "MEDIA": "MEDIUM", "MÉDIA": "MEDIUM", "BAIXA": "LOW"}
+
+# Every card carries a label: one or two words naming what kind of news it is,
+# shown between the title and the description. The ceiling is what keeps it a
+# label and not a second headline -- and what keeps the card scannable, since a
+# reader takes it in at a glance next to fourteen others.
+LABEL_MAX_WORDS = 2
+LABEL_MAX_CHARS = 24
 
 WEEKDAYS = [
     "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
@@ -47,6 +55,25 @@ def normalize_temperature(value: str) -> dict:
             f"invalid temperature: {value!r} (use HIGH, MEDIUM or LOW)"
         )
     return TEMPERATURES[key]
+
+
+def normalize_label(value: str) -> str:
+    """Collapses the whitespace and holds the label to one or two words."""
+    label = re.sub(r"\s+", " ", (value or "")).strip()
+    if not label:
+        raise ValueError("the label is empty")
+    words = label.split(" ")
+    if len(words) > LABEL_MAX_WORDS:
+        raise ValueError(
+            f"label {label!r} has {len(words)} words "
+            f"(use at most {LABEL_MAX_WORDS}, e.g. 'Model launch')"
+        )
+    if len(label) > LABEL_MAX_CHARS:
+        raise ValueError(
+            f"label {label!r} is {len(label)} characters "
+            f"(use at most {LABEL_MAX_CHARS})"
+        )
+    return label
 
 
 def format_date(iso: str) -> str:
@@ -75,6 +102,13 @@ def build_item(index: int, item: dict) -> dict:
             spacing="None",
         ),
         text_block(f"**{index}. {item['title']}**", spacing="Small"),
+        text_block(
+            normalize_label(item["label"]).upper(),
+            size="Small",
+            weight="Bolder",
+            isSubtle=True,
+            spacing="Small",
+        ),
         text_block(item["description"], size="Small", spacing="Small"),
     ]
 
@@ -220,6 +254,7 @@ def preview(digest: dict) -> str:
     for index, item in enumerate(digest["cards"], start=1):
         temp = normalize_temperature(item["temperature"])
         lines.append(f"{temp['emoji']} {temp['label']:6} {index}. {item['title']}")
+        lines.append(f"        [{normalize_label(item['label']).upper()}]")
         lines.append(f"        {item['description']}")
         lines.append(f"        source: {item['source_name']} — {item['source_url']}")
         lines.append("")
@@ -244,13 +279,17 @@ def main() -> int:
     if not digest["cards"]:
         raise SystemExit("error: digest.json contains no cards")
     for card in digest["cards"]:
-        for field in ("title", "description", "temperature", "source_name", "source_url"):
+        for field in ("title", "label", "description", "temperature", "source_name", "source_url"):
             if not card.get(field):
                 raise SystemExit(
                     f"error: card {card.get('title', '?')!r} is missing the field '{field}'"
                 )
         try:
             normalize_temperature(card["temperature"])
+        except ValueError as exc:
+            raise SystemExit(f"error: card {card['title']!r}: {exc}")
+        try:
+            normalize_label(card["label"])
         except ValueError as exc:
             raise SystemExit(f"error: card {card['title']!r}: {exc}")
         if not str(card["source_url"]).startswith("http"):

@@ -11,6 +11,8 @@ Window: last {{HOURS}}h · {{ITEMS}} items from {{SOURCES_OK}}/{{SOURCES_TOTAL}}
 
 ### 1. {{TITLE}}
 
+`{{LABEL: 1-2 words -- Acquisition, Model launch, Security, Funding, Benchmark...}}`
+
 {{DESCRIPTION: 3 to 5 lines. What happened, the number that matters, why the
 committee should care. In English -- unless this card's main source is a
 Brazilian one, in which case it stays in Portuguese.}}
