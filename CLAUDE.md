@@ -9,8 +9,22 @@ from ~35 sources, classifies each item by temperature (HIGH/MEDIUM/LOW), selects
 the 15 most relevant, and publishes a card-format newsletter to a Teams channel.
 
 - Skill: `.claude/skills/ai-news-digest/SKILL.md`
-- Status, decisions and what is left: `docs/HANDOFF-ai-news-digest.md`
 - Published newsletters: `reports/`
+
+### Not live yet
+
+The skill runs manually today — collection, triage and
+`build_card.py --preview` all work without a webhook; only the final POST needs
+the secret. Three steps to make it run on its own:
+
+1. Create the Teams channel webhook and store the URL — steps in
+   `references/teams-delivery.md`.
+2. Push this repo to GitHub: the routine clones `werner-denzin/claude-labs` on
+   every run, so the skill has to be on the remote.
+3. Create the routine with `/schedule`, pointing at an environment with
+   **Network access = Custom or Full**. The `Default` environment is *Trusted*
+   and blocks every news source (`403 host_not_allowed`) — the most likely cause
+   of an empty newsletter at 08:00. Cost and limits in `references/scheduling.md`.
 
 Rules that hold for any change to the skill:
 
@@ -21,6 +35,12 @@ Rules that hold for any change to the skill:
   the cloud environment may not either. No new dependencies.
 - **A source that failed goes into the newsletter as a declared failure**, never
   as silence. The reader has to know the collection was partial.
+
+### Backlog
+
+- Read the previous day's `reports/` entry to say what changed since yesterday.
+- Add Brazilian regulatory sources (PL 2338, ANPD) once that agenda heats up.
+- Run the `type: judgment` evals with an LLM judge over the published newsletter.
 
 ## User preferences
 
