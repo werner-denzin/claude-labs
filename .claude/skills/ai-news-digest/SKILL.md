@@ -99,7 +99,6 @@ The four people in the catalog (Karpathy, Boris Cherny, Thariq, Sam Altman) and
 two of the three investors published nothing in a measured seven-day window,
 because they post on X, which has no fetchable feed. Expect their categories to
 be empty most days, and pick up what they say through the press instead.
-are quieter and easier to overlook.
 
 **Temperature** is relevance to this committee, not popularity of the news:
 
