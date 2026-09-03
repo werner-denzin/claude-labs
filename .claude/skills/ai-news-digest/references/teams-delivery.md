@@ -1,47 +1,46 @@
-# Entrega no Microsoft Teams
+# Delivery to Microsoft Teams
 
-O boletim vai para um canal do Teams como **Adaptive Card**, via webhook. Nenhum
-arquivo e anexado: o cartao carrega o boletim inteiro.
+The newsletter goes to a Teams channel as an **Adaptive Card**, via webhook. No
+file is attached: the card carries the whole newsletter.
 
-## Criar o webhook do canal
+## Creating the channel webhook
 
-A Microsoft aposentou os *Office 365 Connectors* (o antigo "Incoming Webhook").
-O caminho atual e o **Workflows**, que e o Power Automate embutido no Teams:
+Microsoft retired the *Office 365 Connectors* (the old "Incoming Webhook"). The
+current path is **Workflows**, the Power Automate built into Teams:
 
-1. No canal de destino, clique nos `...` ao lado do nome do canal.
-2. **Workflows** (ou **Fluxos de trabalho**).
-3. Escolha o modelo **"Post to a channel when a webhook request is received"**
-   ("Publicar em um canal quando uma solicitacao de webhook for recebida").
-4. Confirme a conta, o time e o canal. O fluxo e criado.
-5. Copie a **URL HTTP POST** gerada. Ela e longa e termina com uma assinatura
+1. On the target channel, click the `...` next to the channel name.
+2. **Workflows**.
+3. Pick the template **"Post to a channel when a webhook request is received"**.
+4. Confirm the account, the team and the channel. The flow is created.
+5. Copy the generated **HTTP POST URL**. It is long and ends with a signature
    (`?api-version=...&sig=...`).
 
-Se a sua organizacao ainda tiver o conector legado habilitado, ele tambem
-funciona e aceita o mesmo payload. Nao vale a pena adotar um caminho em
-descontinuacao para um fluxo novo.
+If your organization still has the legacy connector enabled, it works too and
+accepts the same payload. It is not worth adopting a deprecated path for a new
+workflow.
 
-## Guardar a URL
+## Storing the URL
 
-**A URL e a credencial.** Quem a tem publica no canal. Ela nunca entra no
-repositorio, em log, em mensagem ou em resposta ao usuario.
+**The URL is the credential.** Whoever holds it can post to the channel. It never
+goes into the repository, a log, a message, or a reply to the user.
 
-Local, para rodar a skill na sua maquina:
+Locally, to run the skill on your machine:
 
 ```bash
-# no ~/.zshrc, ou num arquivo fora do repo com permissao 600
+# in ~/.zshrc, or in a file outside the repo with mode 600
 export TEAMS_WEBHOOK_URL='https://prod-XX.brazilsouth.logic.azure.com:443/workflows/...'
-# alternativa: apontar para um arquivo que contem so a URL
+# alternative: point at a file containing only the URL
 export TEAMS_WEBHOOK_FILE="$HOME/.config/sidi/teams-webhook"
 ```
 
-Na routine da nuvem, **nao** use o campo de variaveis de ambiente do ambiente
-Claude: a documentacao diz que elas ficam visiveis para qualquer pessoa que use
-aquele ambiente. Guarde a URL como **API credential** do ambiente. Ver
-`scheduling.md`.
+In the cloud routine, do **not** use the Claude environment's environment-variable
+field: the documentation states those are visible to anyone who uses that
+environment. Store the URL as an **API credential** of the environment instead.
+See `scheduling.md`.
 
-## Formato do payload
+## Payload format
 
-O webhook do Workflows espera o envelope de mensagem do Teams:
+The Workflows webhook expects the Teams message envelope:
 
 ```json
 {
@@ -55,36 +54,36 @@ O webhook do Workflows espera o envelope de mensagem do Teams:
 }
 ```
 
-`build_card.py` produz exatamente isso. `post_to_teams.py` recusa qualquer outra
-forma antes de gastar uma chamada de rede.
+`build_card.py` produces exactly that. `post_to_teams.py` rejects any other shape
+before spending a network call.
 
-## Limites que o codigo ja trata
+## Limits the code already handles
 
-| Limite | Tratamento |
+| Limit | Handling |
 | --- | --- |
-| Mensagem acima de ~28 KB e recusada | `build_card.py` monta o cartao, mede o tamanho **na rede** (JSON compacto) e vai cortando os itens de menor temperatura ate caber, com um aviso no rodape. `post_to_teams.py` recusa acima de 28 KB por garantia. |
-| `429` e `5xx` do Power Automate | Ate 4 tentativas com backoff exponencial, respeitando `Retry-After`. |
-| Timeout de rede | Mesma politica de retry. |
+| Messages above ~28 KB are rejected | `build_card.py` builds the card, measures its size **on the wire** (compact JSON) and drops the lowest-temperature items until it fits, with a footer note. `post_to_teams.py` refuses anything above 28 KB as a backstop. |
+| `429` and `5xx` from Power Automate | Up to 4 attempts with exponential backoff, honouring `Retry-After`. |
+| Network timeout | Same retry policy. |
 
-## O que o Adaptive Card aceita
+## What the Adaptive Card accepts
 
-`TextBlock` suporta um markdown reduzido: **negrito**, _italico_, `[link](url)` e
-listas. **Nao** suporta tabelas nem headings — por isso os titulos do boletim sao
-`TextBlock` com `size`/`weight`, e nao `#`.
+`TextBlock` supports a reduced markdown: **bold**, _italic_, `[link](url)` and
+lists. It does **not** support tables or headings — which is why the newsletter's
+titles are `TextBlock`s with `size`/`weight` rather than `#`.
 
-Emoji funcionam e sao o que carrega a temperatura visualmente (🔴 🟠 🔵). A cor do
-`TextBlock` (`attention`, `warning`, `accent`) reforca, mas alguns clientes do
-Teams a renderizam de forma diferente — por isso o rotulo textual (ALTA/MEDIA/
-BAIXA) sempre acompanha.
+Emoji work and are what carries the temperature visually (🔴 🟠 🔵). The
+`TextBlock` colour (`attention`, `warning`, `accent`) reinforces it, but some
+Teams clients render it differently — which is why the textual label
+(HIGH/MEDIUM/LOW) always travels alongside.
 
-## Testar sem publicar
+## Testing without publishing
 
 ```bash
-python3 scripts/build_card.py --in digest.json --preview        # boletim em texto
+python3 scripts/build_card.py --in digest.json --preview        # newsletter as text
 python3 scripts/build_card.py --in digest.json --out card.json  # payload
-python3 scripts/post_to_teams.py --payload card.json --dry-run  # valida, nao envia
+python3 scripts/post_to_teams.py --payload card.json --dry-run  # validates, sends nothing
 ```
 
-Para ver o cartao renderizado antes de mandar para o canal, cole o conteudo de
-`attachments[0].content` em <https://adaptivecards.io/designer/> (selecione o host
-"Microsoft Teams").
+To see the card rendered before sending it to the channel, paste the contents of
+`attachments[0].content` into <https://adaptivecards.io/designer/> (select the
+"Microsoft Teams" host).

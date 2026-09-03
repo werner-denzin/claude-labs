@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Agregador de feeds RSS/Atom para o radar de IA.
+"""RSS/Atom aggregator for the AI radar.
 
-Le assets/sources.json, busca todos os feeds em paralelo, filtra pela janela de
-tempo, deduplica e escreve um JSON com os candidatos para a triagem.
+Reads assets/sources.json, fetches every feed in parallel, filters by the time
+window, deduplicates, and writes a JSON file with the candidates for triage.
 
-Somente biblioteca padrao (Python 3.11+), para rodar em ambiente restrito sem pip.
+Standard library only (Python 3.11+), so it runs in a restricted environment
+with no pip.
 
-Uso:
+Usage:
     python3 fetch_feeds.py --hours 24 --out /tmp/items.json
     python3 fetch_feeds.py --hours 72 --max-per-source 15 --pretty
 """
@@ -37,18 +38,18 @@ USER_AGENT = (
     "Chrome/124.0.0.0 Safari/537.36"
 )
 
-# Parametros de rede/limpeza que o autor da skill pode querer ajustar.
+# Network and cleanup knobs the skill author may want to tune.
 MAX_BYTES = 4 * 1024 * 1024
 SUMMARY_CHARS = 600
 JACCARD_THRESHOLD = 0.60
-# Sobreposicao mais frouxa: nao funde, apenas sinaliza para a triagem olhar.
+# Looser overlap: does not merge, only flags the pair for triage to inspect.
 OVERLAP_HINT_THRESHOLD = 0.34
 
-# Parametros de query descartados na canonicalizacao de URL (rastreadores).
+# Query parameters dropped when canonicalizing a URL (trackers).
 TRACKING_PREFIXES = ("utm_", "mc_", "pk_", "hsa_", "at_")
 TRACKING_KEYS = {"ref", "source", "fbclid", "gclid", "igshid", "mkt_tok", "cmp", "sh"}
 
-# Namespaces usados pelos feeds atendidos.
+# XML namespaces used by the feeds we support.
 NS = {
     "atom": "http://www.w3.org/2005/Atom",
     "dc": "http://purl.org/dc/elements/1.1/",
@@ -57,9 +58,9 @@ NS = {
     "rss1": "http://purl.org/rss/1.0/",
 }
 
-# Fontes de tecnologia em geral entram no catalogo com "topic_filter": true.
-# So passam itens que mencionem o assunto; sem isso o feed inunda a janela com
-# celular, games e promocao.
+# General-tech sources carry "topic_filter": true in the catalog. Only items
+# mentioning the subject get through; without it the feed floods the window with
+# phones, games and retail promos.
 TOPIC_RE = re.compile(
     r"\b("
     r"a\.?i\.?|artificial intelligence|inteligencia artificial|intelig[eê]ncia artificial|"
@@ -77,7 +78,7 @@ TAG_RE = re.compile(r"<[^>]+>")
 WS_RE = re.compile(r"\s+")
 NONWORD_RE = re.compile(r"[^\w\s]", re.UNICODE)
 
-# Palavras sem valor discriminante na comparacao de titulos.
+# Words with no discriminating value when comparing titles.
 STOPWORDS = {
     "a", "an", "and", "are", "as", "at", "be", "but", "by", "for", "from", "has",
     "how", "in", "is", "it", "its", "new", "of", "on", "or", "that", "the", "then",
@@ -89,7 +90,7 @@ STOPWORDS = {
 
 
 # --------------------------------------------------------------------------- #
-# Rede
+# Network
 # --------------------------------------------------------------------------- #
 
 def fetch_url(url: str, timeout: int) -> bytes:
@@ -146,7 +147,7 @@ def parse_date(value: str) -> datetime | None:
     except (TypeError, ValueError, IndexError):
         pass
     candidate = value.replace("Z", "+00:00")
-    # ISO com fracao de segundo longa demais para fromisoformat antigo
+    # ISO timestamps whose fractional seconds are too long for fromisoformat
     candidate = re.sub(r"(\.\d{6})\d+", r"\1", candidate)
     for text in (candidate, candidate[:19], candidate[:10]):
         try:
@@ -243,7 +244,7 @@ def parse_feed(raw: bytes) -> list[dict]:
 
 
 # --------------------------------------------------------------------------- #
-# Normalizacao e deduplicacao
+# Normalization and deduplication
 # --------------------------------------------------------------------------- #
 
 def canonical_url(url: str) -> str:
@@ -281,17 +282,18 @@ def jaccard(a: frozenset[str], b: frozenset[str]) -> float:
 
 
 def overlap(a: frozenset[str], b: frozenset[str]) -> float:
-    """Coeficiente de sobreposicao: tolera titulos de tamanhos bem diferentes."""
+    """Overlap coefficient: tolerates titles of very different lengths."""
     if not a or not b:
         return 0.0
     return len(a & b) / min(len(a), len(b))
 
 
 def deduplicate(items: list[dict], threshold: float = JACCARD_THRESHOLD) -> list[dict]:
-    """Agrupa a mesma noticia publicada por varios veiculos.
+    """Groups the same story as published by several outlets.
 
-    O representante do grupo e o item de maior peso de fonte; os demais entram em
-    `also_covered_by`, para o relatorio poder dizer quantos veiculos cobriram.
+    The group's representative is the item from the highest-weighted source; the
+    rest go into `also_covered_by`, so the report can say how many outlets
+    covered it.
     """
     items.sort(key=lambda i: (-i["weight"], i["published"] or "", i["title"]))
     kept: list[dict] = []
@@ -328,7 +330,7 @@ def deduplicate(items: list[dict], threshold: float = JACCARD_THRESHOLD) -> list
 
 
 # --------------------------------------------------------------------------- #
-# Coleta
+# Collection
 # --------------------------------------------------------------------------- #
 
 def collect_source(source: dict, cutoff: datetime, max_per_source: int, timeout: int) -> dict:
@@ -342,7 +344,7 @@ def collect_source(source: dict, cutoff: datetime, max_per_source: int, timeout:
     }
     feed = source.get("feed")
     if not feed:
-        result["error"] = "sem feed RSS declarado (usar o campo 'site' via WebFetch)"
+        result["error"] = "no RSS feed declared (read the 'site' field via WebFetch)"
         return result
     try:
         raw = fetch_url(feed, timeout)
@@ -351,9 +353,9 @@ def collect_source(source: dict, cutoff: datetime, max_per_source: int, timeout:
         result["error"] = f"HTTP {exc.code}"
         return result
     except ET.ParseError as exc:
-        result["error"] = f"XML invalido: {exc}"
+        result["error"] = f"invalid XML: {exc}"
         return result
-    except Exception as exc:  # noqa: BLE001 - qualquer falha de rede vira relatorio
+    except Exception as exc:  # noqa: BLE001 - any network failure becomes a report line
         result["error"] = f"{type(exc).__name__}: {exc}"
         return result
 
@@ -389,19 +391,19 @@ def collect_source(source: dict, cutoff: datetime, max_per_source: int, timeout:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--sources", default=DEFAULT_SOURCES, help="caminho do sources.json")
-    parser.add_argument("--hours", type=int, default=24, help="janela em horas (padrao 24 = D-1)")
+    parser.add_argument("--sources", default=DEFAULT_SOURCES, help="path to sources.json")
+    parser.add_argument("--hours", type=int, default=24, help="window in hours (default 24 = D-1)")
     parser.add_argument("--max-per-source", type=int, default=25)
     parser.add_argument("--timeout", type=int, default=25)
     parser.add_argument("--workers", type=int, default=16)
-    parser.add_argument("--only", default="", help="lista de ids separados por virgula")
+    parser.add_argument("--only", default="", help="comma-separated list of source ids")
     parser.add_argument(
         "--merge-threshold",
         type=float,
         default=JACCARD_THRESHOLD,
-        help="similaridade de titulo para fundir automaticamente (padrao 0.60)",
+        help="title similarity required to merge automatically (default 0.60)",
     )
-    parser.add_argument("--out", default="-", help="arquivo de saida ou - para stdout")
+    parser.add_argument("--out", default="-", help="output file, or - for stdout")
     parser.add_argument("--pretty", action="store_true")
     args = parser.parse_args()
 
@@ -454,8 +456,8 @@ def main() -> int:
     for index, item in enumerate(items, start=1):
         item["id"] = f"n{index:03d}"
     for item in items:
-        # Nao sao duplicatas confirmadas: sao pares parecidos o bastante para a
-        # triagem checar se contam a mesma historia (util entre idiomas).
+        # Not confirmed duplicates: pairs similar enough for triage to check
+        # whether they tell the same story (useful across languages).
         item["possible_duplicate_of"] = [hint["id"] for hint in item.pop("_hints", [])]
         item.pop("_tokens", None)
 
@@ -484,12 +486,12 @@ def main() -> int:
         with open(args.out, "w", encoding="utf-8") as handle:
             handle.write(text)
         print(
-            f"{len(items)} itens ({raw_count} antes da deduplicacao) de "
-            f"{len(ok)}/{len(sources)} fontes -> {args.out}",
+            f"{len(items)} items ({raw_count} before deduplication) from "
+            f"{len(ok)}/{len(sources)} sources -> {args.out}",
             file=sys.stderr,
         )
         if failed:
-            print(f"{len(failed)} fontes falharam:", file=sys.stderr)
+            print(f"{len(failed)} source(s) failed:", file=sys.stderr)
             for entry in failed:
                 print(f"  - {entry['name']}: {entry['error']}", file=sys.stderr)
     return 0

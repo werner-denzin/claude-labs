@@ -1,48 +1,46 @@
 # claude-labs
 
-Laboratorio de experimentos com Claude Code.
+A lab for Claude Code experiments.
 
-## Skill `ai-news-digest`
+## The `ai-news-digest` skill
 
-Radar diario de noticias de IA para o comite de estrategia de IA da SiDi:
-coleta as ultimas 24h de ~35 fontes, classifica cada item por temperatura
-(HIGH/MEDIUM/LOW), seleciona os 15 mais relevantes e publica um boletim em
-cards num canal do Teams.
+A daily AI news radar for SiDi's AI strategy committee: it collects the last 24h
+from ~35 sources, classifies each item by temperature (HIGH/MEDIUM/LOW), selects
+the 15 most relevant, and publishes a card-format newsletter to a Teams channel.
 
 - Skill: `.claude/skills/ai-news-digest/SKILL.md`
-- Estado, decisoes e o que falta: `docs/HANDOFF-ai-news-digest.md`
-- Boletins publicados: `reports/`
+- Status, decisions and what is left: `docs/HANDOFF-ai-news-digest.md`
+- Published newsletters: `reports/`
 
-Regras que valem para qualquer mexida na skill:
+Rules that hold for any change to the skill:
 
-- **A URL do webhook do Teams e credencial.** Nunca em arquivo do repositorio,
-  em log, em commit ou em resposta ao usuario. Ela vive em `TEAMS_WEBHOOK_URL`
-  (ou no arquivo apontado por `TEAMS_WEBHOOK_FILE`).
-- **Os scripts usam so a biblioteca padrao do Python.** A VM nao tem `pip`, e o
-  ambiente de nuvem pode nao ter. Nada de dependencia nova.
-- **Fonte que falhou entra no boletim como falha declarada**, nunca como
-  silencio. O leitor precisa saber que a coleta foi parcial.
+- **The Teams webhook URL is a credential.** Never in a repository file, a log, a
+  commit, or a reply to the user. It lives in `TEAMS_WEBHOOK_URL` (or in the file
+  pointed to by `TEAMS_WEBHOOK_FILE`).
+- **The scripts use only the Python standard library.** The VM has no `pip`, and
+  the cloud environment may not either. No new dependencies.
+- **A source that failed goes into the newsletter as a declared failure**, never
+  as silence. The reader has to know the collection was partial.
 
-## Preferencias do usuario
+## User preferences
 
-- Conversar em ingles.
-- **O boletim do radar sai em ingles.** Unica excecao: cards cuja fonte
-  principal e brasileira (`"lang": "pt-BR"` no catalogo — Olhar Digital,
-  TecMundo, Canaltech, Mobile Time) mantem titulo e descricao em portugues,
-  porque sao noticias do mercado local escritas para esse mercado.
-- A documentacao interna da skill (SKILL.md, `references/`, comentarios de
-  codigo, mensagens de diagnostico dos scripts) esta em portugues. Nao e o
-  boletim, entao segue como esta; so a saida que o leitor ve foi traduzida.
+- English, everywhere: conversation, repository files, and the newsletter.
+- **One exception, in the newsletter only:** cards whose main source is Brazilian
+  (`"lang": "pt-BR"` in the catalog — Olhar Digital, TecMundo, Canaltech, Mobile
+  Time) keep their title and description in Portuguese, because they are
+  local-market stories written for that market.
+- The `TOPIC_RE` regex in `fetch_feeds.py` also keeps Portuguese terms on
+  purpose: it has to match the content of Brazilian sources.
 
-## Ditado por voz
+## Voice dictation
 
-O usuario costuma ditar as mensagens, entao aparecem erros de transcricao.
-Interpretar pela intencao, sem pedir confirmacao para casos ja conhecidos:
+The user often dictates messages, so transcription errors show up. Read for
+intent; do not ask for confirmation on cases already known:
 
-| Transcrito | Significa |
+| Transcribed | Means |
 | --- | --- |
 | caras | cards |
-| the teams | no Teams |
+| the teams | in Teams |
 
-Ao encontrar um termo novo que claramente e erro de transcricao, resolver pelo
-contexto e, se o usuario confirmar, acrescentar a esta tabela.
+When a new term is clearly a transcription error, resolve it from context and, if
+the user confirms, add it to this table.

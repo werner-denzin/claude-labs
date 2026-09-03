@@ -1,106 +1,108 @@
-# Skill `ai-news-digest` — estado, decisoes e o que falta
+# `ai-news-digest` skill — status, decisions, and what is left
 
-Atualizado em 2026-09-03. Substitui o handoff da sessao
-`session_01DurrNSDNuj5sHouP8cF7Z2`, que descrevia um desenho anterior.
+Updated 2026-09-03. Replaces the handoff written by session
+`session_01DurrNSDNuj5sHouP8cF7Z2`, which described an earlier design.
 
-## O que a skill faz
+## What the skill does
 
-Boletim diario de IA para o comite de estrategia de IA da SiDi:
+A daily AI newsletter for SiDi's AI strategy committee:
 
-1. Coleta as ultimas 24h de ~35 fontes (labs, imprensa, regulacao, engenharia,
-   pesquisa, imprensa brasileira).
-2. Classifica cada item por **temperatura** — HIGH, MEDIUM ou LOW — medindo
-   relevancia para o comite, nao popularidade da noticia.
-3. Seleciona os **15 mais relevantes**.
-4. Publica um **boletim em cards** (Adaptive Card) num canal do Teams, e guarda a
-   versao markdown em `reports/`.
+1. Collects the last 24h from ~35 sources (labs, press, regulation, engineering,
+   research, Brazilian press).
+2. Classifies each item by **temperature** — HIGH, MEDIUM or LOW — measuring
+   relevance to the committee, not popularity of the news.
+3. Selects the **15 most relevant**.
+4. Publishes a **card-format newsletter** (Adaptive Card) to a Teams channel, and
+   archives the markdown version in `reports/`.
 
-## Decisoes tomadas com o usuario
+## Decisions made with the user
 
-| Tema | Decisao |
+| Topic | Decision |
 | --- | --- |
-| Formato de saida | **Cards, sem PDF.** O pedido original previa PDF; o usuario descartou depois de ver que o webhook do Teams nao anexa arquivo. O cartao carrega o boletim inteiro. |
-| Entrega | Webhook de canal do Teams, criado pelo **Workflows** (Power Automate). O conector legado esta em descontinuacao. |
-| Agendamento | **Routine agendada na nuvem** (`/schedule`), dias uteis as 08:00 BRT. Roda sem depender da maquina do usuario. |
-| Idioma | **Boletim em ingles.** Excecao: cards cuja fonte principal e brasileira ficam em portugues. Decidido depois da primeira implementacao, que saia toda em pt-BR. |
-| Lentes da triagem | As quatro: estrategia corporativa, regulacao/governanca, engenharia/agentic coding, pesquisa/papers. |
-| Segredo | `TEAMS_WEBHOOK_URL` no ambiente; na nuvem, como **API credential**, nunca como variavel de ambiente. |
+| Output format | **Cards, no PDF.** The original request called for a PDF; the user dropped it after seeing that a Teams channel webhook cannot attach a file. The card carries the whole newsletter. |
+| Delivery | Teams channel webhook, created through **Workflows** (Power Automate). The legacy connector is deprecated. |
+| Scheduling | **Scheduled cloud routine** (`/schedule`), weekdays at 08:00 BRT. Runs without depending on the user's machine. |
+| Language | **Newsletter in English**, and every repository file in English. Exception: cards whose main source is Brazilian stay in Portuguese. Decided after the first implementation, which was entirely in pt-BR. |
+| Triage lenses | All four: corporate strategy, regulation/governance, engineering/agentic coding, research/papers. |
+| Secret | `TEAMS_WEBHOOK_URL` in the environment; in the cloud, as an **API credential**, never as an environment variable. |
 | Branch | `claude/ai-research-skill-xoqo0i` |
 
-## Estado: implementado e testado
+## Status: implemented and tested
 
 ```
 .claude/skills/ai-news-digest/
-├── SKILL.md                        # fluxo, rubrica de temperatura, regras de escrita
+├── SKILL.md                        # flow, temperature rubric, writing rules
 ├── assets/
-│   ├── sources.json                # 35 fontes, validadas contra a rede
+│   ├── sources.json                # 35 sources, validated against the network
 │   └── report-template.md
 ├── scripts/
-│   ├── fetch_feeds.py              # agregador RSS/Atom paralelo, dedup, filtro de assunto
-│   ├── build_card.py               # digest.json -> Adaptive Card, com corte por tamanho
-│   └── post_to_teams.py            # POST no webhook, retry com backoff, redacao do segredo
+│   ├── fetch_feeds.py              # parallel RSS/Atom aggregator, dedup, topic filter
+│   ├── build_card.py               # digest.json -> Adaptive Card, with size trimming
+│   └── post_to_teams.py            # POST to the webhook, retry with backoff, secret redaction
 ├── references/
 │   ├── digest-schema.md
 │   ├── sources.md
 │   ├── teams-delivery.md
 │   └── scheduling.md
 └── evals/
-    ├── evals.json                  # 4 casos de script + 4 de julgamento editorial
-    ├── run_script_evals.py         # executa os 4 de script
+    ├── evals.json                  # 4 script cases + 4 editorial-judgment cases
+    ├── run_script_evals.py         # runs the 4 script cases (23 checks)
     └── fixtures/
 ```
 
-Medido em 2026-09-03, contra a rede real:
+Measured on 2026-09-03, against the live network:
 
-- Coleta completa em ~3s. 32 de 35 feeds respondem.
-- Janela de 24h: 93 itens depois do filtro de assunto e da deduplicacao.
-- `run_script_evals.py`: 23 verificacoes, todas passando.
+- Full collection in ~3s. 32 of 35 feeds respond.
+- 24h window: 93 items after the topic filter and deduplication.
+- `run_script_evals.py`: 23 checks, all passing.
 
-### Correcoes feitas no catalogo
+### Catalog fixes
 
-Metade do catalogo original apontava para enderecos mortos. Corrigido contra a
-rede: `microsoft-ai`, `mistral`, `google-ai`, `venturebeat-ai`, `tecmundo`,
-`hn-ai`. Removido: `zdnet-ai` (404 em todos os caminhos). Sem feed publico, so
-site: `anthropic`, `meta-ai`, `marktechpost`. Acrescentadas para cobrir as quatro
-lentes: `eu-ai-act`, `latent-space`, `infoq-ai`, `google-research`,
-`mit-news-ai`, `meta-engineering`, `mobile-time`.
+Half the original catalog pointed at dead addresses. Fixed against the network:
+`microsoft-ai`, `mistral`, `google-ai`, `venturebeat-ai`, `tecmundo`, `hn-ai`.
+Removed: `zdnet-ai` (404 on every path). No public feed, site only: `anthropic`,
+`meta-ai`, `marktechpost`. Added to cover the four lenses: `eu-ai-act`,
+`latent-space`, `infoq-ai`, `google-research`, `mit-news-ai`, `meta-engineering`,
+`mobile-time`.
 
-### Filtro de assunto
+### Topic filter
 
-Fontes de tecnologia em geral (`topic_filter: true`) enchiam a janela com
-celular, games e promocao. Na validacao, o filtro cortou 42 de 50 itens do
-Canaltech e 23 de 26 do TecMundo, derrubando a coleta de 183 para 93 itens sem
-perder nada de IA.
+General-tech sources were filling the window with phones, games and retail
+promos. In validation the filter cut 42 of 50 Canaltech items and 23 of 26
+TecMundo items, taking the collection from 183 to 93 without losing any AI
+coverage.
 
-## O que falta para o boletim rodar sozinho
+## What is left before it runs on its own
 
-Tres passos, todos do lado do usuario:
+Three steps, all on the user's side:
 
-1. **Criar o webhook do canal no Teams** e guardar a URL. Passo a passo em
+1. **Create the Teams channel webhook** and store the URL. Step by step in
    `references/teams-delivery.md`.
-2. **Publicar o repo no GitHub** — a routine clona `werner-denzin/claude-labs` a
-   cada execucao, entao a skill precisa estar commitada e no remoto.
-3. **Criar a routine** com `/schedule`, apontando para um ambiente com
-   **Network access = Custom ou Full**. O ambiente `Default` e *Trusted* e
-   bloqueia todas as fontes de noticia (`403 host_not_allowed`). Detalhes,
-   custo e limites em `references/scheduling.md`.
+2. **Publish the repo to GitHub** — the routine clones
+   `werner-denzin/claude-labs` on every run, so the skill has to be committed and
+   pushed.
+3. **Create the routine** with `/schedule`, pointing at an environment with
+   **Network access = Custom or Full**. The `Default` environment is *Trusted* and
+   blocks every news source (`403 host_not_allowed`). Cost, limits and details in
+   `references/scheduling.md`.
 
-Antes disso, a skill roda manualmente: a coleta, a triagem e o `--preview`
-funcionam sem webhook; so o POST final precisa do segredo.
+Until then the skill runs manually: collection, triage and `--preview` all work
+without a webhook; only the final POST needs the secret.
 
-## Bloqueio anterior, resolvido
+## Earlier blocker, resolved
 
-O handoff antigo registrava o ambiente de nuvem com *Network access = Trusted*,
-o que impedia validar os feeds. Nesta sessao a rede estava liberada e todos os
-feeds foram testados de verdade. **O mesmo ajuste continua necessario no
-ambiente que a routine usar** — e a causa mais provavel de um boletim vazio as
-08:00.
+The old handoff recorded the cloud environment at *Network access = Trusted*,
+which prevented validating the feeds. In this session the network was open and
+every feed was tested for real. **The same adjustment is still required on
+whichever environment the routine uses** — it is the most likely cause of an
+empty newsletter at 08:00.
 
-O video que inspirou o pedido (https://youtu.be/dHxMu6TGu88) continua sem ser
-lido. Deixou de ser bloqueio: o usuario especificou as duas fases diretamente.
+The video that inspired the request (https://youtu.be/dHxMu6TGu88) is still
+unread. It stopped being a blocker: the user specified both phases directly.
 
-## Ideias que ficaram fora do escopo
+## Ideas left out of scope
 
-- Ler o `reports/` do dia anterior para dizer o que mudou de ontem para hoje.
-- Fontes regulatorias brasileiras (PL 2338, ANPD) quando a pauta esquentar.
-- Juiz LLM rodando os evals de `type: judgment` sobre o boletim publicado.
+- Reading the previous day's `reports/` entry to say what changed since
+  yesterday.
+- Brazilian regulatory sources (PL 2338, ANPD) once that agenda heats up.
+- An LLM judge running the `type: judgment` evals over the published newsletter.

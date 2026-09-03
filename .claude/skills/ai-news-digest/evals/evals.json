@@ -1,98 +1,98 @@
 {
-  "_comment": "Casos de teste da skill ai-news-digest. Os tres primeiros nao dependem de rede nem de LLM e podem rodar em CI; os demais avaliam o julgamento editorial.",
+  "_comment": "Test cases for the ai-news-digest skill. The first four need no LLM judgment and are run by evals/run_script_evals.py; the rest evaluate editorial judgment and need a human or an LLM judge.",
   "evals": [
     {
       "id": "collect-window",
       "type": "script",
-      "description": "A coleta respeita a janela de tempo e nao quebra com feed fora do ar.",
+      "description": "Collection respects the time window and does not break when a feed is down.",
       "run": "python3 scripts/fetch_feeds.py --hours 24 --out /tmp/eval-items.json",
       "expect": [
-        "sai com codigo 0 mesmo com fontes falhando",
+        "exits 0 even with sources failing",
         "counts.items_deduped > 0",
-        "todo item tem published dentro da janela",
-        "as tres fontes com feed:null aparecem em sources_failed com motivo explicito",
-        "sources_ok[].off_topic > 0 para Canaltech e TecMundo"
+        "every item is published inside the window",
+        "the three feedless sources appear in sources_failed with an explicit reason",
+        "sources_ok[].off_topic > 0 for Canaltech and TecMundo"
       ]
     },
     {
       "id": "card-size-limit",
       "type": "script",
-      "description": "O cartao nunca estoura o limite do Teams: corta os itens mais frios primeiro.",
+      "description": "The card never exceeds the Teams limit: it drops the coldest items first.",
       "run": "python3 scripts/build_card.py --in evals/fixtures/digest-15.json --out /tmp/eval-card.json --max-bytes 6000",
       "expect": [
-        "payload compacto <= 6000 bytes",
-        "os itens ALTA sobrevivem ao corte",
-        "o rodape avisa quantos itens sairam"
+        "compact payload <= 6000 bytes",
+        "the HIGH items survive the trim",
+        "the footer says how many items were dropped"
       ]
     },
     {
       "id": "digest-validation",
       "type": "script",
-      "description": "Digest malformado falha com mensagem util, nao com traceback.",
+      "description": "A malformed digest fails with a useful message, not a traceback.",
       "run": "python3 scripts/build_card.py --in evals/fixtures/digest-invalida.json --out /dev/null",
       "expect": [
-        "codigo de saida != 0",
-        "a mensagem nomeia o card e o campo que faltou",
-        "temperatura fora de ALTA/MEDIA/BAIXA e recusada com mensagem legivel",
-        "HIGH/MEDIUM/LOW sao aceitos como alias"
+        "exit code != 0",
+        "the message names the card and the missing field",
+        "a temperature outside HIGH/MEDIUM/LOW is rejected with a readable message",
+        "ALTA/MEDIA/BAIXA are accepted as aliases"
       ]
     },
     {
       "id": "webhook-secret",
       "type": "script",
-      "description": "A URL do webhook nunca vaza.",
+      "description": "The webhook URL never leaks.",
       "run": "TEAMS_WEBHOOK_URL='https://exemplo/x?sig=SEGREDO' python3 scripts/post_to_teams.py --payload evals/fixtures/card.json --dry-run",
       "expect": [
-        "a saida nao contem a query string nem 'SEGREDO'",
-        "--dry-run nao faz nenhuma requisicao de rede",
-        "sem webhook configurado, o erro diz como configurar"
+        "the output contains neither the query string nor the secret",
+        "--dry-run makes no network request",
+        "with no webhook configured, the error explains how to configure it"
       ]
     },
     {
       "id": "dedup-cross-language",
       "type": "judgment",
-      "description": "A mesma noticia em varios veiculos vira um card so.",
-      "scenario": "A aquisicao da Hugging Face pela NVIDIA sai em 7 fontes, incluindo NVIDIA Blog (en) e TecMundo (pt-BR).",
+      "description": "The same story across several outlets becomes a single card.",
+      "scenario": "The NVIDIA acquisition of Hugging Face runs in 7 sources, including NVIDIA Blog (en) and TecMundo (pt-BR).",
       "expect": [
-        "um unico card, nao sete",
-        "a fonte principal e o NVIDIA Blog (primaria), nao o veiculo que cobriu",
-        "os outros veiculos aparecem em also_covered_by",
-        "o card em portugues nao vira um item separado"
+        "a single card, not seven",
+        "the main source is the NVIDIA Blog (primary), not an outlet covering it",
+        "the other outlets appear in also_covered_by",
+        "the Portuguese card does not become a separate item"
       ]
     },
     {
       "id": "temperature-calibration",
       "type": "judgment",
-      "description": "Temperatura mede relevancia para o comite, nao popularidade.",
-      "scenario": "Dia com: (a) aquisicao bilionaria que muda o mercado de ferramentas, (b) lancamento de GPU de consumo, (c) paper de arXiv sobre memoria de agentes, (d) prazo de vigencia do EU AI Act.",
+      "description": "Temperature measures relevance to the committee, not popularity.",
+      "scenario": "A day with: (a) a billion-dollar acquisition that reshapes the tooling market, (b) a consumer GPU launch, (c) an arXiv paper on agent memory, (d) an EU AI Act compliance deadline.",
       "expect": [
-        "(a) ALTA e (d) ALTA",
-        "(b) nao e ALTA, apesar do volume de cobertura",
-        "(c) BAIXA, com a lente pesquisa",
-        "entre 2 e 5 itens ALTA no total"
+        "(a) is HIGH and (d) is HIGH",
+        "(b) is not HIGH, despite the volume of coverage",
+        "(c) is LOW, with the research lens",
+        "between 2 and 5 HIGH items in total"
       ]
     },
     {
       "id": "honest-failure",
       "type": "judgment",
-      "description": "Falha declarada, nunca silencio.",
-      "scenario": "Metade das fontes retorna 403 porque o ambiente esta com Network access = Trusted.",
+      "description": "Failure is declared, never silent.",
+      "scenario": "Half the sources return 403 because the environment has Network access = Trusted.",
       "expect": [
-        "o boletim avisa no topo que a coleta foi parcial",
-        "as fontes que falharam sao listadas com o motivo",
-        "o numero de cards e menor em vez de completado com ruido",
-        "a resposta aponta o ajuste de Network access"
+        "the newsletter says up front that collection was partial",
+        "the failing sources are listed with their reason",
+        "the card count is lower rather than padded with noise",
+        "the reply points at the Network access setting"
       ]
     },
     {
       "id": "thin-day",
       "type": "judgment",
-      "description": "Dia fraco nao vira boletim inflado.",
-      "scenario": "So 6 itens sobrevivem a triagem.",
+      "description": "A thin day does not become an inflated newsletter.",
+      "scenario": "Only 6 items survive triage.",
       "expect": [
-        "publica 6 cards, nao 15",
-        "diz explicitamente que o dia foi fraco",
-        "nao promove item BAIXA a MEDIA para encher"
+        "publishes 6 cards, not 15",
+        "explicitly says the day was thin",
+        "does not promote a LOW item to MEDIUM to fill space"
       ]
     }
   ]

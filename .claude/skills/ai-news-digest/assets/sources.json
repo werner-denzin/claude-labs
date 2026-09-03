@@ -1,5 +1,5 @@
 {
-  "_comment": "Catalogo de fontes do radar de IA. Editavel: acrescente, remova ou mude o peso conforme o interesse da audiencia. Campos: id (unico), name, feed (RSS/Atom; null quando a fonte nao publica feed), site (leitura via WebFetch, tambem usada como fallback quando o feed morre), lang, category, weight (1-5; 5 = fonte primaria, quase sempre relevante). Opcionais: topic_filter (true = fonte de tecnologia em geral, so passam itens que mencionem IA) e max_items (teto proprio de itens, menor que o global). Feeds mudam de endereco: fetch_feeds.py reporta os que falharam para voce corrigir aqui. Validado contra a rede em 2026-09-03.",
+  "_comment": "AI radar source catalog. Editable: add, remove or reweight sources to match your audience's interest. Fields: id (unique), name, feed (RSS/Atom; null when the source publishes no feed), site (read via WebFetch, and the fallback when a feed dies), lang (en or pt-BR; also decides the card's language -- pt-BR sources keep their cards in Portuguese), category, weight (1-5; 5 = primary source, almost always relevant). Optional: topic_filter (true = general-tech source, only items mentioning AI get through) and max_items (its own ceiling, lower than the global one). Feeds move: fetch_feeds.py reports the failures so you can fix them here. Validated against the live network on 2026-09-03.",
   "sources": [
     {
       "id": "openai",
@@ -18,7 +18,7 @@
       "lang": "en",
       "category": "lab",
       "weight": 5,
-      "note": "Sem RSS publico (2026-09-03: /rss.xml, /news/rss.xml, /feed.xml todos 404). Ler o site via WebFetch."
+      "note": "No public RSS (2026-09-03: /rss.xml, /news/rss.xml and /feed.xml all 404). Read the site via WebFetch."
     },
     {
       "id": "deepmind",
@@ -46,7 +46,7 @@
       "lang": "en",
       "category": "lab",
       "weight": 4,
-      "note": "ai.meta.com devolve 400 para qualquer caminho de feed. Ler o site via WebFetch; ver tambem meta-engineering."
+      "note": "ai.meta.com returns 400 for every feed path. Read the site via WebFetch; see also meta-engineering."
     },
     {
       "id": "meta-engineering",
@@ -216,7 +216,7 @@
       "lang": "en",
       "category": "news",
       "weight": 2,
-      "note": "Feed responde 403 mesmo com User-Agent de navegador (WAF). Fonte opcional, ler pelo site."
+      "note": "The feed returns 403 even with a browser User-Agent (WAF). Optional source, read from the site."
     },
     {
       "id": "hn-ai",

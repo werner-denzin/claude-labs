@@ -1,93 +1,95 @@
-# Catalogo de fontes
+# Source catalog
 
-Editar `assets/sources.json`. Cada entrada:
+Edit `assets/sources.json`. Each entry:
 
-| Campo | Uso |
+| Field | Use |
 | --- | --- |
-| `id` | Chave unica. Usada em `--only` e nos relatorios de falha. |
-| `name` | Nome que aparece no cartao. |
-| `feed` | RSS/Atom. `null` quando a fonte nao publica feed — ai a skill le o `site` com WebFetch. |
-| `site` | Pagina humana. Fallback quando o feed morre e destino do WebFetch. |
-| `lang` | `en` ou `pt-BR`. **Decide o idioma do card**: item cuja fonte principal e `pt-BR` fica em portugues; todo o resto do boletim sai em ingles. |
+| `id` | Unique key. Used by `--only` and in failure reports. |
+| `name` | The name shown on the card. |
+| `feed` | RSS/Atom. `null` when the source publishes no feed — the skill then reads `site` with WebFetch. |
+| `site` | Human-facing page. Fallback when the feed dies, and the WebFetch target. |
+| `lang` | `en` or `pt-BR`. **Decides the card's language**: an item whose main source is `pt-BR` stays in Portuguese; the rest of the newsletter is English. |
 | `category` | `lab`, `infra`, `open-source`, `news`, `analysis`, `engineering`, `research`, `regulation`, `community`. |
-| `weight` | 1-5. Desempata a triagem e escolhe o representante na deduplicacao. 5 = fonte primaria. |
-| `topic_filter` | Opcional. `true` = fonte de tecnologia em geral; so passam itens que mencionem IA. |
-| `max_items` | Opcional. Teto proprio, menor que o global. |
-| `note` | Opcional. Por que a fonte esta assim. |
+| `weight` | 1-5. Breaks ties in triage and picks the representative during deduplication. 5 = primary source. |
+| `topic_filter` | Optional. `true` = general-tech source; only items mentioning AI get through. |
+| `max_items` | Optional. Its own ceiling, lower than the global one. |
+| `note` | Optional. Why the source is configured this way. |
 
-## Por que essas fontes
+## Why these sources
 
-**Peso 5 — labs primarios.** OpenAI, Anthropic, DeepMind. O anuncio nasce aqui;
-o resto do mundo cobre depois. Quando um item aparece no lab e na imprensa, o
-card leva o link do lab.
+**Weight 5 — primary labs.** OpenAI, Anthropic, DeepMind. The announcement is
+born here; everyone else covers it afterwards. When an item appears both at the
+lab and in the press, the card carries the lab's link.
 
-**Peso 4 — imprensa forte e fontes de engenharia.** TechCrunch, The Verge, Ars
+**Weight 4 — strong press and engineering sources.** TechCrunch, The Verge, Ars
 Technica, MIT Tech Review, Hugging Face, Latent Space, Simon Willison, Google/
-Microsoft/Meta, EU AI Act. Trazem contexto e apuracao que o blog do lab omite.
+Microsoft/Meta, EU AI Act. They bring context and reporting the lab's blog omits.
 
-**Peso 3 — cobertura ampla.** The Decoder, VentureBeat, WIRED, The Register,
+**Weight 3 — broad coverage.** The Decoder, VentureBeat, WIRED, The Register,
 InfoQ, NVIDIA, AWS, Mistral, Import AI, Raschka, Google Research, HN.
 
-**Peso 2 — volume e mercado local.** arXiv, MIT News, e a imprensa brasileira
-(Olhar Digital, TecMundo, Canaltech, Mobile Time). Raramente viram HIGH sozinhos,
-mas sao o que da leitura do mercado local e do que chegou ao publico daqui — e sao
-as unicas fontes cujos cards saem em portugues.
+**Weight 2 — volume and local market.** arXiv, MIT News, and the Brazilian press
+(Olhar Digital, TecMundo, Canaltech, Mobile Time). They rarely reach HIGH on
+their own, but they are what reads the local market and what actually reached the
+audience here — and they are the only sources whose cards come out in Portuguese.
 
-As quatro lentes do comite (estrategia, regulacao, engenharia, pesquisa) estao
-todas cobertas. `regulation` tem so o EU AI Act: se a pauta regulatoria brasileira
-esquentar (PL 2338, ANPD), vale acrescentar fontes daqui.
+All four committee lenses (strategy, regulation, engineering, research) are
+covered. `regulation` holds only the EU AI Act: if the Brazilian regulatory
+agenda heats up (PL 2338, ANPD), it is worth adding local sources.
 
-## Fontes sem feed
+## Feedless sources
 
-Tres entradas tem `"feed": null` e por isso aparecem sempre em `sources_failed`
-com "sem feed RSS declarado". Nao e defeito, e o catalogo dizendo para ler pelo
-site:
+Three entries carry `"feed": null` and therefore always show up in
+`sources_failed` with "no RSS feed declared". That is not a defect — it is the
+catalog telling you to read them from the site:
 
-| Fonte | Situacao em 2026-09-03 |
+| Source | Situation as of 2026-09-03 |
 | --- | --- |
-| Anthropic News | Nao publica RSS. `/rss.xml`, `/news/rss.xml`, `/feed.xml`, `/engineering/rss.xml` todos 404. |
-| Meta AI Blog | `ai.meta.com` devolve 400 para qualquer caminho de feed. O feed de `engineering.fb.com` (ML Applications) esta no catalogo como `meta-engineering` e funciona. |
-| MarkTechPost | O feed responde 403 mesmo com User-Agent de navegador (WAF). Fonte opcional. |
+| Anthropic News | Publishes no RSS. `/rss.xml`, `/news/rss.xml`, `/feed.xml` and `/engineering/rss.xml` all 404. |
+| Meta AI Blog | `ai.meta.com` returns 400 for every feed path. The `engineering.fb.com` feed (ML Applications) is in the catalog as `meta-engineering` and works. |
+| MarkTechPost | The feed returns 403 even with a browser User-Agent (WAF). Optional source. |
 
-## Validar os feeds
+## Validating the feeds
 
-Feeds mudam de endereco sem aviso — foi o que aconteceu com metade do catalogo
-original. `fetch_feeds.py` reporta cada falha com o motivo:
+Feeds move without warning — which is what had happened to half the original
+catalog. `fetch_feeds.py` reports each failure with its reason:
 
 ```bash
 python3 scripts/fetch_feeds.py --hours 168 --out /tmp/check.json
 ```
 
-`HTTP 404` ou `410` = endereco mudou, procure o novo e corrija o JSON.
-`HTTP 403` = WAF bloqueando; normalmente so resta o site.
-`XML invalido` = a fonte devolveu uma pagina de erro em HTML.
+`HTTP 404` or `410` = the address moved; find the new one and fix the JSON.
+`HTTP 403` = a WAF is blocking; usually only the site is left.
+`invalid XML` = the source returned an HTML error page.
 
-Para testar uma fonte so: `--only techcrunch-ai`.
+To test a single source: `--only techcrunch-ai`.
 
-## Filtro de assunto
+## Topic filter
 
-Fontes de tecnologia em geral entram com `"topic_filter": true`. Sem ele,
-TecMundo e Canaltech ocupavam 25 vagas cada com celular, games e promocao — na
-validacao, o filtro cortou 42 de 50 itens do Canaltech e 23 de 26 do TecMundo,
-derrubando a coleta de 183 para 93 itens sem perder nada de IA.
+General-tech sources are entered with `"topic_filter": true`. Without it,
+TecMundo and Canaltech were taking 25 slots each with phones, games and retail
+promos — in validation the filter cut 42 of 50 Canaltech items and 23 of 26
+TecMundo items, taking the collection from 183 to 93 without losing any AI
+coverage.
 
-A lista de termos esta em `TOPIC_RE`, no topo de `fetch_feeds.py`. Nome de modelo
-novo que ainda nao esteja la (o mercado inventa um por mes) deve ser acrescentado.
+The term list lives in `TOPIC_RE`, at the top of `fetch_feeds.py`. It carries
+Portuguese terms on purpose, since it has to match Brazilian sources. A new model
+name that is not there yet (the market invents one a month) should be added.
 
-## Deduplicacao
+## Deduplication
 
-Duas camadas:
+Two layers:
 
-1. **URL canonica** — mesma URL sem rastreadores (`utm_*`, `fbclid`, ...) e um
-   item so.
-2. **Similaridade de titulo** — Jaccard sobre os tokens do titulo, sem
-   stopwords e sem acento, acima de 0.60. O item de maior `weight` vira o
-   representante; os outros entram em `also_covered_by`. Ajustavel com
+1. **Canonical URL** — the same URL minus trackers (`utm_*`, `fbclid`, ...) is a
+   single item.
+2. **Title similarity** — Jaccard over title tokens, minus stopwords and
+   accents, above 0.60. The item with the highest `weight` becomes the
+   representative; the others go into `also_covered_by`. Tunable with
    `--merge-threshold`.
 
-O que o script **nao** funde, de proposito: titulos em idiomas diferentes.
-"Nvidia buys Hugging Face" e "Nvidia anuncia compra da Hugging Face" tem
-sobreposicao lexical baixa demais para qualquer limiar seguro. Esses pares saem
-em `possible_duplicate_of` como pista, e a etapa de triagem decide. O campo tem
-falsos positivos (um post sobre `llm-gemini` casa com toda noticia de Gemini) —
-por isso e pista, nao veredito.
+What the script deliberately does **not** merge: titles in different languages.
+"Nvidia buys Hugging Face" and "Nvidia anuncia compra da Hugging Face" overlap
+too little lexically for any safe threshold. Those pairs come out in
+`possible_duplicate_of` as a hint, and the triage step decides. The field has
+false positives (a post about `llm-gemini` matches every Gemini story) — which is
+why it is a hint, not a verdict.

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Executa os evals de script da skill ai-news-digest.
+"""Runs the script evals for the ai-news-digest skill.
 
-Sao os casos de `evals.json` com "type": "script" — os que nao dependem de
-julgamento editorial. Os de "type": "judgment" precisam de um humano ou de um
-juiz LLM lendo o boletim.
+These are the `evals.json` cases with "type": "script" -- the ones that need no
+editorial judgment. The "type": "judgment" cases need a human, or an LLM judge,
+reading the newsletter.
 
-O eval de coleta toca a rede; use --offline para pular so ele.
+The collection eval touches the network; use --offline to skip just that one.
 
     python3 evals/run_script_evals.py
     python3 evals/run_script_evals.py --offline
@@ -31,7 +31,7 @@ def check(name: str, condition: bool, detail: str = "") -> None:
     if condition:
         print(f"  ok    {name}")
     else:
-        print(f"  FALHA {name}{': ' + detail if detail else ''}")
+        print(f"  FAIL  {name}{': ' + detail if detail else ''}")
         failures.append(name)
 
 
@@ -42,7 +42,7 @@ def run(args: list[str], **kwargs) -> subprocess.CompletedProcess:
 
 
 def text_blocks(node):
-    """Percorre body/items/columns aninhados e devolve todos os TextBlock."""
+    """Walks nested body/items/columns and yields every TextBlock."""
     if isinstance(node, dict):
         if node.get("type") == "TextBlock":
             yield node
@@ -69,63 +69,63 @@ def temperatures(payload: dict) -> list[str]:
 # --------------------------------------------------------------------------- #
 
 def eval_collect_window(tmp: str) -> None:
-    print("\n[collect-window] coleta respeita a janela e reporta falhas")
+    print("\n[collect-window] collection respects the window and reports failures")
     out = os.path.join(tmp, "items.json")
     proc = run(["scripts/fetch_feeds.py", "--hours", "24", "--out", out])
-    check("sai com codigo 0 mesmo com fontes falhando", proc.returncode == 0, proc.stderr[-200:])
+    check("exits 0 even with failing sources", proc.returncode == 0, proc.stderr[-200:])
     if proc.returncode != 0:
         return
     data = json.load(open(out, encoding="utf-8"))
-    check("coletou algum item", data["counts"]["items_deduped"] > 0)
+    check("collected at least one item", data["counts"]["items_deduped"] > 0)
     check(
-        "todo item tem data dentro da janela",
+        "every item is dated inside the window",
         all(i["published"] >= data["window_start"] for i in data["items"]),
     )
-    no_feed = {f["id"] for f in data["sources_failed"] if "sem feed" in f["error"]}
+    no_feed = {f["id"] for f in data["sources_failed"] if "no RSS feed" in f["error"]}
     check(
-        "fontes sem feed aparecem em sources_failed com motivo",
+        "feedless sources appear in sources_failed with a reason",
         no_feed >= {"anthropic", "meta-ai"},
-        f"veio {no_feed}",
+        f"got {no_feed}",
     )
     filtered = [s for s in data["sources_ok"] if s.get("off_topic", 0) > 0]
-    check("o filtro de assunto descartou itens", bool(filtered))
+    check("the topic filter dropped items", bool(filtered))
     check(
-        "nenhum item duplicado por URL",
+        "no item duplicated by URL",
         len({i["url"] for i in data["items"]}) == len(data["items"]),
     )
 
 
 def eval_card_size_limit(tmp: str) -> None:
-    print("\n[card-size-limit] o cartao corta os itens mais frios primeiro")
+    print("\n[card-size-limit] the card drops the coldest items first")
     out = os.path.join(tmp, "small.json")
     proc = run([
         "scripts/build_card.py", "--in", "evals/fixtures/digest-15.json",
         "--out", out, "--max-bytes", "6000",
     ])
-    check("gerou o cartao", proc.returncode == 0, proc.stderr[-200:])
+    check("built the card", proc.returncode == 0, proc.stderr[-200:])
     if proc.returncode != 0:
         return
     payload = json.load(open(out, encoding="utf-8"))
     size = len(json.dumps(payload, ensure_ascii=False).encode("utf-8"))
-    check(f"payload dentro do limite ({size} <= 6000)", size <= 6000)
+    check(f"payload within the limit ({size} <= 6000)", size <= 6000)
     kept = temperatures(payload)
-    check("os 3 itens HIGH sobreviveram", kept.count("HIGH") == 3, f"veio {kept}")
-    check("nenhum LOW passou na frente de um MEDIUM", "LOW" not in kept, f"veio {kept}")
+    check("all 3 HIGH items survived", kept.count("HIGH") == 3, f"got {kept}")
+    check("no LOW kept ahead of a MEDIUM", "LOW" not in kept, f"got {kept}")
     blocks = list(text_blocks(payload["attachments"][0]["content"]))
-    check("o rodape avisa do corte", any("omitted" in b.get("text", "") for b in blocks))
+    check("the footer announces the trim", any("omitted" in b.get("text", "") for b in blocks))
 
     full = os.path.join(tmp, "full.json")
     run(["scripts/build_card.py", "--in", "evals/fixtures/digest-15.json", "--out", full])
-    check("sem corte, os 15 itens entram", len(temperatures(json.load(open(full)))) == 15)
+    check("with no trim, all 15 items fit", len(temperatures(json.load(open(full)))) == 15)
 
 
 def eval_digest_validation(tmp: str) -> None:
-    print("\n[digest-validation] digest malformado falha com mensagem util")
+    print("\n[digest-validation] a malformed digest fails with a useful message")
     proc = run(["scripts/build_card.py", "--in", "evals/fixtures/digest-invalida.json", "--out", os.path.devnull])
     combined = proc.stdout + proc.stderr
-    check("codigo de saida diferente de zero", proc.returncode != 0)
-    check("sem traceback", "Traceback" not in combined, combined[-200:])
-    check("a mensagem nomeia o campo que faltou", "source_url" in combined, combined[-200:])
+    check("non-zero exit code", proc.returncode != 0)
+    check("no traceback", "Traceback" not in combined, combined[-200:])
+    check("the message names the missing field", "source_url" in combined, combined[-200:])
 
     bad = os.path.join(tmp, "temp-ruim.json")
     digest = json.load(open(os.path.join(FIXTURES, "digest-15.json"), encoding="utf-8"))
@@ -133,9 +133,9 @@ def eval_digest_validation(tmp: str) -> None:
     json.dump(digest, open(bad, "w", encoding="utf-8"), ensure_ascii=False)
     proc = run(["scripts/build_card.py", "--in", bad, "--out", os.path.devnull])
     combined = proc.stdout + proc.stderr
-    check("temperatura invalida recusada sem traceback",
+    check("invalid temperature rejected without a traceback",
           proc.returncode != 0 and "Traceback" not in combined, combined[-200:])
-    check("a mensagem explica os valores aceitos", "HIGH" in combined)
+    check("the message lists the accepted values", "HIGH" in combined)
 
     alias = os.path.join(tmp, "alias.json")
     digest = json.load(open(os.path.join(FIXTURES, "digest-15.json"), encoding="utf-8"))
@@ -143,39 +143,39 @@ def eval_digest_validation(tmp: str) -> None:
         card["temperature"] = value
     json.dump(digest, open(alias, "w", encoding="utf-8"), ensure_ascii=False)
     proc = run(["scripts/build_card.py", "--in", alias, "--out", os.path.join(tmp, "a.json")])
-    check("ALTA/MEDIA/BAIXA aceitos como alias", proc.returncode == 0, proc.stderr[-200:])
+    check("ALTA/MEDIA/BAIXA accepted as aliases", proc.returncode == 0, proc.stderr[-200:])
 
 
 def eval_webhook_secret(tmp: str) -> None:
-    print("\n[webhook-secret] a URL do webhook nunca vaza")
-    secret = "https://exemplo.logic.azure.com/workflows/abc?api-version=1&sig=SEGREDO123"
+    print("\n[webhook-secret] the webhook URL never leaks")
+    secret = "https://exemplo.logic.azure.com/workflows/abc?api-version=1&sig=SECRET123"
     env = {**os.environ, "TEAMS_WEBHOOK_URL": secret}
     proc = run(["scripts/post_to_teams.py", "--payload", "evals/fixtures/card.json", "--dry-run"], env=env)
     combined = proc.stdout + proc.stderr
-    check("dry-run sai com codigo 0", proc.returncode == 0, combined[-200:])
-    check("o segredo nao aparece na saida", "SEGREDO123" not in combined, combined[-200:])
-    check("a query string nao aparece", "sig=" not in combined)
+    check("dry-run exits 0", proc.returncode == 0, combined[-200:])
+    check("the secret never appears in the output", "SECRET123" not in combined, combined[-200:])
+    check("the query string never appears", "sig=" not in combined)
 
     env = {k: v for k, v in os.environ.items() if k not in ("TEAMS_WEBHOOK_URL", "TEAMS_WEBHOOK_FILE")}
     proc = run(["scripts/post_to_teams.py", "--payload", "evals/fixtures/card.json"], env=env)
     combined = proc.stdout + proc.stderr
-    check("sem webhook, falha explicando como configurar",
+    check("with no webhook, fails explaining how to configure it",
           proc.returncode != 0 and "TEAMS_WEBHOOK_URL" in combined, combined[-200:])
 
     bad = os.path.join(tmp, "payload-cru.json")
     json.dump({"text": "oi"}, open(bad, "w"))
     proc = run(["scripts/post_to_teams.py", "--payload", bad, "--dry-run"])
-    check("payload fora do formato do Teams e recusado", proc.returncode != 0)
+    check("a payload outside the Teams shape is rejected", proc.returncode != 0)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--offline", action="store_true", help="pula o eval que toca a rede")
+    parser.add_argument("--offline", action="store_true", help="skip the eval that touches the network")
     args = parser.parse_args()
 
     with tempfile.TemporaryDirectory() as tmp:
         if args.offline:
-            print("\n[collect-window] pulado (--offline)")
+            print("\n[collect-window] skipped (--offline)")
         else:
             eval_collect_window(tmp)
         eval_card_size_limit(tmp)
@@ -184,9 +184,9 @@ def main() -> int:
 
     print()
     if failures:
-        print(f"{len(failures)} verificacao(oes) falharam: {', '.join(failures)}")
+        print(f"{len(failures)} check(s) failed: {', '.join(failures)}")
         return 1
-    print("todas as verificacoes passaram")
+    print("all checks passed")
     return 0
 
 

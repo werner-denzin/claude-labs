@@ -1,7 +1,7 @@
-# Boletins publicados
+# Published newsletters
 
-A skill `ai-news-digest` grava aqui a versao em markdown de cada boletim, como
-`AAAA-MM-DD-radar-ia.md`. E o registro legivel do que foi publicado no Teams
-naquele dia — o cartao do Teams nao fica pesquisavel depois de algumas semanas.
+The `ai-news-digest` skill writes the markdown version of each newsletter here,
+as `YYYY-MM-DD-ai-radar.md`. It is the readable record of what was published to
+Teams that day — a Teams card stops being searchable after a few weeks.
 
-O que vai para o Teams e o Adaptive Card; este diretorio e o arquivo historico.
+What goes to Teams is the Adaptive Card; this directory is the archive.

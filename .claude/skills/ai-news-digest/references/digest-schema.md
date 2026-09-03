@@ -1,33 +1,33 @@
-# Schema do `digest.json`
+# `digest.json` schema
 
-Arquivo que a etapa de triagem escreve e que `build_card.py` consome. JSON UTF-8.
+The file the triage step writes and `build_card.py` consumes. UTF-8 JSON.
 
 ```jsonc
 {
-  "date": "2026-09-03",              // obrigatorio, ISO. Dia do boletim, nao da coleta
-  "window_hours": 24,                // janela usada na coleta
+  "date": "2026-09-03",              // required, ISO. The newsletter's day, not the collection's
+  "window_hours": 24,                // window used for collection
   "generated_at": "2026-09-03T11:04:00-03:00",
   "headline": "One line, in English: what the story of the day was.",
 
-  "cards": [                          // obrigatorio, 1 a 15 itens
+  "cards": [                          // required, 1 to 15 items
     {
-      "rank": 1,                      // ordem editorial dentro da temperatura
+      "rank": 1,                      // editorial order within the temperature band
       "title": "NVIDIA acquires Hugging Face for $12.9 billion",
       "description": "3 to 5 lines (~200-400 chars). What happened, the number that matters, why the committee should care. In English -- unless the main source is a Brazilian one, in which case this card stays in Portuguese.",
-      "temperature": "HIGH",          // HIGH | MEDIUM | LOW (aceita ALTA/MEDIA/BAIXA)
+      "temperature": "HIGH",          // HIGH | MEDIUM | LOW (ALTA/MEDIA/BAIXA accepted as aliases)
       "lens": "strategy",             // strategy | regulation | engineering | research
-      "source_name": "NVIDIA Blog",   // fonte principal: prefira a primaria
+      "source_name": "NVIDIA Blog",   // main source: prefer the primary one
       "source_url": "https://blogs.nvidia.com/...",
-      "also_covered_by": [            // opcional; o cartao mostra ate 3
+      "also_covered_by": [            // optional; the card shows up to 3
         { "source": "TechCrunch AI", "url": "https://..." }
       ]
     }
   ],
 
-  "not_relevant": [                   // opcional, em ingles: o que dominou o volume e nao merece atencao
+  "not_relevant": [                   // optional, in English: what dominated the volume and does not deserve attention
     "consumer hardware launches"
   ],
-  "sources_failed": [                 // copiar de items.json + bloqueios da etapa 2
+  "sources_failed": [                 // copy from items.json + the blocks from step 2
     { "name": "MarkTechPost", "error": "HTTP 403" }
   ],
   "stats": {
@@ -38,24 +38,25 @@ Arquivo que a etapa de triagem escreve e que `build_card.py` consome. JSON UTF-8
 }
 ```
 
-## Validacao
+## Validation
 
-`build_card.py` recusa o arquivo e explica o motivo quando:
+`build_card.py` rejects the file and explains why when:
 
-- falta `date` ou `cards`, ou `cards` esta vazio;
-- algum card nao tem `title`, `description`, `temperature`, `source_name` ou `source_url`;
-- `temperature` nao e um dos valores aceitos;
-- `source_url` nao comeca com `http`.
+- `date` or `cards` is missing, or `cards` is empty;
+- a card lacks `title`, `description`, `temperature`, `source_name` or `source_url`;
+- `temperature` is not one of the accepted values;
+- `source_url` does not start with `http`.
 
-Rode `build_card.py --in digest.json --preview` para ver o boletim em texto antes
-de gerar o payload.
+Run `build_card.py --in digest.json --preview` to read the newsletter as text
+before generating the payload.
 
-## Notas de campo
+## Field notes
 
-- `rank` e so ordenacao editorial. Quem decide a posicao final e a temperatura:
-  `build_card.py` agrupa HIGH, depois MEDIUM, depois LOW, e usa `rank` para
-  desempatar dentro de cada faixa.
-- `lens` aparece no cartao ao lado da temperatura, literalmente como voce
-  escrever. Deixe vazio se o item nao se encaixar em nenhuma das quatro.
-- `also_covered_by` sai do `items.json`, mas cabe editar: se voce fundiu itens que
-  o script nao fundiu (o caso tipico entre ingles e portugues), acrescente aqui.
+- `rank` is editorial ordering only. Temperature decides the final position:
+  `build_card.py` groups HIGH, then MEDIUM, then LOW, and uses `rank` to break
+  ties inside each band.
+- `lens` renders on the card next to the temperature, exactly as you write it.
+  Leave it empty if the item fits none of the four.
+- `also_covered_by` comes from `items.json`, but it is editable: if you merged
+  items the script did not (the typical case being English and Portuguese
+  covering the same story), add them here.

@@ -1,65 +1,65 @@
-# Agendamento — dias uteis, 08:00 (horario de Brasilia)
+# Scheduling — weekdays, 08:00 (Brasilia time)
 
-Decisao tomada: **routine agendada na nuvem**. As outras duas receitas ficam
-documentadas abaixo como alternativa.
+Decision made: **scheduled cloud routine**. The other two recipes are documented
+below as alternatives.
 
-## Opcao escolhida: routine na nuvem
+## Chosen option: cloud routine
 
-Uma routine e uma configuracao salva do Claude Code (prompt + repositorios +
-ambiente + conectores) que roda em infraestrutura da Anthropic, independente da
-sua maquina.
+A routine is a saved Claude Code configuration (prompt + repositories +
+environment + connectors) that runs on Anthropic-managed infrastructure,
+independent of your machine.
 
-### Custo
+### Cost
 
-Routines consomem a assinatura do mesmo jeito que uma sessao interativa: mesmos
-tokens, sem taxa de infraestrutura e sem cobranca por sessao. Existe, alem dos
-limites normais de uso, um **teto diario de execucoes por conta** — o numero
-aparece em <https://claude.ai/code/routines>. Uma execucao por dia util nao
-chega perto de nenhum plano. Estourado o teto, as execucoes seguintes sao
-recusadas ate a janela reabrir, a menos que a organizacao ligue *usage credits*,
-que transforma o excedente em cobranca medida.
+Routines draw down the subscription the same way an interactive session does:
+same tokens, no infrastructure fee, no per-session charge. On top of the normal
+usage limits there is a **daily cap on runs per account** — the number is shown
+at <https://claude.ai/code/routines>. One run per weekday comes nowhere near any
+plan's cap. Once the cap is hit, further runs are rejected until the window
+resets, unless the organization enables *usage credits*, which turns the overage
+into metered billing.
 
-Disponivel em Pro, Max, Team e Enterprise. Exige login claude.ai — nao funciona
-com API key do Console nem com Bedrock/Foundry.
+Available on Pro, Max, Team and Enterprise. Requires a claude.ai login — it does
+not work with a Console API key, nor with Bedrock/Foundry.
 
-### Criar
+### Creating it
 
 ```
-/schedule boletim diario do radar de IA, dias uteis as 8h
+/schedule daily AI radar newsletter, weekdays at 8am
 ```
 
-O Claude pergunta o resto e salva. Tambem da para criar em
-<https://claude.ai/code/routines>. Depois: `/schedule list`, `/schedule update`,
-`/schedule run`.
+Claude asks for the rest and saves it. You can also create it at
+<https://claude.ai/code/routines>. Afterwards: `/schedule list`,
+`/schedule update`, `/schedule run`.
 
-### Configuracao da routine
+### Routine configuration
 
-| Campo | Valor |
+| Field | Value |
 | --- | --- |
-| Repositorio | `werner-denzin/claude-labs` — a skill precisa estar commitada, a routine clona o repo a cada execucao |
-| Trigger | Schedule, preset **weekdays**, 08:00 |
-| Fuso | **Nao converta nada.** O horario e informado no seu fuso local e convertido automaticamente; a routine roda as 08:00 de Brasilia. |
-| Ambiente | Um com **Network access = Custom ou Full** (ver abaixo) |
-| Conectores | Remova os que a routine nao usa — durante a execucao ela pode chamar qualquer ferramenta de um conector incluido, inclusive de escrita, sem pedir permissao |
+| Repository | `werner-denzin/claude-labs` — the skill has to be committed, since the routine clones the repo on every run |
+| Trigger | Schedule, **weekdays** preset, 08:00 |
+| Timezone | **Convert nothing.** The time is entered in your local zone and converted automatically; the routine runs at 08:00 Brasilia time. |
+| Environment | One with **Network access = Custom or Full** (see below) |
+| Connectors | Remove the ones the routine does not use — during a run it can call any tool from an included connector, writes included, without asking permission |
 
-Prompt da routine, algo como:
+The routine's prompt, roughly:
 
 ```
-Execute a skill ai-news-digest para o dia de hoje: colete as ultimas 24h,
-classifique por temperatura, selecione os 15 mais relevantes, monte o cartao e
-publique no canal do Teams. Se o webhook nao estiver configurado, pare antes de
-publicar e explique o que falta.
+Run the ai-news-digest skill for today: collect the last 24h, classify by
+temperature, select the 15 most relevant, build the card and publish it to the
+Teams channel. If the webhook is not configured, stop before publishing and
+explain what is missing.
 ```
 
-### Rede: o ponto que quebra se esquecido
+### Network: the thing that breaks if forgotten
 
-O ambiente **Default** vem com *Network access = Trusted*, que libera so a
-allowlist padrao (registries de pacote, APIs de cloud). Todas as fontes de
-noticia ficam de fora: cada requisicao volta `403` com
-`x-deny-reason: host_not_allowed` e o boletim sai vazio.
+The **Default** environment ships with *Network access = Trusted*, which allows
+only the default allowlist (package registries, cloud APIs). Every news source
+falls outside it: each request comes back `403` with
+`x-deny-reason: host_not_allowed` and the newsletter comes out empty.
 
-No ambiente da routine, mude **Network access** para **Full**, ou **Custom** com
-os dominios de `assets/sources.json`. Para extrair a lista:
+On the routine's environment, set **Network access** to **Full**, or **Custom**
+with the domains from `assets/sources.json`. To extract the list:
 
 ```bash
 python3 -c "
@@ -69,52 +69,53 @@ d={urllib.parse.urlsplit(u).netloc for x in s for u in (x.get('feed'),x.get('sit
 print('\n'.join(sorted(d)))"
 ```
 
-Acrescente tambem o dominio do webhook do Teams
-(`*.logic.azure.com`, ou o host que a sua URL usar).
+Add the Teams webhook's domain too (`*.logic.azure.com`, or whatever host your
+URL uses).
 
-### Segredo do webhook
+### The webhook secret
 
-Variaveis de ambiente do ambiente de nuvem **ficam visiveis para qualquer pessoa
-que use aquele ambiente**. Guarde a URL do webhook como **API credential** do
-ambiente, nao como variavel de ambiente, e nunca no repositorio.
+Environment variables on a cloud environment **are visible to anyone who uses
+that environment**. Store the webhook URL as an **API credential** of the
+environment, not as an environment variable, and never in the repository.
 
-### Detalhes de operacao
+### Operational details
 
-- As execucoes podem comecar alguns minutos depois das 08:00: ha um *stagger*
-  deliberado, constante para cada routine.
-- Intervalo minimo entre execucoes: 1 hora.
-- Status verde na lista significa que a sessao subiu e terminou sem erro de
-  infraestrutura — **nao** que o boletim saiu. Abra a execucao e leia a
-  transcricao. Requisicao bloqueada e falha de tarefa aparecem la, nao no status.
-- A routine pertence a sua conta individual e nao e compartilhada com o time. O
-  que ela publica sai como voce.
-- Owner de Team/Enterprise pode desligar routines para toda a organizacao em
-  `claude.ai/admin-settings/claude-code`. Se `/schedule` sumir, e o primeiro
-  lugar para olhar.
+- Runs may start a few minutes after 08:00: there is a deliberate *stagger*,
+  constant per routine.
+- Minimum interval between runs: 1 hour.
+- A green status in the run list means the session started and exited without an
+  infrastructure error — **not** that the newsletter went out. Open the run and
+  read the transcript. Blocked requests and task-level failures show up there,
+  not in the status indicator.
+- The routine belongs to your individual account and is not shared with the team.
+  What it publishes goes out as you.
+- A Team/Enterprise Owner can disable routines for the whole organization at
+  `claude.ai/admin-settings/claude-code`. If `/schedule` disappears, that is the
+  first place to look.
 
-## Alternativa A: timer local no WSL
+## Alternative A: local timer on WSL
 
-Roda de graca, mas **so dispara com o WSL de pe as 08:00** — e o WSL nao sobe
-sozinho com o Windows. Bom para teste manual, arriscado para producao.
+Free to run, but it **only fires with WSL up at 08:00** — and WSL does not start
+by itself with Windows. Good for manual testing, risky for production.
 
-`~/.config/systemd/user/radar-ia.service`:
+`~/.config/systemd/user/ai-radar.service`:
 
 ```ini
 [Unit]
-Description=Radar de IA - boletim diario
+Description=AI Radar - daily newsletter
 
 [Service]
 Type=oneshot
 WorkingDirectory=%h/git/claude-labs
 Environment=TEAMS_WEBHOOK_FILE=%h/.config/sidi/teams-webhook
-ExecStart=/usr/bin/claude -p "Execute a skill ai-news-digest e publique o boletim de hoje no Teams."
+ExecStart=/usr/bin/claude -p "Run the ai-news-digest skill and publish today's newsletter to Teams."
 ```
 
-`~/.config/systemd/user/radar-ia.timer`:
+`~/.config/systemd/user/ai-radar.timer`:
 
 ```ini
 [Unit]
-Description=Radar de IA as 08:00 nos dias uteis
+Description=AI Radar at 08:00 on weekdays
 
 [Timer]
 OnCalendar=Mon..Fri 08:00 America/Sao_Paulo
@@ -126,21 +127,21 @@ WantedBy=timers.target
 
 ```bash
 systemctl --user daemon-reload
-systemctl --user enable --now radar-ia.timer
-systemctl --user list-timers radar-ia.timer
-loginctl enable-linger "$USER"   # para o timer sobreviver ao logout
+systemctl --user enable --now ai-radar.timer
+systemctl --user list-timers ai-radar.timer
+loginctl enable-linger "$USER"   # so the timer survives logout
 ```
 
-Com `cron` em vez de systemd, o equivalente e `0 8 * * 1-5` — mas ai o fuso e o
-do sistema, entao confira com `timedatectl`.
+With `cron` instead of systemd the equivalent is `0 8 * * 1-5` — but then the
+timezone is the system's, so check it with `timedatectl`.
 
-## Alternativa B: GitHub Actions
+## Alternative B: GitHub Actions
 
-Sempre roda, log versionado. Duas ressalvas: o cron do Actions e **em UTC**
-(08:00 BRT = `0 11 * * 1-5`, e o Brasil nao tem mais horario de verao desde 2019,
-entao a conversao e fixa), e o Actions nao tem o Claude interativo — a triagem
-teria que ir por API com uma `ANTHROPIC_API_KEY` nos secrets, ou o boletim sai
-sem curadoria. O `TEAMS_WEBHOOK_URL` entra em *Repository secrets*.
+Always runs, versioned logs. Two caveats: the Actions cron is **in UTC** (08:00
+BRT = `0 11 * * 1-5`, and Brazil has had no DST since 2019, so the conversion is
+fixed), and Actions has no interactive Claude — triage would have to go through
+the API with an `ANTHROPIC_API_KEY` in secrets, or the newsletter comes out
+uncurated. `TEAMS_WEBHOOK_URL` goes in *Repository secrets*.
 
 ```yaml
 on:
@@ -149,4 +150,4 @@ on:
   workflow_dispatch:
 ```
 
-Vale a pena so se voce ja quiser tirar a assinatura do caminho critico.
+Worth it only if you want the subscription out of the critical path.

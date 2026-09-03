@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Converte o digest triado em um Adaptive Card para o Microsoft Teams.
+"""Turns the triaged digest into an Adaptive Card for Microsoft Teams.
 
-Entrada: digest.json (escrito pela etapa de triagem da skill; schema em
-references/digest-schema.md). Saida: o envelope pronto para POST no webhook.
+Input: digest.json (written by the skill's triage step; schema in
+references/digest-schema.md). Output: the envelope ready to POST to the webhook.
 
-Somente biblioteca padrao. Uso:
+Standard library only. Usage:
     python3 build_card.py --in digest.json --out card.json
     python3 build_card.py --in digest.json --preview
 """
@@ -16,18 +16,18 @@ import json
 import sys
 from datetime import date, datetime
 
-# Teams rejeita cartoes acima de ~28 KB. Ficamos abaixo com folga e cortamos os
-# itens mais frios antes de estourar, em vez de deixar o POST falhar.
-MAX_PAYLOAD_BYTES = 25_000  # ajustavel via --max-bytes
+# Teams rejects cards above ~28 KB. We stay comfortably below and drop the
+# coldest items before overflowing, rather than letting the POST fail.
+MAX_PAYLOAD_BYTES = 25_000  # tunable via --max-bytes
 
-# O boletim sai em ingles. Itens vindos de fontes brasileiras mantem titulo e
-# descricao em portugues; so a moldura do cartao e traduzida.
+# The newsletter is written in English. Items from Brazilian sources keep their
+# title and description in Portuguese; only the card frame is rendered here.
 TEMPERATURES = {
     "HIGH": {"emoji": "\U0001f534", "label": "HIGH", "color": "attention", "rank": 0},
     "MEDIUM": {"emoji": "\U0001f7e0", "label": "MEDIUM", "color": "warning", "rank": 1},
     "LOW": {"emoji": "\U0001f535", "label": "LOW", "color": "accent", "rank": 2},
 }
-# Aceita os rotulos em portugues, para nao quebrar digests antigos.
+# Portuguese labels accepted as aliases, so older digests still build.
 ALIASES = {"ALTA": "HIGH", "MEDIA": "MEDIUM", "MÉDIA": "MEDIUM", "BAIXA": "LOW"}
 
 WEEKDAYS = [
@@ -44,7 +44,7 @@ def normalize_temperature(value: str) -> dict:
     key = ALIASES.get(key, key)
     if key not in TEMPERATURES:
         raise ValueError(
-            f"temperatura invalida: {value!r} (use HIGH, MEDIUM ou LOW)"
+            f"invalid temperature: {value!r} (use HIGH, MEDIUM or LOW)"
         )
     return TEMPERATURES[key]
 
@@ -183,7 +183,7 @@ def build_card(digest: dict, items: list[dict]) -> dict:
 
 
 def fit_to_limit(digest: dict, max_bytes: int = MAX_PAYLOAD_BYTES) -> tuple[dict, int]:
-    """Monta o cartao cortando os itens mais frios ate caber no limite do Teams."""
+    """Builds the card, dropping the coldest items until it fits the Teams limit."""
     order = {"HIGH": 0, "MEDIUM": 1, "LOW": 2}
     items = sorted(
         digest["cards"],
@@ -209,7 +209,7 @@ def fit_to_limit(digest: dict, max_bytes: int = MAX_PAYLOAD_BYTES) -> tuple[dict
             return payload, dropped
         items.pop()
         dropped += 1
-    raise SystemExit("erro: nem o cabecalho do cartao cabe no limite do Teams")
+    raise SystemExit("error: not even the card header fits the Teams limit")
 
 
 def preview(digest: dict) -> str:
@@ -229,10 +229,10 @@ def preview(digest: dict) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--in", dest="src", required=True, help="digest.json")
-    parser.add_argument("--out", default="-", help="arquivo do payload ou - para stdout")
-    parser.add_argument("--preview", action="store_true", help="imprime texto legivel em vez do JSON")
+    parser.add_argument("--out", default="-", help="payload file, or - for stdout")
+    parser.add_argument("--preview", action="store_true", help="print readable text instead of the JSON")
     parser.add_argument("--max-bytes", type=int, default=MAX_PAYLOAD_BYTES,
-                        help="teto do payload; acima disso corta os itens mais frios")
+                        help="payload ceiling; above it the coldest items are dropped")
     args = parser.parse_args()
 
     with open(args.src, encoding="utf-8") as handle:
@@ -240,22 +240,22 @@ def main() -> int:
 
     for field in ("date", "cards"):
         if field not in digest:
-            raise SystemExit(f"erro: digest.json sem o campo obrigatorio '{field}'")
+            raise SystemExit(f"error: digest.json is missing the required field '{field}'")
     if not digest["cards"]:
-        raise SystemExit("erro: digest.json sem nenhum card")
+        raise SystemExit("error: digest.json contains no cards")
     for card in digest["cards"]:
         for field in ("title", "description", "temperature", "source_name", "source_url"):
             if not card.get(field):
                 raise SystemExit(
-                    f"erro: card {card.get('title', '?')!r} sem o campo '{field}'"
+                    f"error: card {card.get('title', '?')!r} is missing the field '{field}'"
                 )
         try:
             normalize_temperature(card["temperature"])
         except ValueError as exc:
-            raise SystemExit(f"erro: card {card['title']!r}: {exc}")
+            raise SystemExit(f"error: card {card['title']!r}: {exc}")
         if not str(card["source_url"]).startswith("http"):
             raise SystemExit(
-                f"erro: card {card['title']!r} com source_url invalida: "
+                f"error: card {card['title']!r} has an invalid source_url: "
                 f"{card['source_url']!r}"
             )
 
@@ -271,10 +271,10 @@ def main() -> int:
         with open(args.out, "w", encoding="utf-8") as handle:
             handle.write(text)
         size = len(json.dumps(payload, ensure_ascii=False).encode("utf-8"))
-        note = f", {dropped} item(ns) cortado(s) por tamanho" if dropped else ""
+        note = f", {dropped} item(s) dropped for size" if dropped else ""
         print(
-            f"cartao com {len(digest['cards']) - dropped} itens, "
-            f"{size} bytes na rede{note} -> {args.out}",
+            f"card with {len(digest['cards']) - dropped} items, "
+            f"{size} bytes on the wire{note} -> {args.out}",
             file=sys.stderr,
         )
     return 0
