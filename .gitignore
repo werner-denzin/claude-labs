@@ -1,2 +1,9 @@
 __pycache__/
 *.pyc
+
+# Secrets -- never commit. The GitHub token and the Teams webhook URL live here.
+.secret
+.secret.*
+.env
+.env.*
+*.token
