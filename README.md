@@ -14,6 +14,62 @@ and research sources, because the primary tier cannot report on itself — the l
 announce but do not analyse, the people publish on X which has no fetchable feed,
 and the VC firms blog about portfolio companies rather than deals.
 
+## Sources
+
+The catalog as it stands, with what each source actually delivered. **d-1** is
+the last 24 hours, **d-7** the last 7 days, both measured on 2026-09-03 and both
+counted before deduplication — the same story from four outlets counts four
+times here and becomes one card.
+
+| `id`               | Name                                    | Category    | How it is read          | d-1    | d-7     |
+| ------------------ | --------------------------------------- | ----------- | ----------------------- | ------ | ------- |
+| `openai`           | OpenAI News                             | lab         | RSS/Atom                | 4      | 14      |
+| `anthropic`        | Anthropic News                          | lab         | Sitemap                 | 0      | 6       |
+| `deepmind`         | Google DeepMind Blog                    | lab         | RSS/Atom                | 1      | 4       |
+| `google-ai`        | Google - The Keyword (AI)               | lab         | RSS/Atom                | 0      | 3       |
+| `karpathy`         | Andrej Karpathy                         | people      | RSS/Atom                | 0      | 0       |
+| `boris-cherny`     | Boris Cherny                            | people      | RSS/Atom                | 0      | 0       |
+| `thariq`           | Thariq Shihipar                         | people      | RSS/Atom                | 0      | 0       |
+| `the-batch`        | The Batch (Andrew Ng / DeepLearning.AI) | people      | Sitemap                 | 0      | 7       |
+| `sam-altman`       | Sam Altman                              | people      | RSS/Atom                | 0      | 0       |
+| `a16z`             | Andreessen Horowitz                     | investor    | Sitemap                 | 0      | 0       |
+| `ycombinator`      | Y Combinator Blog                       | investor    | RSS/Atom                | 0      | 0       |
+| `sequoia`          | Sequoia Capital                         | investor    | RSS/Atom                | 0      | 0       |
+| `nvidia`           | NVIDIA Blog                             | hardware    | RSS/Atom + topic filter | 2      | 3       |
+| `nvidia-newsroom`  | NVIDIA Newsroom                         | hardware    | RSS/Atom + topic filter | 2      | 4       |
+| `techcrunch-ai`    | TechCrunch AI                           | press       | RSS/Atom                | 7      | 19      |
+| `the-decoder`      | The Decoder                             | press       | RSS/Atom                | 8      | 10      |
+| `arstechnica-ai`   | Ars Technica AI                         | press       | RSS/Atom                | 2      | 10      |
+| `latent-space`     | Latent Space                            | engineering | RSS/Atom                | 2      | 7       |
+| `arxiv-se`         | arXiv cs.SE (Software Engineering)      | research    | RSS/Atom                | 10*    | 10*     |
+| `github-changelog` | GitHub Changelog                        | engineering | RSS/Atom + topic filter | 3      | 5       |
+| **Total**          | **20 sources**                          |             |                         | **41** | **102** |
+
+`*` capped by the source's own `max_items`; arXiv cs.SE publishes far more than
+10 a day and is deliberately held there.
+
+The counts are a snapshot and drift. To take a fresh one:
+
+```bash
+python3 scripts/fetch_feeds.py --hours 24  --out /tmp/d1.json
+python3 scripts/fetch_feeds.py --hours 168 --out /tmp/d7.json
+# per source: sources_ok[].in_window in each file
+```
+
+Two things the numbers say plainly. **The people and the investors publish
+almost nothing**: seven of the twenty sources returned zero in a full week,
+because Karpathy, Boris Cherny, Thariq and Sam Altman post on X, which has no
+fetchable feed, and the VC firms blog about portfolio companies rather than
+deals. They stay in the catalog because when they do publish it is first-hand,
+and they cost nothing on a quiet day. **The press carries the volume**:
+TechCrunch, The Decoder and Ars Technica together are 39 of the 102 items in a
+week.
+
+The three sitemap sources publish no RSS at all and are read from
+`sitemap.xml`; the topic filter is what keeps NVIDIA's gaming beat and
+GitHub's non-AI changelog out. `references/sources.md` has the reasoning per
+source, and how to add or fix one.
+
 ## Solution overview
 
 ```mermaid
