@@ -56,8 +56,9 @@ Read `items.json`. Besides the items it carries:
 
 ### 2. Sources with no feed
 
-Anthropic and a16z publish no RSS. The collector reads them from their sitemaps
-instead, so they arrive like any other item and need no extra step.
+Anthropic, a16z and The Batch publish no RSS. The collector reads them from
+their sitemaps instead, so they arrive like any other item and need no extra
+step.
 
 Two things to know when one of them is a candidate: the **title is derived from
 the URL slug**, so it is close to the headline but not it, and there is **no

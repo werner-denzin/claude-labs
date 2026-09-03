@@ -10,7 +10,7 @@ Edit `assets/sources.json`. Each entry:
 | `sitemap` | Optional, for sources with no feed: `{"url": "...", "contains": "/news/"}`. The collector reads the sitemap, keeps URLs containing that substring, and dates them by `<lastmod>`. Add `"excludes": ["/tag/"]` to drop index pages that share the path. |
 | `site` | Human-facing page. Fallback when the feed dies, and the WebFetch target. |
 | `lang` | `en` or `pt-BR`. **Decides the card's language**: an item whose main source is `pt-BR` stays in Portuguese; the rest of the newsletter is English. |
-| `category` | `lab`, `infra`, `open-source`, `news`, `analysis`, `engineering`, `research`, `regulation`, `community`. |
+| `category` | In use today: `lab`, `people`, `investor`, `hardware`, `press`, `engineering`, `research`. |
 | `weight` | 1-5. Breaks ties in triage and picks the representative during deduplication. 5 = primary source. |
 | `kind` | Optional. `release` = a version feed. Pre-releases are dropped automatically and triage folds a day's releases per tool into one card. |
 | `topic_filter` | Optional. `true` = general source; only items matching the global `TOPIC_RE` get through. |
@@ -20,57 +20,70 @@ Edit `assets/sources.json`. Each entry:
 | `max_items` | Optional. Its own ceiling, lower than the global one. |
 | `note` | Optional. Why the source is configured this way. |
 
-## The engineering core
+## The catalog today
 
-The radar's focus is software engineering with AI, so the sources that matter
-most are the quiet ones.
+Twenty sources, in the two tiers the `_comment` in `sources.json` describes.
+Fewer sources means a smaller triage context and a cheaper run, so every addition
+has to earn its place against that cost.
 
-**Coding agents, via GitHub `releases.atom`.** Claude Code, Cline, Codex, Gemini
-CLI, Continue, Zed, opencode and goose all publish a releases feed, and Cursor
-publishes a real changelog feed. This is the fastest, least mediated signal there
-is: the release notes land before anyone writes about them. It is also the
-noisiest, which is what `kind: release` handles.
+**Primary — chosen by the user.** The labs (OpenAI, Anthropic, DeepMind, Google's
+Keyword blog), the people building them (Karpathy, Boris Cherny, Thariq, Sam
+Altman, Andrew Ng's The Batch), the investors (a16z, Y Combinator, Sequoia) and
+NVIDIA. The announcement is born here; everyone else covers it afterwards, so
+when an item appears both at the source and in the press, the card carries the
+source's link.
 
-**Protocol and evaluation.** MCP spec, MCP servers and SWE-bench move slowly, but
-a change in any of them reaches every tool downstream.
+**Supporting — because the primary tier cannot report on itself.** The labs
+announce but do not analyse, the people mostly publish on X which has no
+fetchable feed, and the VC firms blog about portfolio companies rather than
+deals. So: TechCrunch AI for funding and M&A, The Decoder for what the founders
+say, Ars Technica AI for depth and for legal and policy, Latent Space for
+agentic coding, arXiv cs.SE for research an engineer could act on, and GitHub
+Changelog for Copilot's enterprise controls and model deprecations.
 
-**Practice.** GitHub's AI blog and Changelog, Sourcegraph, JetBrains AI, Simon
-Willison's `ai-assisted-programming` tag, Latent Space, InfoQ, the Pragmatic
-Engineer and Martin Fowler.
+### What this catalog cannot see
 
-**Research that an engineer could act on.** `arXiv cs.SE` rather than only cs.AI
-and cs.CL — it is where agent harnesses, prompt engineering and repair show up.
+Worth knowing before you conclude a quiet day means a quiet market.
 
-These feeds publish far less than the AI press. On volume they lose every time,
-which is exactly why the triage step has a target share instead of picking by
-recency.
+**Coding agents.** There is no release feed in the catalog. GitHub
+`releases.atom` would be the fastest, least mediated signal there is — the notes
+land before anyone writes about them — but the cloud sandbox scopes GitHub
+access to the cloned repository and returns 403 for every other repo. Latent
+Space and GitHub Changelog stand in for it, editorially and partially. The
+`kind: release` machinery in `fetch_feeds.py` still works and is ready for the
+day a coding agent is added from somewhere reachable.
 
-## Why these sources
+**The people.** Karpathy, Boris Cherny, Thariq and Sam Altman publish on X.
+Their blogs are real but rare — measured over a seven-day window, all four
+produced nothing. Expect those categories empty most days and pick up what they
+said through the press.
 
-**Weight 5 — primary labs and the agents themselves.** OpenAI, Anthropic,
-DeepMind, plus Claude Code, Cline, Simon Willison's AI-assisted-programming tag
-and Latent Space. The announcement is born here; everyone else covers it
-afterwards. When an item appears both at the source and in the press, the card
-carries the source's link.
+**Regulation.** No source covers it directly since the catalog was cut. The EU AI
+Act, LGPD/ANPD and court rulings reach the radar only through Ars Technica and
+TechCrunch. If the Brazilian regulatory agenda heats up (PL 2338, ANPD), that gap
+has to be closed with local sources.
 
-**Weight 4 — strong press and engineering sources.** TechCrunch, The Verge, Ars
-Technica, MIT Tech Review, Hugging Face, Latent Space, Simon Willison, Google/
-Microsoft/Meta, EU AI Act. They bring context and reporting the lab's blog omits.
-The Batch belongs here too: Andrew Ng's weekly letter is one of the few places
-where someone with a practitioner's standing says what a week of releases means,
-and DeepLearning.AI's roundup around it is written for engineers.
+**The local market.** No Brazilian source is in the catalog today, so the
+Portuguese-language rule in `SKILL.md` is currently inert — correct, and waiting
+for a `pt-BR` source to return.
 
-**Weight 3 — broad coverage.** The Decoder, VentureBeat, WIRED, The Register,
-InfoQ, NVIDIA, AWS, Mistral, Import AI, Raschka, Google Research, HN.
+## Weights
 
-**Weight 2 — volume and local market.** arXiv, MIT News, and the Brazilian press
-(Olhar Digital, TecMundo, Canaltech, Mobile Time). They rarely reach HIGH on
-their own, but they are what reads the local market and what actually reached the
-audience here — and they are the only sources whose cards come out in Portuguese.
+`weight` breaks ties in triage and picks the representative when two items
+deduplicate into one.
 
-All four committee lenses (strategy, regulation, engineering, research) are
-covered. `regulation` holds only the EU AI Act: if the Brazilian regulatory
-agenda heats up (PL 2338, ANPD), it is worth adding local sources.
+**5 — the primary source of its own news.** OpenAI, Anthropic, DeepMind, and the
+three Claude Code people whose posts, when they come, are first-hand.
+
+**4 — strong analysis and reporting.** Google's Keyword blog, Sam Altman, The
+Batch, NVIDIA (blog and newsroom), TechCrunch AI, The Decoder, Ars Technica AI
+and Latent Space. The Batch earns this tier: Andrew Ng's weekly letter is one of
+the few places where someone with a practitioner's standing says what a week of
+releases means, and DeepLearning.AI's roundup around it is written for engineers.
+
+**3 — context and volume.** The three investor blogs, GitHub Changelog and arXiv
+cs.SE. They rarely carry the day on their own, but they are the only window onto
+deal flow, platform governance and research.
 
 ## Sources with no feed
 
@@ -134,18 +147,21 @@ To test a single source: `--only techcrunch-ai`.
 
 ## Topic filter
 
-General-tech sources are entered with `"topic_filter": true`. Without it,
-TecMundo and Canaltech were taking 25 slots each with phones, games and retail
-promos — in validation the filter cut 42 of 50 Canaltech items and 23 of 26
-TecMundo items, taking the collection from 183 to 93 without losing any AI
+General-tech sources are entered with `"topic_filter": true`: only items matching
+the global `TOPIC_RE` get through. Three sources use the gate today — the two
+NVIDIA feeds and GitHub Changelog — all of them beats that are mostly not about
+AI. The measurement that justified the gate came from the Brazilian general-tech
+press, since removed from the catalog: it cut 42 of 50 Canaltech items and 23 of
+26 TecMundo items, taking a collection from 183 to 93 without losing any AI
 coverage.
 
 The term list lives in `TOPIC_RE`, at the top of `fetch_feeds.py`. It carries
-Portuguese terms on purpose, since it has to match Brazilian sources. A new model
-name that is not there yet (the market invents one a month) should be added.
+Portuguese terms on purpose: no `pt-BR` source is in the catalog right now, but
+the list has to keep working the day one returns. A new model name that is not
+there yet (the market invents one a month) should be added.
 
-**One global list does not fit every source**, and two cases in this catalog show
-both failure directions.
+**One global list does not fit every source**, and both sources using the gate
+show a different failure direction.
 
 *Too permissive.* `nvidia` is itself a topic term, so every post on NVIDIA's own
 blog matched and the gate passed its entire gaming beat -- `'NBA 2K27' With

@@ -4,7 +4,7 @@ A lab for Claude Code experiments. It currently holds one thing: **`ai-news-dige
 a daily radar on **software engineering with AI**, written for SiDi's AI strategy
 committee.
 
-Every weekday morning it collects the last 24 hours from a deliberately small catalog of 19 sources, judges how
+Every weekday morning it collects the last 24 hours from a deliberately small catalog of 20 sources, judges how
 much each item matters, keeps the 15 that matter most, and publishes them as a
 card newsletter in a Microsoft Teams channel.
 
@@ -23,10 +23,10 @@ flowchart TD
         MANUAL["Manual run<br>ask Claude for the AI radar"]
     end
 
-    CATALOG[("assets/sources.json<br>19 sources<br>labs · people · investors<br>hardware · press · research")]
+    CATALOG[("assets/sources.json<br>20 sources<br>labs · people · investors<br>hardware · press · research")]
     FETCH["scripts/fetch_feeds.py<br>parallel RSS/Atom, 24h window<br>topic + pre-release filters<br>deduplication"]
     ITEMS[("items.json<br>~12 candidates a day<br>+ failures + duplicate hints")]
-    WEB["WebFetch<br>sources with no feed:<br>Anthropic, Meta AI, MarkTechPost"]
+    SITEMAP["sitemap.xml<br>sources with no feed:<br>Anthropic, a16z, The Batch"]
 
     TRIAGE{"Claude triage<br>consolidate duplicates and releases<br>score temperature<br>select 15, ~8 engineering<br>write descriptions"}
     DIGEST[("digest.json<br>the editorial product")]
@@ -43,9 +43,9 @@ flowchart TD
     MANUAL --> FETCH
     CATALOG --> FETCH
     FETCH --> ITEMS
-    CATALOG -. "feed is null" .-> WEB
+    CATALOG -. "feed is null" .-> SITEMAP
+    SITEMAP --> FETCH
     ITEMS --> TRIAGE
-    WEB --> TRIAGE
     TRIAGE --> DIGEST
     DIGEST --> BUILD
     BUILD --> CARD
@@ -60,6 +60,7 @@ flowchart TD
     classDef secret fill:#fce8e6,stroke:#d93025,color:#111
     class FETCH,BUILD,POST script
     class CATALOG,ITEMS,DIGEST,CARD,ARCHIVE data
+    class SITEMAP script
     class TRIAGE judgment
     class SECRET secret
 ```
@@ -94,7 +95,7 @@ reports why it failed.
 | `references/teams-delivery.md` | How to create the channel webhook, the payload format, and the limits the code handles for you. |
 | `references/scheduling.md` | Running it daily at 08:00 BRT: the cloud routine, plus local systemd and GitHub Actions as alternatives. Includes cost and the network setting that silently empties the newsletter if missed. |
 | `evals/evals.json` | Eight test cases. Four are mechanical; four judge editorial quality and need a human or an LLM judge. |
-| `evals/run_script_evals.py` | Runs the four mechanical cases as 23 assertions over collection, size trimming, digest validation, and secret handling. |
+| `evals/run_script_evals.py` | Runs the four mechanical cases as 24 assertions over collection, size trimming, digest validation, and secret handling. |
 | `evals/fixtures/` | Sample `digest.json` and `card.json` used by those assertions. |
 
 ## Running it by hand
@@ -115,7 +116,7 @@ In practice you just ask Claude for the AI radar and it walks the whole flow.
 Run the checks with:
 
 ```bash
-python3 evals/run_script_evals.py            # 23 assertions
+python3 evals/run_script_evals.py            # 24 assertions
 python3 evals/run_script_evals.py --offline  # skips the one that hits the network
 ```
 

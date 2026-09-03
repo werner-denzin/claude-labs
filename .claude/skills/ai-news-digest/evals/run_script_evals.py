@@ -86,7 +86,7 @@ def eval_collect_window(tmp: str) -> None:
         all(f.get("error") for f in data["sources_failed"]),
         f'got {[f.get("error") for f in data["sources_failed"]]}',
     )
-    sitemap_ids = {"anthropic", "a16z"}
+    sitemap_ids = {"anthropic", "a16z", "the-batch"}
     failed_ids = {f["id"] for f in data["sources_failed"]}
     check(
         "sitemap sources are read, not reported as failures",
