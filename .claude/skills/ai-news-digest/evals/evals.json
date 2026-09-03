@@ -1,0 +1,113 @@
+{
+  "_comment": "Test cases for the ai-news-digest skill. The first four need no LLM judgment and are run by evals/run_script_evals.py; the rest evaluate editorial judgment and need a human or an LLM judge.",
+  "evals": [
+    {
+      "id": "collect-window",
+      "type": "script",
+      "description": "Collection respects the time window and does not break when a feed is down.",
+      "run": "python3 scripts/fetch_feeds.py --hours 24 --out /tmp/eval-items.json",
+      "expect": [
+        "exits 0 even with sources failing",
+        "counts.items_deduped > 0",
+        "every item is published inside the window",
+        "the three feedless sources appear in sources_failed with an explicit reason",
+        "sources_ok[].off_topic > 0 for Canaltech and TecMundo",
+        "release feeds drop pre-releases: sources_ok[].prerelease > 0 for at least one tool"
+      ]
+    },
+    {
+      "id": "card-size-limit",
+      "type": "script",
+      "description": "The card never exceeds the Teams limit: it drops the coldest items first.",
+      "run": "python3 scripts/build_card.py --in evals/fixtures/digest-15.json --out /tmp/eval-card.json --max-bytes 6000",
+      "expect": [
+        "compact payload <= 6000 bytes",
+        "the HIGH items survive the trim",
+        "the footer says how many items were dropped"
+      ]
+    },
+    {
+      "id": "digest-validation",
+      "type": "script",
+      "description": "A malformed digest fails with a useful message, not a traceback.",
+      "run": "python3 scripts/build_card.py --in evals/fixtures/digest-invalida.json --out /dev/null",
+      "expect": [
+        "exit code != 0",
+        "the message names the card and the missing field",
+        "a temperature outside HIGH/MEDIUM/LOW is rejected with a readable message",
+        "ALTA/MEDIA/BAIXA are accepted as aliases"
+      ]
+    },
+    {
+      "id": "webhook-secret",
+      "type": "script",
+      "description": "The webhook URL never leaks.",
+      "run": "TEAMS_WEBHOOK_URL='https://exemplo/x?sig=SEGREDO' python3 scripts/post_to_teams.py --payload evals/fixtures/card.json --dry-run",
+      "expect": [
+        "the output contains neither the query string nor the secret",
+        "--dry-run makes no network request",
+        "with no webhook configured, the error explains how to configure it"
+      ]
+    },
+    {
+      "id": "dedup-cross-language",
+      "type": "judgment",
+      "description": "The same story across several outlets becomes a single card.",
+      "scenario": "The NVIDIA acquisition of Hugging Face runs in 7 sources, including NVIDIA Blog (en) and TecMundo (pt-BR).",
+      "expect": [
+        "a single card, not seven",
+        "the main source is the NVIDIA Blog (primary), not an outlet covering it",
+        "the other outlets appear in also_covered_by",
+        "the Portuguese card does not become a separate item"
+      ]
+    },
+    {
+      "id": "temperature-calibration",
+      "type": "judgment",
+      "description": "Temperature measures relevance to the committee, not popularity.",
+      "scenario": "A day with: (a) a billion-dollar acquisition that reshapes the tooling market, (b) a consumer GPU launch, (c) an arXiv cs.SE paper on agent harnesses, (d) an EU AI Act compliance deadline, (e) Claude Code shipping four versions whose notes are only bug fixes.",
+      "expect": [
+        "(a) is HIGH and (d) is HIGH",
+        "(b) is not HIGH, despite the volume of coverage",
+        "(c) is LOW or MEDIUM, with the research lens",
+        "(e) is a single LOW card or is left out entirely, never four cards",
+        "between 2 and 5 HIGH items in total"
+      ]
+    },
+    {
+      "id": "honest-failure",
+      "type": "judgment",
+      "description": "Failure is declared, never silent.",
+      "scenario": "Half the sources return 403 because the environment has Network access = Trusted.",
+      "expect": [
+        "the newsletter says up front that collection was partial",
+        "the failing sources are listed with their reason",
+        "the card count is lower rather than padded with noise",
+        "the reply points at the Network access setting"
+      ]
+    },
+    {
+      "id": "thin-day",
+      "type": "judgment",
+      "description": "A thin day does not become an inflated newsletter.",
+      "scenario": "Only 6 items survive triage.",
+      "expect": [
+        "publishes 6 cards, not 15",
+        "explicitly says the day was thin",
+        "does not promote a LOW item to MEDIUM to fill space"
+      ]
+    },
+    {
+      "id": "engineering-share",
+      "type": "judgment",
+      "description": "The newsletter keeps its engineering focus instead of following press volume.",
+      "scenario": "A day with 90 general AI press items and 14 engineering items, including releases from Claude Code, Codex and Zed, two GitHub Changelog entries and 10 arXiv cs.SE papers.",
+      "expect": [
+        "roughly 8 of the 15 cards are engineering",
+        "a tool release card says what changed, not that a release happened",
+        "several versions of one tool become a single card",
+        "the quiet feeds are not crowded out by the louder press"
+      ]
+    }
+  ]
+}

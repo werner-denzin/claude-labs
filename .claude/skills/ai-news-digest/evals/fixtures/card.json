@@ -1,0 +1,622 @@
+{
+  "type": "message",
+  "attachments": [
+    {
+      "contentType": "application/vnd.microsoft.card.adaptive",
+      "content": {
+        "type": "AdaptiveCard",
+        "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+        "version": "1.4",
+        "msteams": {
+          "width": "Full"
+        },
+        "body": [
+          {
+            "type": "TextBlock",
+            "text": "AI Radar — Thursday, September 3, 2026",
+            "wrap": true,
+            "size": "Large",
+            "weight": "Bolder"
+          },
+          {
+            "type": "TextBlock",
+            "text": "15 highlights  ·  🔴 3 high  🟠 5 medium  🔵 7 low  ·  93 items from 32 sources in the last 24h",
+            "wrap": true,
+            "size": "Small",
+            "isSubtle": true,
+            "spacing": "None"
+          },
+          {
+            "type": "TextBlock",
+            "text": "NVIDIA's $12.9B Hugging Face acquisition dominates the day; Google shortens the Gemini Flash release cycle.",
+            "wrap": true,
+            "weight": "Bolder",
+            "spacing": "Medium"
+          },
+          {
+            "type": "Container",
+            "separator": true,
+            "spacing": "Medium",
+            "items": [
+              {
+                "type": "TextBlock",
+                "text": "🔴 **HIGH**  ·  strategy",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "color": "attention",
+                "spacing": "None"
+              },
+              {
+                "type": "TextBlock",
+                "text": "**1. Proactive cyber defense for governments and enterprises**",
+                "wrap": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "Proactive cyber defense for governments and enterprises",
+                "wrap": true,
+                "size": "Small",
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "[Google DeepMind Blog](https://deepmind.google/blog/proactive-cyber-defense-for-governments-and-enterprises/)  ·  also in [Google - The Keyword (AI)](https://blog.google/innovation-and-ai/technology/safety-security/fairwind-program/)",
+                "wrap": true,
+                "size": "Small",
+                "isSubtle": true,
+                "spacing": "Small"
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "separator": true,
+            "spacing": "Medium",
+            "items": [
+              {
+                "type": "TextBlock",
+                "text": "🔴 **HIGH**  ·  regulation",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "color": "attention",
+                "spacing": "None"
+              },
+              {
+                "type": "TextBlock",
+                "text": "**2. Introducing Gemini 3.8 Flash and 3.8 Flash Cyber**",
+                "wrap": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber",
+                "wrap": true,
+                "size": "Small",
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "[Google DeepMind Blog](https://deepmind.google/blog/introducing-gemini-3-8-flash-and-38-flash-cyber/)",
+                "wrap": true,
+                "size": "Small",
+                "isSubtle": true,
+                "spacing": "Small"
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "separator": true,
+            "spacing": "Medium",
+            "items": [
+              {
+                "type": "TextBlock",
+                "text": "🔴 **HIGH**  ·  strategy",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "color": "attention",
+                "spacing": "None"
+              },
+              {
+                "type": "TextBlock",
+                "text": "**3. Nvidia buys Hugging Face, the Github of AI, for $13 billion**",
+                "wrap": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "Nvidia says Hugging Face will stay open even as the chipmaker takes control of a key AI hub.",
+                "wrap": true,
+                "size": "Small",
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "[Ars Technica AI](https://arstechnica.com/ai/2026/09/nvidia-buys-hugging-face-the-github-of-ai-for-13-billion/)",
+                "wrap": true,
+                "size": "Small",
+                "isSubtle": true,
+                "spacing": "Small"
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "separator": true,
+            "spacing": "Medium",
+            "items": [
+              {
+                "type": "TextBlock",
+                "text": "🟠 **MEDIUM**  ·  engineering",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "color": "warning",
+                "spacing": "None"
+              },
+              {
+                "type": "TextBlock",
+                "text": "**4. NeoMME: an efficient Multimodal-native and Multilingual Encoder**",
+                "wrap": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "NeoMME: an efficient Multimodal-native and Multilingual Encoder",
+                "wrap": true,
+                "size": "Small",
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "[Hugging Face Blog](https://huggingface.co/blog/Hcompany/neomme)",
+                "wrap": true,
+                "size": "Small",
+                "isSubtle": true,
+                "spacing": "Small"
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "separator": true,
+            "spacing": "Medium",
+            "items": [
+              {
+                "type": "TextBlock",
+                "text": "🟠 **MEDIUM**  ·  strategy",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "color": "warning",
+                "spacing": "None"
+              },
+              {
+                "type": "TextBlock",
+                "text": "**5. Nvidia confirms it will buy Hugging Face for $12.9 billion**",
+                "wrap": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "Nvidia said Hugging Face hosts over 3 million models and is used by over 18 million developers.",
+                "wrap": true,
+                "size": "Small",
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "[TechCrunch AI](https://techcrunch.com/2026/09/03/nvidia-confirms-it-will-buy-hugging-face-for-12-9-billion/)",
+                "wrap": true,
+                "size": "Small",
+                "isSubtle": true,
+                "spacing": "Small"
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "separator": true,
+            "spacing": "Medium",
+            "items": [
+              {
+                "type": "TextBlock",
+                "text": "🟠 **MEDIUM**  ·  engineering",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "color": "warning",
+                "spacing": "None"
+              },
+              {
+                "type": "TextBlock",
+                "text": "**6. Nvidia is buying Hugging Face for almost $13 billion**",
+                "wrap": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "Nvidia has agreed to buy Hugging Face for $12.93 billion, bringing one of the most popular hosting platforms for open-source AI models, datasets, and tools under the ownership of the world's biggest AI chipmaker. Hugging Face is an online platform founded in 2016 that gives AI developers a space to share their projects and data […]",
+                "wrap": true,
+                "size": "Small",
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "[The Verge AI](https://www.theverge.com/tech/985474/nvidia-buying-hugging-face-deal)",
+                "wrap": true,
+                "size": "Small",
+                "isSubtle": true,
+                "spacing": "Small"
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "separator": true,
+            "spacing": "Medium",
+            "items": [
+              {
+                "type": "TextBlock",
+                "text": "🟠 **MEDIUM**  ·  regulation",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "color": "warning",
+                "spacing": "None"
+              },
+              {
+                "type": "TextBlock",
+                "text": "**7. [AINews] Muse Spark 1.3 matches GPT-5.6-Sol, confirming Meta Superintelligence as the newest Frontier Lab, >90% discount for training**",
+                "wrap": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "an epic comeback story for Meta",
+                "wrap": true,
+                "size": "Small",
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "[Latent Space](https://www.latent.space/p/ainews-muse-spark-13-matches-gpt)",
+                "wrap": true,
+                "size": "Small",
+                "isSubtle": true,
+                "spacing": "Small"
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "separator": true,
+            "spacing": "Medium",
+            "items": [
+              {
+                "type": "TextBlock",
+                "text": "🟠 **MEDIUM**  ·  strategy",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "color": "warning",
+                "spacing": "None"
+              },
+              {
+                "type": "TextBlock",
+                "text": "**8. Fine-tuning a 350M Model for Better Structured Outputs in 100 GRPO Steps**",
+                "wrap": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "Fine-tuning a 350M Model for Better Structured Outputs in 100 GRPO Steps",
+                "wrap": true,
+                "size": "Small",
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "[Hugging Face Blog](https://huggingface.co/blog/grpo-with-trl-ifstruct)",
+                "wrap": true,
+                "size": "Small",
+                "isSubtle": true,
+                "spacing": "Small"
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "separator": true,
+            "spacing": "Medium",
+            "items": [
+              {
+                "type": "TextBlock",
+                "text": "🔵 **LOW**  ·  research",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "color": "accent",
+                "spacing": "None"
+              },
+              {
+                "type": "TextBlock",
+                "text": "**9. Give Your Coding Agents a Memory You Own**",
+                "wrap": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "Give Your Coding Agents a Memory You Own",
+                "wrap": true,
+                "size": "Small",
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "[Hugging Face Blog](https://huggingface.co/blog/funes)",
+                "wrap": true,
+                "size": "Small",
+                "isSubtle": true,
+                "spacing": "Small"
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "separator": true,
+            "spacing": "Medium",
+            "items": [
+              {
+                "type": "TextBlock",
+                "text": "🔵 **LOW**  ·  research",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "color": "accent",
+                "spacing": "None"
+              },
+              {
+                "type": "TextBlock",
+                "text": "**10. Training a coding model to paint watercolours with TRL and OpenEnv**",
+                "wrap": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "Training a coding model to paint watercolours with TRL and OpenEnv",
+                "wrap": true,
+                "size": "Small",
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "[Hugging Face Blog](https://huggingface.co/blog/train-to-paint-with-code)",
+                "wrap": true,
+                "size": "Small",
+                "isSubtle": true,
+                "spacing": "Small"
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "separator": true,
+            "spacing": "Medium",
+            "items": [
+              {
+                "type": "TextBlock",
+                "text": "🔵 **LOW**  ·  engineering",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "color": "accent",
+                "spacing": "None"
+              },
+              {
+                "type": "TextBlock",
+                "text": "**11. The Builders Stage brings practical strategies for scaling startups to TechCrunch Disrupt 2026**",
+                "wrap": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "The Builders Stage is returning to TechCrunch Disrupt, bringing together founders, startup operators, and investors for practical conversations on what it takes to build and scale.",
+                "wrap": true,
+                "size": "Small",
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "[TechCrunch AI](https://techcrunch.com/2026/09/02/the-builders-stage-brings-practical-strategies-for-scaling-startups-to-techcrunch-disrupt-2026/)",
+                "wrap": true,
+                "size": "Small",
+                "isSubtle": true,
+                "spacing": "Small"
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "separator": true,
+            "spacing": "Medium",
+            "items": [
+              {
+                "type": "TextBlock",
+                "text": "🔵 **LOW**  ·  research",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "color": "accent",
+                "spacing": "None"
+              },
+              {
+                "type": "TextBlock",
+                "text": "**12. Palo Alto Networks paid $500M for Thrive-backed Console, sources say**",
+                "wrap": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "The acquisition also leaves Sequoia-backed Serval as the de facto startup leader in AI IT service automation, industry watchers believe.",
+                "wrap": true,
+                "size": "Small",
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "[TechCrunch AI](https://techcrunch.com/2026/09/02/palo-alto-networks-paid-500m-for-thrive-backed-console-sources-say/)",
+                "wrap": true,
+                "size": "Small",
+                "isSubtle": true,
+                "spacing": "Small"
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "separator": true,
+            "spacing": "Medium",
+            "items": [
+              {
+                "type": "TextBlock",
+                "text": "🔵 **LOW**  ·  engineering",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "color": "accent",
+                "spacing": "None"
+              },
+              {
+                "type": "TextBlock",
+                "text": "**13. TechCrunch Disrupt 2026’s new Real World AI Stage features Nvidia, robots, and extinct animals**",
+                "wrap": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "On our new Real World AI stage, we’ll be focusing on the intersection between the digital and physical, and all the ways we’ll continue to see a blending of the two.",
+                "wrap": true,
+                "size": "Small",
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "[TechCrunch AI](https://techcrunch.com/2026/09/02/techcrunch-disrupt-2026s-new-real-world-ai-stage-features-nvidia-robots-and-extinct-animals/)",
+                "wrap": true,
+                "size": "Small",
+                "isSubtle": true,
+                "spacing": "Small"
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "separator": true,
+            "spacing": "Medium",
+            "items": [
+              {
+                "type": "TextBlock",
+                "text": "🔵 **LOW**  ·  research",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "color": "accent",
+                "spacing": "None"
+              },
+              {
+                "type": "TextBlock",
+                "text": "**14. OpenAI’s new reasoning technique alarms AI safety experts**",
+                "wrap": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "OpenAI’s new Astra model will use “recurrent depth,” a technique that allows the model to operate outside of the sequential thinking that characterizes most reasoning models.",
+                "wrap": true,
+                "size": "Small",
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "[TechCrunch AI](https://techcrunch.com/2026/09/02/openais-new-reasoning-technique-alarms-ai-safety-experts/)",
+                "wrap": true,
+                "size": "Small",
+                "isSubtle": true,
+                "spacing": "Small"
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "separator": true,
+            "spacing": "Medium",
+            "items": [
+              {
+                "type": "TextBlock",
+                "text": "🔵 **LOW**  ·  strategy",
+                "wrap": true,
+                "size": "Small",
+                "weight": "Bolder",
+                "color": "accent",
+                "spacing": "None"
+              },
+              {
+                "type": "TextBlock",
+                "text": "**15. Google says its new Gemini 3.8 Flash model ‘works harder’ but might cost more**",
+                "wrap": true,
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "Google launched Gemini 3.8 Flash, arriving just a few weeks after its predecessor. The company claims the new model \"works harder\" than Gemini 3.7 Flash by performing more reasoning steps on complex tasks and \"calling tools iteratively.\" It has the same introductory pricing as 3.7 Flash, $0.75 per million input tokens and $3.75 per millio",
+                "wrap": true,
+                "size": "Small",
+                "spacing": "Small"
+              },
+              {
+                "type": "TextBlock",
+                "text": "[The Verge AI](https://www.theverge.com/ai-artificial-intelligence/988742/google-gemini-3-8-flash)",
+                "wrap": true,
+                "size": "Small",
+                "isSubtle": true,
+                "spacing": "Small"
+              }
+            ]
+          },
+          {
+            "type": "TextBlock",
+            "text": "**Left out:** consumer hardware launches; retail promotions",
+            "wrap": true,
+            "size": "Small",
+            "isSubtle": true,
+            "spacing": "Medium",
+            "separator": true
+          },
+          {
+            "type": "TextBlock",
+            "text": "⚠️ 3 source(s) did not respond: Anthropic News, Meta AI Blog, MarkTechPost",
+            "wrap": true,
+            "size": "Small",
+            "isSubtle": true,
+            "color": "warning",
+            "spacing": "Small"
+          },
+          {
+            "type": "TextBlock",
+            "text": "Generated by the `ai-news-digest` skill. Temperature = relevance to AI strategy, not popularity.",
+            "wrap": true,
+            "size": "Small",
+            "isSubtle": true,
+            "spacing": "Medium",
+            "separator": true
+          }
+        ]
+      }
+    }
+  ]
+}
