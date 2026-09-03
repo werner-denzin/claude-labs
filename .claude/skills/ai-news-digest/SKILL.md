@@ -1,6 +1,6 @@
 ---
 name: ai-news-digest
-description: Daily radar on software engineering with AI. Collects the last 24h from ~56 sources -- coding agents (Claude Code, Cline, Cursor, Codex, Gemini CLI, Zed, opencode, goose), MCP and eval infrastructure, engineering practice, arXiv cs.SE, plus AI labs, press and regulation -- classifies each item by temperature (HIGH/MEDIUM/LOW), selects 15 with roughly half on engineering, and publishes a card newsletter to a Microsoft Teams channel. Written in English, except items from Brazilian sources. Use for "AI radar", "AI newsletter", "AI news of the day", "AI digest", "coding agent news", "radar de IA", "noticias de IA", or when a scheduled routine fires the daily newsletter.
+description: Daily radar on software engineering with AI. Collects the last 24h from a deliberately small catalog -- the labs (OpenAI, Anthropic, Google), the people building them, investors and NVIDIA -- classifies each item by temperature (HIGH/MEDIUM/LOW), selects up to 15, and publishes a card newsletter to a Microsoft Teams channel. Written in English, except items from Brazilian sources. Use for "AI radar", "AI newsletter", "AI news of the day", "AI digest", "coding agent news", "radar de IA", "noticias de IA", or when a scheduled routine fires the daily newsletter.
 ---
 
 # AI Radar — daily newsletter

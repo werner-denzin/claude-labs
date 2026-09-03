@@ -4,7 +4,7 @@ A lab for Claude Code experiments. It currently holds one thing: **`ai-news-dige
 a daily radar on **software engineering with AI**, written for SiDi's AI strategy
 committee.
 
-Every weekday morning it collects the last 24 hours from ~56 sources, judges how
+Every weekday morning it collects the last 24 hours from a small, deliberately chosen catalog, judges how
 much each item matters, keeps the 15 that matter most, and publishes them as a
 card newsletter in a Microsoft Teams channel.
 
@@ -23,9 +23,9 @@ flowchart TD
         MANUAL["Manual run<br>ask Claude for the AI radar"]
     end
 
-    CATALOG[("assets/sources.json<br>56 sources, weighted<br>13 release feeds")]
+    CATALOG[("assets/sources.json<br>13 sources<br>labs · people · investors · hardware")]
     FETCH["scripts/fetch_feeds.py<br>parallel RSS/Atom, 24h window<br>topic + pre-release filters<br>deduplication"]
-    ITEMS[("items.json<br>~115 candidates<br>+ failures + duplicate hints")]
+    ITEMS[("items.json<br>a few candidates a day<br>+ failures + duplicate hints")]
     WEB["WebFetch<br>sources with no feed:<br>Anthropic, Meta AI, MarkTechPost"]
 
     TRIAGE{"Claude triage<br>consolidate duplicates and releases<br>score temperature<br>select 15, ~8 engineering<br>write descriptions"}
