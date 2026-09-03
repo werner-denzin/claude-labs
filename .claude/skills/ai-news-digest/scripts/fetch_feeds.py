@@ -58,19 +58,36 @@ NS = {
     "rss1": "http://purl.org/rss/1.0/",
 }
 
-# General-tech sources carry "topic_filter": true in the catalog. Only items
-# mentioning the subject get through; without it the feed floods the window with
-# phones, games and retail promos.
+# General sources carry "topic_filter": true in the catalog. Only items mentioning
+# the subject get through; without it a general feed floods the window with
+# phones, games and retail promos, or with unrelated platform changelog entries.
+# Portuguese terms are here on purpose: the filter has to match Brazilian sources.
 TOPIC_RE = re.compile(
     r"\b("
+    # --- coding agents and the tools around them -------------------------
+    r"claude code|cline|cursor|copilot|codex|aider|windsurf|zed|devin|"
+    r"opencode|goose|continue\.dev|sourcegraph|amp|jules|antigravity|"
+    r"coding agent|agentic|agent(s|ic)? (coding|workflow|harness|loop)|"
+    r"swe-?bench|terminal-?bench|mcp|model context protocol|tool use|"
+    r"subagent|code review|pull request|refactor|codebase|ide|sdk|cli|"
+    # --- general AI ------------------------------------------------------
     r"a\.?i\.?|artificial intelligence|inteligencia artificial|intelig[eê]ncia artificial|"
     r"machine learning|aprendizado de m[aá]quina|deep learning|rede neural|neural network|"
     r"llm|large language model|modelo de linguagem|generative|generativ[ao]|transformer|"
-    r"chatbot|copilot|agente de ia|ai agent|agentic|rag|embedding|fine-?tuning|"
+    r"chatbot|agente de ia|ai agent|rag|embedding|fine-?tuning|"
     r"openai|anthropic|chatgpt|gpt-?\d|claude|gemini|llama|mistral|deepseek|qwen|grok|"
-    r"hugging ?face|nvidia|midjourney|stable diffusion|perplexity|copilot|"
+    r"hugging ?face|nvidia|midjourney|stable diffusion|perplexity|"
     r"agi|superintelig|alucina|hallucinat|prompt|datacenter|data center|gpu"
     r")\b",
+    re.IGNORECASE,
+)
+
+# Feeds de release ("kind": "release") publicam alpha, beta, nightly e tags
+# internas junto com as versoes de verdade. So a versao estavel e noticia.
+# Uma fonte pode optar por receber tudo com "prereleases": true.
+PRERELEASE_RE = re.compile(
+    r"(alpha|beta|\brc[.\-]?\d|nightly|snapshot|staging|canary|"
+    r"[.\-]pre\b|[.\-]dev\b|preview\b)",
     re.IGNORECASE,
 )
 
@@ -341,6 +358,7 @@ def collect_source(source: dict, cutoff: datetime, max_per_source: int, timeout:
         "skipped_old": 0,
         "undated": 0,
         "off_topic": 0,
+        "prerelease": 0,
     }
     feed = source.get("feed")
     if not feed:
@@ -360,6 +378,8 @@ def collect_source(source: dict, cutoff: datetime, max_per_source: int, timeout:
         return result
 
     topic_filter = bool(source.get("topic_filter"))
+    is_release = source.get("kind") == "release"
+    drop_pre = is_release and not source.get("prereleases")
     cap = min(max_per_source, source.get("max_items", max_per_source))
 
     for entry in entries:
@@ -370,6 +390,9 @@ def collect_source(source: dict, cutoff: datetime, max_per_source: int, timeout:
         if published < cutoff:
             result["skipped_old"] += 1
             continue
+        if drop_pre and PRERELEASE_RE.search(entry["title"]):
+            result["prerelease"] += 1
+            continue
         if topic_filter and not TOPIC_RE.search(f"{entry['title']} {entry['summary']}"):
             result["off_topic"] += 1
             continue
@@ -378,6 +401,7 @@ def collect_source(source: dict, cutoff: datetime, max_per_source: int, timeout:
                 "source_id": source["id"],
                 "source_name": source["name"],
                 "source_category": source.get("category", "news"),
+                "source_kind": source.get("kind", "article"),
                 "source_lang": source.get("lang", "en"),
                 "weight": source.get("weight", 3),
             }
@@ -446,6 +470,7 @@ def main() -> int:
                     "in_window": len(result["items"]),
                     "too_old": result["skipped_old"],
                     "off_topic": result["off_topic"],
+                    "prerelease": result["prerelease"],
                     "undated": result["undated"],
                 }
             )

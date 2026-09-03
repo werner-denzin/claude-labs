@@ -4,9 +4,15 @@ A lab for Claude Code experiments.
 
 ## The `ai-news-digest` skill
 
-A daily AI news radar for SiDi's AI strategy committee: it collects the last 24h
-from ~35 sources, classifies each item by temperature (HIGH/MEDIUM/LOW), selects
-the 15 most relevant, and publishes a card-format newsletter to a Teams channel.
+A daily radar on **software engineering with AI** for SiDi's AI strategy
+committee: it collects the last 24h from ~56 sources, classifies each item by
+temperature (HIGH/MEDIUM/LOW), selects 15 with roughly half on engineering, and
+publishes a card-format newsletter to a Teams channel.
+
+The engineering half covers coding agents (Claude Code, Cline, Cursor, Codex,
+Gemini CLI, Zed, opencode, goose), MCP and eval infrastructure, platform and IDE
+changes, practice writeups and `arXiv cs.SE`. The other half is strategy and
+regulation.
 
 - Skill: `.claude/skills/ai-news-digest/SKILL.md`
 - Published newsletters: `reports/`

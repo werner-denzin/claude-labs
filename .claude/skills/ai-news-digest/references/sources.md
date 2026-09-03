@@ -11,15 +11,44 @@ Edit `assets/sources.json`. Each entry:
 | `lang` | `en` or `pt-BR`. **Decides the card's language**: an item whose main source is `pt-BR` stays in Portuguese; the rest of the newsletter is English. |
 | `category` | `lab`, `infra`, `open-source`, `news`, `analysis`, `engineering`, `research`, `regulation`, `community`. |
 | `weight` | 1-5. Breaks ties in triage and picks the representative during deduplication. 5 = primary source. |
-| `topic_filter` | Optional. `true` = general-tech source; only items mentioning AI get through. |
+| `kind` | Optional. `release` = a version feed. Pre-releases are dropped automatically and triage folds a day's releases per tool into one card. |
+| `topic_filter` | Optional. `true` = general source; only items mentioning AI or coding agents get through. |
+| `prereleases` | Optional. `true` on a `release` source keeps alpha/beta/rc/nightly builds. Off by default. |
 | `max_items` | Optional. Its own ceiling, lower than the global one. |
 | `note` | Optional. Why the source is configured this way. |
 
+## The engineering core
+
+The radar's focus is software engineering with AI, so the sources that matter
+most are the quiet ones.
+
+**Coding agents, via GitHub `releases.atom`.** Claude Code, Cline, Codex, Gemini
+CLI, Continue, Zed, opencode and goose all publish a releases feed, and Cursor
+publishes a real changelog feed. This is the fastest, least mediated signal there
+is: the release notes land before anyone writes about them. It is also the
+noisiest, which is what `kind: release` handles.
+
+**Protocol and evaluation.** MCP spec, MCP servers and SWE-bench move slowly, but
+a change in any of them reaches every tool downstream.
+
+**Practice.** GitHub's AI blog and Changelog, Sourcegraph, JetBrains AI, Simon
+Willison's `ai-assisted-programming` tag, Latent Space, InfoQ, the Pragmatic
+Engineer and Martin Fowler.
+
+**Research that an engineer could act on.** `arXiv cs.SE` rather than only cs.AI
+and cs.CL — it is where agent harnesses, prompt engineering and repair show up.
+
+These feeds publish far less than the AI press. On volume they lose every time,
+which is exactly why the triage step has a target share instead of picking by
+recency.
+
 ## Why these sources
 
-**Weight 5 — primary labs.** OpenAI, Anthropic, DeepMind. The announcement is
-born here; everyone else covers it afterwards. When an item appears both at the
-lab and in the press, the card carries the lab's link.
+**Weight 5 — primary labs and the agents themselves.** OpenAI, Anthropic,
+DeepMind, plus Claude Code, Cline, Simon Willison's AI-assisted-programming tag
+and Latent Space. The announcement is born here; everyone else covers it
+afterwards. When an item appears both at the source and in the press, the card
+carries the source's link.
 
 **Weight 4 — strong press and engineering sources.** TechCrunch, The Verge, Ars
 Technica, MIT Tech Review, Hugging Face, Latent Space, Simon Willison, Google/
@@ -75,6 +104,22 @@ coverage.
 The term list lives in `TOPIC_RE`, at the top of `fetch_feeds.py`. It carries
 Portuguese terms on purpose, since it has to match Brazilian sources. A new model
 name that is not there yet (the market invents one a month) should be added.
+
+## Release feeds
+
+A `kind: release` source needs two things the others do not.
+
+**Pre-release filtering.** GitHub releases feeds carry alpha, beta, rc, nightly,
+snapshot, canary and internal staging tags alongside real versions. Measured on
+2026-09-03, that was 3 of 4 Zed entries, 2 of 3 Codex entries, and the only Cline
+and goose entries in the window. `PRERELEASE_RE` in `fetch_feeds.py` drops them
+and counts them under `sources_ok[].prerelease`, so a tool that looks silent can
+be told apart from one that only shipped betas.
+
+**Consolidation.** A tool can ship several versions in a day. Triage folds them
+into one card describing what changed, never one card per version. The script
+does not merge them, because the release bodies differ and the judgment of what
+matters across them is editorial.
 
 ## Deduplication
 

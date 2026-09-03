@@ -1,6 +1,6 @@
 ---
 name: ai-news-digest
-description: Daily AI news radar. Collects the last 24h from ~35 sources (labs, press, regulation, engineering, research), classifies each item by temperature (HIGH/MEDIUM/LOW), selects the 15 most relevant and publishes a card-format newsletter to a Microsoft Teams channel. The newsletter is written in English, except for items from Brazilian sources, which stay in Portuguese. Use for "AI radar", "AI newsletter", "AI news of the day", "AI digest", "radar de IA", "noticias de IA", or when a scheduled routine fires the daily newsletter.
+description: Daily radar on software engineering with AI. Collects the last 24h from ~56 sources -- coding agents (Claude Code, Cline, Cursor, Codex, Gemini CLI, Zed, opencode, goose), MCP and eval infrastructure, engineering practice, arXiv cs.SE, plus AI labs, press and regulation -- classifies each item by temperature (HIGH/MEDIUM/LOW), selects 15 with roughly half on engineering, and publishes a card newsletter to a Microsoft Teams channel. Written in English, except items from Brazilian sources. Use for "AI radar", "AI newsletter", "AI news of the day", "AI digest", "coding agent news", "radar de IA", "noticias de IA", or when a scheduled routine fires the daily newsletter.
 ---
 
 # AI Radar — daily newsletter
@@ -8,6 +8,12 @@ description: Daily AI news radar. Collects the last 24h from ~35 sources (labs, 
 Audience: SiDi's AI strategy committee. They read the Teams card in under two
 minutes at the start of the day, and they need to come away knowing what changed
 and what needs a decision. Write for that reader.
+
+The focus is **software engineering with AI**: coding agents, the tooling and
+protocols around them, and the practices that are actually changing how teams
+build. Roughly half the newsletter is that. The other half is the AI strategy and
+regulation a committee member cannot afford to miss. A day that produces fifteen
+funding rounds and no engineering is a failed day for this radar.
 
 ## Language
 
@@ -71,34 +77,63 @@ across languages.
 
 Then classify each candidate against the committee's four lenses:
 
-| Lens | What counts |
-| --- | --- |
-| **Strategy** | Moves a platform, vendor, build-vs-buy or cost decision: model launch and deprecation, pricing, partnership, acquisition, licence change. |
-| **Regulation** | EU AI Act, LGPD/ANPD, NIST, court rulings, compliance requirements, security incidents. Everything the committee has to take to the table. |
-| **Engineering** | Tools, frameworks, agent practices and coding assistants — what changes the day-to-day of SiDi's teams. |
-| **Research** | A lab result or paper that has not become a product yet. Early signal. |
+| Lens | What counts | Share |
+| --- | --- | --- |
+| **Engineering** | Coding agents and their releases (Claude Code, Cline, Cursor, Codex, Gemini CLI, Zed, opencode, goose), MCP and protocol changes, agent frameworks, evals like SWE-bench, IDE and platform changes, and practice writeups with evidence behind them. What changes how SiDi's teams build. | **~8 of 15** |
+| **Strategy** | Moves a platform, vendor, build-vs-buy or cost decision: model launch and deprecation, pricing, partnership, acquisition, licence change. | ~3 |
+| **Regulation** | EU AI Act, LGPD/ANPD, NIST, court rulings, compliance requirements, security incidents. What the committee has to take to the table. | ~2 |
+| **Research** | arXiv cs.SE and lab results that have not become practice yet. Prefer papers an engineer could act on over general ML theory. | ~2 |
+
+The shares are a target, not a quota. If the day genuinely has five engineering
+items worth publishing, publish five and fill the rest honestly — but check you
+have not simply let the louder general-AI press crowd out the tool feeds, which
+are quieter and easier to overlook.
 
 **Temperature** is relevance to this committee, not popularity of the news:
 
-- **HIGH** — changes or pressures a decision in the next ~90 days. A vendor SiDi
-  uses moved on a model, a price or its terms; a rule with an effective date; an
-  acquisition that reshapes the tooling market; a vulnerability in something in
-  production. If the reader has to act or tell someone, it is HIGH.
-- **MEDIUM** — worth tracking, does not force a decision yet. A competitor's
-  launch, a meaningful benchmark, a regulatory move still in consultation.
-- **LOW** — context and early signal. A paper with no product, a well-argued
-  opinion, a market number.
+- **HIGH** — changes or pressures a decision in the next ~90 days. A coding agent
+  the teams use gained or lost a real capability, changed its limits or pricing,
+  or broke something; a protocol change that ripples through every tool; a
+  vulnerability in a developer tool; a rule with an effective date; an
+  acquisition that reshapes the tooling market. If the reader has to act or tell
+  someone, it is HIGH.
+- **MEDIUM** — worth tracking, does not force a decision yet. A notable release
+  from a tool the teams do not use yet, a benchmark result with method behind it,
+  a practice writeup backed by evidence, a regulatory move still in consultation.
+- **LOW** — context and early signal. A routine version bump, a paper with no
+  practice implication yet, a well-argued opinion, a market number.
+
+### Reading a tool release
+
+A version number is not news. Open the release body and judge what is in it:
+
+- New capability, a breaking change, a limit or pricing change, a security fix →
+  HIGH or MEDIUM, and **say what changed**, not that a release happened.
+- Only bug fixes and dependency bumps → LOW, or leave it out. "Claude Code
+  shipped v2.1.259" with nothing behind it wastes one of fifteen slots.
+- **One card per tool per day.** A tool that shipped four versions gets a single
+  card covering what changed across them, not four cards.
+
+`fetch_feeds.py` already drops alpha, beta, rc, nightly, preview and internal
+staging tags from release feeds, so what reaches you should be real releases. If
+a tool you care about looks silent, check its `prerelease` count in
+`sources_ok` before assuming nothing shipped.
 
 Calibration: a normal day has **2 to 5 HIGH items**. If you marked ten, the bar
-slipped. If you marked zero on a day with a major model launch, it is too tight.
+slipped. If you marked zero on a day with a major model launch or a breaking
+change in a coding agent, it is too tight.
 
 ### 4. Select the 15
 
 Sort by temperature and, within it, by impact. Cut at 15.
 
-Cover the four lenses when there is material — a newsletter of fifteen
-engineering items fails this committee. But do not manufacture balance: if the
-day was about regulation, the newsletter is about regulation.
+Aim for the shares in the lens table: roughly eight engineering items, the rest
+split across strategy, regulation and research. Before you cut, check the quiet
+sources — release feeds, MCP, arXiv cs.SE and the practice blogs publish less
+than the AI press and lose on volume every time.
+
+Do not manufacture balance either. If only four engineering items are worth
+publishing, publish four and let the rest of the day fill the newsletter.
 
 ### 5. Write the digest
 

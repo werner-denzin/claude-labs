@@ -1,11 +1,18 @@
 # claude-labs
 
 A lab for Claude Code experiments. It currently holds one thing: **`ai-news-digest`**,
-a skill that produces a daily AI news briefing for SiDi's AI strategy committee.
+a daily radar on **software engineering with AI**, written for SiDi's AI strategy
+committee.
 
-Every weekday morning it collects the last 24 hours from ~35 sources, judges how
-much each item matters to the committee, keeps the 15 that matter most, and
-publishes them as a card newsletter in a Microsoft Teams channel.
+Every weekday morning it collects the last 24 hours from ~56 sources, judges how
+much each item matters, keeps the 15 that matter most, and publishes them as a
+card newsletter in a Microsoft Teams channel.
+
+Roughly half the newsletter is engineering: coding agent releases (Claude Code,
+Cline, Cursor, Codex, Gemini CLI, Zed, opencode, goose), MCP and eval
+infrastructure, GitHub and IDE platform changes, practice writeups, and
+`arXiv cs.SE`. The other half is the AI strategy and regulation a committee
+member cannot afford to miss.
 
 ## Solution overview
 
@@ -16,12 +23,12 @@ flowchart TD
         MANUAL["Manual run<br>ask Claude for the AI radar"]
     end
 
-    CATALOG[("assets/sources.json<br>35 sources, weighted")]
-    FETCH["scripts/fetch_feeds.py<br>parallel RSS/Atom, 24h window<br>topic filter, deduplication"]
-    ITEMS[("items.json<br>~90 candidates<br>+ failures + duplicate hints")]
+    CATALOG[("assets/sources.json<br>56 sources, weighted<br>13 release feeds")]
+    FETCH["scripts/fetch_feeds.py<br>parallel RSS/Atom, 24h window<br>topic + pre-release filters<br>deduplication"]
+    ITEMS[("items.json<br>~115 candidates<br>+ failures + duplicate hints")]
     WEB["WebFetch<br>sources with no feed:<br>Anthropic, Meta AI, MarkTechPost"]
 
-    TRIAGE{"Claude triage<br>consolidate duplicates<br>score temperature<br>select top 15<br>write descriptions"}
+    TRIAGE{"Claude triage<br>consolidate duplicates and releases<br>score temperature<br>select 15, ~8 engineering<br>write descriptions"}
     DIGEST[("digest.json<br>the editorial product")]
 
     BUILD["scripts/build_card.py<br>Adaptive Card<br>trims to the Teams size limit"]
@@ -77,9 +84,9 @@ reports why it failed.
 | Path | What it is |
 | --- | --- |
 | `SKILL.md` | The entry point. Claude reads this to run the newsletter: the seven-step flow, the temperature rubric, the four committee lenses, and the writing rules. Everything else in the folder is referenced from here. |
-| `assets/sources.json` | The source catalog, and the file you edit most. Each entry carries a feed, a weight, a language, and optional flags. `lang` also decides the card's language. |
+| `assets/sources.json` | The source catalog, and the file you edit most. Each entry carries a feed, a weight, a language, and optional flags. `lang` decides the card's language; `kind: release` marks a version feed. |
 | `assets/report-template.md` | Shape of the markdown newsletter archived in `reports/`. |
-| `scripts/fetch_feeds.py` | Collector. Fetches every feed in parallel, filters to the time window, drops off-topic items from general-tech sources, deduplicates, and reports every failure. Standard library only. |
+| `scripts/fetch_feeds.py` | Collector. Fetches every feed in parallel, filters to the time window, drops off-topic items from general sources and alpha/beta/nightly builds from release feeds, deduplicates, and reports every failure. Standard library only. |
 | `scripts/build_card.py` | Renderer. Turns `digest.json` into a Teams Adaptive Card, validates the digest, and drops the coldest items if the card would exceed the Teams size limit. |
 | `scripts/post_to_teams.py` | Publisher. POSTs to the channel webhook with retry and backoff, and redacts the URL from every line it prints. |
 | `references/digest-schema.md` | The contract between triage and rendering: what `digest.json` must contain and how it is validated. |
@@ -121,6 +128,9 @@ python3 evals/run_script_evals.py --offline  # skips the one that hits the netwo
   not either, so the scripts add no dependencies.
 - **A source that failed is reported, never hidden.** The reader has to know when
   a collection was partial.
+- **The quiet feeds win ties.** Release feeds, MCP and `arXiv cs.SE` publish far
+  less than the AI press, so the triage step targets a share of engineering items
+  rather than picking by volume or recency.
 - **English everywhere**, with one exception: cards whose main source is a
   Brazilian outlet keep their title and description in Portuguese, because they
   are local-market stories written for that market.

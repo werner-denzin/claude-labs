@@ -11,7 +11,8 @@
         "counts.items_deduped > 0",
         "every item is published inside the window",
         "the three feedless sources appear in sources_failed with an explicit reason",
-        "sources_ok[].off_topic > 0 for Canaltech and TecMundo"
+        "sources_ok[].off_topic > 0 for Canaltech and TecMundo",
+        "release feeds drop pre-releases: sources_ok[].prerelease > 0 for at least one tool"
       ]
     },
     {
@@ -64,11 +65,12 @@
       "id": "temperature-calibration",
       "type": "judgment",
       "description": "Temperature measures relevance to the committee, not popularity.",
-      "scenario": "A day with: (a) a billion-dollar acquisition that reshapes the tooling market, (b) a consumer GPU launch, (c) an arXiv paper on agent memory, (d) an EU AI Act compliance deadline.",
+      "scenario": "A day with: (a) a billion-dollar acquisition that reshapes the tooling market, (b) a consumer GPU launch, (c) an arXiv cs.SE paper on agent harnesses, (d) an EU AI Act compliance deadline, (e) Claude Code shipping four versions whose notes are only bug fixes.",
       "expect": [
         "(a) is HIGH and (d) is HIGH",
         "(b) is not HIGH, despite the volume of coverage",
-        "(c) is LOW, with the research lens",
+        "(c) is LOW or MEDIUM, with the research lens",
+        "(e) is a single LOW card or is left out entirely, never four cards",
         "between 2 and 5 HIGH items in total"
       ]
     },
@@ -93,6 +95,18 @@
         "publishes 6 cards, not 15",
         "explicitly says the day was thin",
         "does not promote a LOW item to MEDIUM to fill space"
+      ]
+    },
+    {
+      "id": "engineering-share",
+      "type": "judgment",
+      "description": "The newsletter keeps its engineering focus instead of following press volume.",
+      "scenario": "A day with 90 general AI press items and 14 engineering items, including releases from Claude Code, Codex and Zed, two GitHub Changelog entries and 10 arXiv cs.SE papers.",
+      "expect": [
+        "roughly 8 of the 15 cards are engineering",
+        "a tool release card says what changed, not that a release happened",
+        "several versions of one tool become a single card",
+        "the quiet feeds are not crowded out by the louder press"
       ]
     }
   ]

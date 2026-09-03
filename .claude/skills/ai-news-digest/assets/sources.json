@@ -1,5 +1,5 @@
 {
-  "_comment": "AI radar source catalog. Editable: add, remove or reweight sources to match your audience's interest. Fields: id (unique), name, feed (RSS/Atom; null when the source publishes no feed), site (read via WebFetch, and the fallback when a feed dies), lang (en or pt-BR; also decides the card's language -- pt-BR sources keep their cards in Portuguese), category, weight (1-5; 5 = primary source, almost always relevant). Optional: topic_filter (true = general-tech source, only items mentioning AI get through) and max_items (its own ceiling, lower than the global one). Feeds move: fetch_feeds.py reports the failures so you can fix them here. Validated against the live network on 2026-09-03.",
+  "_comment": "AI radar source catalog, focused on software engineering with AI and agentic coding, with a smaller strategy/regulation section. Editable. Fields: id (unique), name, feed (RSS/Atom; null when the source publishes no feed), site (read via WebFetch, and the fallback when a feed dies), lang (en or pt-BR; also decides the card's language -- pt-BR sources keep their cards in Portuguese), category, weight (1-5; 5 = primary source, almost always relevant). Optional: kind ('release' = a version feed, consolidate a day's releases per tool into one card), topic_filter (true = general source, only items mentioning AI or coding agents get through) and max_items (its own ceiling, lower than the global one). Feeds move: fetch_feeds.py reports the failures so you can fix them here. Validated against the live network on 2026-09-03.",
   "sources": [
     {
       "id": "openai",
@@ -101,7 +101,7 @@
       "feed": "https://huggingface.co/blog/feed.xml",
       "site": "https://huggingface.co/blog",
       "lang": "en",
-      "category": "open-source",
+      "category": "engineering",
       "weight": 4,
       "max_items": 12
     },
@@ -186,7 +186,7 @@
       "site": "https://www.infoq.com/ai-ml-data-eng/",
       "lang": "en",
       "category": "engineering",
-      "weight": 3,
+      "weight": 4,
       "topic_filter": true
     },
     {
@@ -196,17 +196,18 @@
       "site": "https://www.latent.space/",
       "lang": "en",
       "category": "engineering",
-      "weight": 4
+      "weight": 5
     },
     {
       "id": "simonwillison",
-      "name": "Simon Willison's Weblog",
-      "feed": "https://simonwillison.net/atom/everything/",
-      "site": "https://simonwillison.net/",
+      "name": "Simon Willison - AI-assisted programming",
+      "feed": "https://simonwillison.net/tags/ai-assisted-programming.atom",
+      "site": "https://simonwillison.net/tags/ai-assisted-programming/",
       "lang": "en",
       "category": "engineering",
-      "weight": 4,
-      "topic_filter": true
+      "weight": 5,
+      "topic_filter": true,
+      "note": "Feed da tag, nao o geral: mais preciso para o foco de engenharia."
     },
     {
       "id": "marktechpost",
@@ -333,6 +334,213 @@
       "category": "news",
       "weight": 2,
       "topic_filter": true
+    },
+    {
+      "id": "claude-code",
+      "name": "Claude Code (releases)",
+      "feed": "https://github.com/anthropics/claude-code/releases.atom",
+      "site": "https://github.com/anthropics/claude-code/releases",
+      "lang": "en",
+      "category": "coding-agent",
+      "weight": 5,
+      "kind": "release"
+    },
+    {
+      "id": "codex-cli",
+      "name": "OpenAI Codex (releases)",
+      "feed": "https://github.com/openai/codex/releases.atom",
+      "site": "https://github.com/openai/codex/releases",
+      "lang": "en",
+      "category": "coding-agent",
+      "weight": 4,
+      "kind": "release"
+    },
+    {
+      "id": "gemini-cli",
+      "name": "Gemini CLI (releases)",
+      "feed": "https://github.com/google-gemini/gemini-cli/releases.atom",
+      "site": "https://github.com/google-gemini/gemini-cli/releases",
+      "lang": "en",
+      "category": "coding-agent",
+      "weight": 4,
+      "kind": "release"
+    },
+    {
+      "id": "cline",
+      "name": "Cline (releases)",
+      "feed": "https://github.com/cline/cline/releases.atom",
+      "site": "https://github.com/cline/cline/releases",
+      "lang": "en",
+      "category": "coding-agent",
+      "weight": 5,
+      "kind": "release"
+    },
+    {
+      "id": "cursor",
+      "name": "Cursor Changelog",
+      "feed": "https://cursor.com/changelog/rss.xml",
+      "site": "https://cursor.com/changelog",
+      "lang": "en",
+      "category": "coding-agent",
+      "weight": 4,
+      "kind": "release",
+      "max_items": 8
+    },
+    {
+      "id": "continue-dev",
+      "name": "Continue (releases)",
+      "feed": "https://github.com/continuedev/continue/releases.atom",
+      "site": "https://github.com/continuedev/continue/releases",
+      "lang": "en",
+      "category": "coding-agent",
+      "weight": 3,
+      "kind": "release"
+    },
+    {
+      "id": "zed",
+      "name": "Zed (releases)",
+      "feed": "https://github.com/zed-industries/zed/releases.atom",
+      "site": "https://zed.dev/blog",
+      "lang": "en",
+      "category": "coding-agent",
+      "weight": 3,
+      "kind": "release"
+    },
+    {
+      "id": "opencode",
+      "name": "opencode (releases)",
+      "feed": "https://github.com/sst/opencode/releases.atom",
+      "site": "https://github.com/sst/opencode/releases",
+      "lang": "en",
+      "category": "coding-agent",
+      "weight": 3,
+      "kind": "release"
+    },
+    {
+      "id": "goose",
+      "name": "Goose (releases)",
+      "feed": "https://github.com/block/goose/releases.atom",
+      "site": "https://github.com/block/goose/releases",
+      "lang": "en",
+      "category": "coding-agent",
+      "weight": 3,
+      "kind": "release"
+    },
+    {
+      "id": "langgraph",
+      "name": "LangGraph (releases)",
+      "feed": "https://github.com/langchain-ai/langgraph/releases.atom",
+      "site": "https://github.com/langchain-ai/langgraph/releases",
+      "lang": "en",
+      "category": "agent-framework",
+      "weight": 3,
+      "kind": "release"
+    },
+    {
+      "id": "mcp-spec",
+      "name": "Model Context Protocol (spec)",
+      "feed": "https://github.com/modelcontextprotocol/modelcontextprotocol/releases.atom",
+      "site": "https://modelcontextprotocol.io/",
+      "lang": "en",
+      "category": "protocol",
+      "weight": 4,
+      "kind": "release"
+    },
+    {
+      "id": "mcp-servers",
+      "name": "MCP Servers (releases)",
+      "feed": "https://github.com/modelcontextprotocol/servers/releases.atom",
+      "site": "https://github.com/modelcontextprotocol/servers",
+      "lang": "en",
+      "category": "protocol",
+      "weight": 3,
+      "kind": "release"
+    },
+    {
+      "id": "swebench",
+      "name": "SWE-bench (releases)",
+      "feed": "https://github.com/SWE-bench/SWE-bench/releases.atom",
+      "site": "https://www.swebench.com/",
+      "lang": "en",
+      "category": "eval",
+      "weight": 3,
+      "kind": "release"
+    },
+    {
+      "id": "github-ai",
+      "name": "GitHub Blog - AI & ML",
+      "feed": "https://github.blog/ai-and-ml/feed/",
+      "site": "https://github.blog/ai-and-ml/",
+      "lang": "en",
+      "category": "engineering",
+      "weight": 4
+    },
+    {
+      "id": "github-changelog",
+      "name": "GitHub Changelog",
+      "feed": "https://github.blog/changelog/feed/",
+      "site": "https://github.blog/changelog/",
+      "lang": "en",
+      "category": "engineering",
+      "weight": 3,
+      "topic_filter": true
+    },
+    {
+      "id": "sourcegraph",
+      "name": "Sourcegraph Blog",
+      "feed": "https://sourcegraph.com/blog/rss.xml",
+      "site": "https://sourcegraph.com/blog",
+      "lang": "en",
+      "category": "engineering",
+      "weight": 3
+    },
+    {
+      "id": "jetbrains-ai",
+      "name": "JetBrains AI Blog",
+      "feed": "https://blog.jetbrains.com/ai/feed/",
+      "site": "https://blog.jetbrains.com/ai/",
+      "lang": "en",
+      "category": "engineering",
+      "weight": 3
+    },
+    {
+      "id": "pragmatic-engineer",
+      "name": "The Pragmatic Engineer",
+      "feed": "https://newsletter.pragmaticengineer.com/feed",
+      "site": "https://newsletter.pragmaticengineer.com/",
+      "lang": "en",
+      "category": "engineering",
+      "weight": 3,
+      "topic_filter": true
+    },
+    {
+      "id": "martin-fowler",
+      "name": "Martin Fowler",
+      "feed": "https://martinfowler.com/feed.atom",
+      "site": "https://martinfowler.com/",
+      "lang": "en",
+      "category": "engineering",
+      "weight": 3,
+      "topic_filter": true
+    },
+    {
+      "id": "augment-code",
+      "name": "Augment Code Blog",
+      "feed": "https://www.augmentcode.com/blog/rss.xml",
+      "site": "https://www.augmentcode.com/blog",
+      "lang": "en",
+      "category": "engineering",
+      "weight": 2
+    },
+    {
+      "id": "arxiv-se",
+      "name": "arXiv cs.SE (Software Engineering)",
+      "feed": "https://export.arxiv.org/rss/cs.SE",
+      "site": "https://arxiv.org/list/cs.SE/recent",
+      "lang": "en",
+      "category": "research",
+      "weight": 3,
+      "max_items": 10
     }
   ]
 }
