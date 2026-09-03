@@ -1,5 +1,5 @@
 {
-  "_comment": "Test cases for the ai-news-digest skill. The first four need no LLM judgment and are run by evals/run_script_evals.py as 29 assertions; the rest evaluate editorial judgment and need a human or an LLM judge.",
+  "_comment": "Test cases for the ai-news-digest skill. The first four need no LLM judgment and are run by evals/run_script_evals.py as 30 assertions; the rest evaluate editorial judgment and need a human or an LLM judge.",
   "evals": [
     {
       "id": "collect-window",
@@ -25,7 +25,8 @@
         "compact payload <= 6000 bytes",
         "the HIGH items survive the trim",
         "the footer says how many items were dropped",
-        "every card renders its label, uppercased, between the title and the description"
+        "every card renders its label, uppercased, between the title and the description",
+        "a 20-card newsletter fits the Teams limit without trimming"
       ]
     },
     {
@@ -95,7 +96,7 @@
       "description": "A thin day does not become an inflated newsletter.",
       "scenario": "Only 6 items survive triage.",
       "expect": [
-        "publishes 6 cards, not 15",
+        "publishes 6 cards, not 20",
         "explicitly says the day was thin",
         "does not promote a LOW item to MEDIUM to fill space"
       ]
@@ -106,7 +107,7 @@
       "description": "The newsletter keeps its engineering focus instead of following press volume.",
       "scenario": "A day with 90 general AI press items and 14 engineering items: two Latent Space posts, two GitHub Changelog entries and 10 arXiv cs.SE papers.",
       "expect": [
-        "roughly 4 of the 15 cards are engineering, per the lens table",
+        "roughly 10 of the 20 cards are engineering, per the lens table",
         "every card carries a one or two word label, and the same kind of story reuses the same one",
         "an engineering card says what changed, not that something shipped",
         "several versions of one tool become a single card",

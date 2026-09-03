@@ -46,7 +46,7 @@ The routine's prompt, roughly:
 
 ```
 Run the ai-news-digest skill for today: collect the last 24h, classify by
-temperature, select the 15 most relevant, build the card and publish it to the
+temperature, select the 20 most relevant, build the card and publish it to the
 Teams channel. If the webhook is not configured, stop before publishing and
 explain what is missing.
 ```

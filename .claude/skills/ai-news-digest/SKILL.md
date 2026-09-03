@@ -1,6 +1,6 @@
 ---
 name: ai-news-digest
-description: Daily radar on software engineering with AI. Collects the last 24h from a deliberately small catalog -- the labs (OpenAI, Anthropic, Google), the people building them (Karpathy, Andrew Ng's The Batch), investors and NVIDIA -- classifies each item by temperature (HIGH/MEDIUM/LOW), selects up to 15, and publishes a card newsletter to a Microsoft Teams channel. Written in English, except cards whose main source is Brazilian. Use for "AI radar", "AI newsletter", "AI news of the day", "AI digest", "coding agent news", "radar de IA", "noticias de IA", or when a scheduled routine fires the daily newsletter.
+description: Daily radar on software engineering with AI. Collects the last 24h from a deliberately small catalog -- the labs (OpenAI, Anthropic, Google), the people building them (Karpathy, Andrew Ng's The Batch), investors and NVIDIA -- classifies each item by temperature (HIGH/MEDIUM/LOW), selects up to 20, and publishes a card newsletter to a Microsoft Teams channel. Written in English, except cards whose main source is Brazilian. Use for "AI radar", "AI newsletter", "AI news of the day", "AI digest", "coding agent news", "radar de IA", "noticias de IA", or when a scheduled routine fires the daily newsletter.
 ---
 
 # AI Radar — daily newsletter
@@ -11,11 +11,10 @@ and what needs a decision. Write for that reader.
 
 The focus is **software engineering with AI**: coding agents, the tooling and
 protocols around them, and the practices that are actually changing how teams
-build. Around four of the fifteen cards are that — the share the catalog can
-supply, set in the lens table below. The rest is the AI strategy, research and
-regulation a committee member cannot afford to miss. A day that produces fifteen
-funding rounds and no engineering is a failed day for this radar: engineering is
-the smaller share, never an optional one.
+build. **Half the newsletter is that** — ten of the twenty cards, set in the lens
+table below. The rest is the AI strategy, research and regulation a committee
+member cannot afford to miss. A day that produces twenty funding rounds and no
+engineering is a failed day for this radar.
 
 ## Language
 
@@ -85,15 +84,21 @@ Then classify each candidate against the committee's four lenses:
 
 | Lens | What counts | Share |
 | --- | --- | --- |
-| **Strategy** | Moves a platform, vendor, build-vs-buy or cost decision: model launch and deprecation, pricing, partnership, acquisition, funding, licence change. The catalog leans this way by design. | ~6 of 15 |
-| **Engineering** | Agentic coding practice, MCP and protocol changes, IDE and platform changes such as GitHub's Copilot controls, and practice writeups with evidence behind them. What changes how SiDi's teams build. | ~4 |
+| **Engineering** | Agentic coding practice, MCP and protocol changes, IDE and platform changes such as GitHub's Copilot controls, and practice writeups with evidence behind them. What changes how SiDi's teams build. | **~10 of 20** |
+| **Strategy** | Moves a platform, vendor, build-vs-buy or cost decision: model launch and deprecation, pricing, partnership, acquisition, funding, licence change. | ~5 |
 | **Research** | arXiv cs.SE and lab results not yet in practice. Prefer papers an engineer could act on over general ML theory. | ~3 |
 | **Regulation** | EU AI Act, LGPD/ANPD, NIST, court rulings, compliance requirements, security incidents. What the committee has to take to the table. | ~2 |
 
-The shares are a target, not a quota, and they follow what this catalog can
-actually supply: roughly 12 items a day, weighted towards the labs, the press
-covering them, and the money. If a day genuinely has two engineering items worth
-publishing, publish two.
+The shares are a target, not a quota. **Engineering is the one to fight for**,
+and it is the one the catalog struggles to fill: the two engineering sources
+supplied 5 items in the last 24h and 12 in a week, against roughly 39 candidates
+a day overall. So most engineering cards will come from the press and the labs,
+judged by what the item does rather than by which source carried it — a pricing
+change in a coding agent is engineering, wherever it was reported.
+
+If a day genuinely has four engineering items worth publishing, publish four and
+say the day was thin on engineering. Do not fill the gap with press items that
+merely mention a developer tool.
 
 The four people in the catalog (Karpathy, Boris Cherny, Thariq, Sam Altman) and
 two of the three investors published nothing in a measured seven-day window,
@@ -127,7 +132,7 @@ A version number is not news. Open the release body and judge what is in it:
 - New capability, a breaking change, a limit or pricing change, a security fix →
   HIGH or MEDIUM, and **say what changed**, not that a release happened.
 - Only bug fixes and dependency bumps → LOW, or leave it out. "Claude Code
-  shipped v2.1.259" with nothing behind it wastes one of fifteen slots.
+  shipped v2.1.259" with nothing behind it wastes one of twenty slots.
 - **One card per tool per day.** A tool that shipped four versions gets a single
   card covering what changed across them, not four cards.
 
@@ -136,21 +141,29 @@ staging tags from release feeds, so what reaches you should be real releases. If
 a tool you care about looks silent, check its `prerelease` count in
 `sources_ok` before assuming nothing shipped.
 
-Calibration: a normal day has **2 to 5 HIGH items**. If you marked ten, the bar
+Calibration: a normal day has **2 to 5 HIGH items**. That number does not scale
+with the card count — it describes how much of a day genuinely forces a decision,
+not how many slots the newsletter has. Twenty cards means more MEDIUM and LOW,
+not more HIGH. If you marked ten, the bar
 slipped. If you marked zero on a day with a major model launch or a breaking
 change in a coding agent, it is too tight.
 
-### 4. Select the 15
+### 4. Select the 20
 
-Sort by temperature and, within it, by impact. Cut at 15.
+Sort by temperature and, within it, by impact. Cut at 20.
 
-Aim for the shares in the lens table: roughly six strategy, four engineering,
-three research and two regulation. Before you cut, check the quiet sources —
-Latent Space, GitHub Changelog and arXiv cs.SE publish far less than the AI press
-and lose on volume every time.
+Aim for the shares in the lens table: roughly ten engineering, five strategy,
+three research and two regulation. Fill engineering first — it is the largest
+share and the hardest to fill, and by the time you have sorted by temperature the
+press items will already be sitting at the top. Before you cut, check the quiet
+sources: Latent Space, GitHub Changelog and arXiv cs.SE publish far less than the
+AI press and lose on volume every time.
 
-Do not manufacture balance either. If only four engineering items are worth
-publishing, publish four and let the rest of the day fill the newsletter.
+Twenty of roughly 39 daily candidates is half the collection, so the bar per card
+is lower than it was at fifteen — but it is still a bar. Do not manufacture
+balance. If only four engineering items are worth publishing, publish four, say
+the day was thin on engineering, and let the rest of the day fill the
+newsletter.
 
 ### 5. Write the digest
 
@@ -212,8 +225,8 @@ Write the markdown version to `reports/YYYY-MM-DD-ai-radar.md` following
 - **Many sources failing** (more than a quarter): say so at the top of your
   reply. A feed that moved is the most common cause — the new address goes into
   `assets/sources.json`.
-- **Few items in the window** (fewer than 15 after triage): publish fewer cards
-  and say the day was thin. Do not pad with noise to reach 15.
+- **Few items in the window** (fewer than 20 after triage): publish fewer cards
+  and say the day was thin. Do not pad with noise to reach 20.
 - **No Brazilian source that day**: normal, and today it is every day — the
   catalog has none. Do not force a local card just to satisfy the language
   exception.

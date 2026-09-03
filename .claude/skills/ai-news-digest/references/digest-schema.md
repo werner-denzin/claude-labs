@@ -9,14 +9,14 @@ The file the triage step writes and `build_card.py` consumes. UTF-8 JSON.
   "generated_at": "2026-09-03T11:04:00-03:00",
   "headline": "One line, in English: what the story of the day was.",
 
-  "cards": [                          // required, 1 to 15 items
+  "cards": [                          // required, 1 to 20 items
     {
       "rank": 1,                      // editorial order within the temperature band
       "title": "NVIDIA acquires Hugging Face for $12.9 billion",
       "label": "Acquisition",         // required, 1-2 words, max 24 chars. What kind of news this is
       "description": "3 to 5 lines (~200-400 chars). What happened, the number that matters, why the committee should care. In English -- unless the main source is a Brazilian one, in which case this card stays in Portuguese.",
       "temperature": "HIGH",          // HIGH | MEDIUM | LOW (ALTA/MEDIA/BAIXA accepted as aliases)
-      "lens": "engineering",          // strategy (~6 of 15) | engineering (~4) | research (~3) | regulation (~2)
+      "lens": "engineering",          // engineering (~10 of 20) | strategy (~5) | research (~3) | regulation (~2)
       "source_name": "NVIDIA Blog",   // main source: prefer the primary one
       "source_url": "https://blogs.nvidia.com/...",
       "also_covered_by": [            // optional; the card shows up to 3

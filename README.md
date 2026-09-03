@@ -5,7 +5,7 @@ a daily radar on **software engineering with AI**, written for SiDi's AI strateg
 committee.
 
 Every weekday morning it collects the last 24 hours from a deliberately small catalog of 20 sources, judges how
-much each item matters, keeps the 15 that matter most, and publishes them as a
+much each item matters, keeps the 20 that matter most, and publishes them as a
 card newsletter in a Microsoft Teams channel.
 
 The catalog has two tiers. **Primary:** the labs (OpenAI, Anthropic, Google), the
@@ -56,7 +56,16 @@ python3 scripts/fetch_feeds.py --hours 168 --out /tmp/d7.json
 # per source: sources_ok[].in_window in each file
 ```
 
-Two things the numbers say plainly. **The people and the investors publish
+**The engineering share is not covered by this catalog.** The lens table asks for
+ten engineering cards of twenty; the two engineering sources supplied 5 items in
+the last 24h and 12 in the week. The gap has to be closed either by the press
+(judged by lens — a coding-agent pricing change is engineering wherever it was
+reported) or by adding sources. The backlog item in `CLAUDE.md` lists the
+reachable candidates: Simon Willison's `ai-assisted-programming` tag, Sourcegraph,
+JetBrains AI, the MCP spec, InfoQ, the Pragmatic Engineer, Martin Fowler and
+Cursor's changelog — none of them a GitHub release feed, which the sandbox blocks.
+
+Two more things the numbers say plainly. **The people and the investors publish
 almost nothing**: seven of the twenty sources returned zero in a full week,
 because Karpathy, Boris Cherny, Thariq and Sam Altman post on X, which has no
 fetchable feed, and the VC firms blog about portfolio companies rather than
@@ -84,7 +93,7 @@ flowchart TD
     ITEMS[("items.json<br>~12 candidates a day<br>+ failures + duplicate hints")]
     SITEMAP["sitemap.xml<br>sources with no feed:<br>Anthropic, a16z, The Batch"]
 
-    TRIAGE{"Claude triage<br>consolidate duplicates<br>score temperature<br>select 15: 6 strategy · 4 engineering<br>3 research · 2 regulation<br>write label + description"}
+    TRIAGE{"Claude triage<br>consolidate duplicates<br>score temperature<br>select 20: 10 engineering · 5 strategy<br>3 research · 2 regulation<br>write label + description"}
     DIGEST[("digest.json<br>the editorial product")]
 
     BUILD["scripts/build_card.py<br>Adaptive Card<br>trims to the Teams size limit"]
@@ -151,7 +160,7 @@ reports why it failed.
 | `references/teams-delivery.md` | How to create the channel webhook, the payload format, and the limits the code handles for you. |
 | `references/scheduling.md` | Running it daily at 08:00 BRT: the cloud routine, plus local systemd and GitHub Actions as alternatives. Includes cost and the network setting that silently empties the newsletter if missed. |
 | `evals/evals.json` | Eight test cases. Four are mechanical; four judge editorial quality and need a human or an LLM judge. |
-| `evals/run_script_evals.py` | Runs the four mechanical cases as 29 assertions over collection, size trimming, digest validation, and secret handling. |
+| `evals/run_script_evals.py` | Runs the four mechanical cases as 30 assertions over collection, size trimming, digest validation, and secret handling. |
 | `evals/fixtures/` | Sample `digest.json` and `card.json` used by those assertions. |
 
 ## Running it by hand
@@ -172,7 +181,7 @@ In practice you just ask Claude for the AI radar and it walks the whole flow.
 Run the checks with:
 
 ```bash
-python3 evals/run_script_evals.py            # 29 assertions
+python3 evals/run_script_evals.py            # 30 assertions
 python3 evals/run_script_evals.py --offline  # skips the one that hits the network
 ```
 
@@ -187,8 +196,9 @@ python3 evals/run_script_evals.py --offline  # skips the one that hits the netwo
   a collection was partial.
 - **The quiet feeds win ties.** Latent Space, GitHub Changelog and `arXiv cs.SE`
   publish far less than the AI press, so the triage step targets a share of
-  engineering items — four of the fifteen — rather than picking by volume or
-  recency.
+  engineering items — ten of the twenty — rather than picking by volume or
+  recency. That share is above what the catalog supplies today; see the note
+  under the source table.
 - **English everywhere**, with one exception: cards whose main source is a
   Brazilian outlet keep their title and description in Portuguese, because they
   are local-market stories written for that market. No `pt-BR` source is in the

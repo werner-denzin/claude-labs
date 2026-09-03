@@ -125,6 +125,14 @@ def eval_card_size_limit(tmp: str) -> None:
     payload = json.load(open(full))
     check("with no trim, all 15 items fit", len(temperatures(payload)) == 15)
 
+    full20 = os.path.join(tmp, "full20.json")
+    proc = run(["scripts/build_card.py", "--in", "evals/fixtures/digest-20.json", "--out", full20])
+    check(
+        "a 20-card newsletter fits without trimming",
+        proc.returncode == 0 and len(temperatures(json.load(open(full20)))) == 20,
+        proc.stderr[-200:],
+    )
+
     texts = [b.get("text", "") for b in text_blocks(payload["attachments"][0]["content"])]
     check(
         "every card renders its label, uppercased",
