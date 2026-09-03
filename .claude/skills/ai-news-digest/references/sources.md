@@ -8,7 +8,7 @@ Editar `assets/sources.json`. Cada entrada:
 | `name` | Nome que aparece no cartao. |
 | `feed` | RSS/Atom. `null` quando a fonte nao publica feed — ai a skill le o `site` com WebFetch. |
 | `site` | Pagina humana. Fallback quando o feed morre e destino do WebFetch. |
-| `lang` | `en` ou `pt-BR`. |
+| `lang` | `en` ou `pt-BR`. **Decide o idioma do card**: item cuja fonte principal e `pt-BR` fica em portugues; todo o resto do boletim sai em ingles. |
 | `category` | `lab`, `infra`, `open-source`, `news`, `analysis`, `engineering`, `research`, `regulation`, `community`. |
 | `weight` | 1-5. Desempata a triagem e escolhe o representante na deduplicacao. 5 = fonte primaria. |
 | `topic_filter` | Opcional. `true` = fonte de tecnologia em geral; so passam itens que mencionem IA. |
@@ -29,8 +29,9 @@ Microsoft/Meta, EU AI Act. Trazem contexto e apuracao que o blog do lab omite.
 InfoQ, NVIDIA, AWS, Mistral, Import AI, Raschka, Google Research, HN.
 
 **Peso 2 — volume e mercado local.** arXiv, MIT News, e a imprensa brasileira
-(Olhar Digital, TecMundo, Canaltech, Mobile Time). Raramente viram ALTA sozinhos,
-mas sao o que da leitura do mercado local e do que chegou ao publico daqui.
+(Olhar Digital, TecMundo, Canaltech, Mobile Time). Raramente viram HIGH sozinhos,
+mas sao o que da leitura do mercado local e do que chegou ao publico daqui — e sao
+as unicas fontes cujos cards saem em portugues.
 
 As quatro lentes do comite (estrategia, regulacao, engenharia, pesquisa) estao
 todas cobertas. `regulation` tem so o EU AI Act: se a pauta regulatoria brasileira

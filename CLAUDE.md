@@ -6,7 +6,7 @@ Laboratorio de experimentos com Claude Code.
 
 Radar diario de noticias de IA para o comite de estrategia de IA da SiDi:
 coleta as ultimas 24h de ~35 fontes, classifica cada item por temperatura
-(ALTA/MEDIA/BAIXA), seleciona os 15 mais relevantes e publica um boletim em
+(HIGH/MEDIUM/LOW), seleciona os 15 mais relevantes e publica um boletim em
 cards num canal do Teams.
 
 - Skill: `.claude/skills/ai-news-digest/SKILL.md`
@@ -25,9 +25,14 @@ Regras que valem para qualquer mexida na skill:
 
 ## Preferencias do usuario
 
-- Responder em portugues do Brasil.
-- Relatorios e artefatos gerados tambem em portugues do Brasil, salvo pedido em
-  contrario. O boletim do radar sai em pt-BR.
+- Conversar em ingles.
+- **O boletim do radar sai em ingles.** Unica excecao: cards cuja fonte
+  principal e brasileira (`"lang": "pt-BR"` no catalogo — Olhar Digital,
+  TecMundo, Canaltech, Mobile Time) mantem titulo e descricao em portugues,
+  porque sao noticias do mercado local escritas para esse mercado.
+- A documentacao interna da skill (SKILL.md, `references/`, comentarios de
+  codigo, mensagens de diagnostico dos scripts) esta em portugues. Nao e o
+  boletim, entao segue como esta; so a saida que o leitor ve foi traduzida.
 
 ## Ditado por voz
 

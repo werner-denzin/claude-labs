@@ -60,7 +60,7 @@ def temperatures(payload: dict) -> list[str]:
     for block in text_blocks(card):
         text = block.get("text", "")
         if text.startswith(EMOJI):
-            for label in ("ALTA", "MEDIA", "BAIXA"):
+            for label in ("HIGH", "MEDIUM", "LOW"):
                 if f"**{label}**" in text:
                     out.append(label)
     return out
@@ -109,10 +109,10 @@ def eval_card_size_limit(tmp: str) -> None:
     size = len(json.dumps(payload, ensure_ascii=False).encode("utf-8"))
     check(f"payload dentro do limite ({size} <= 6000)", size <= 6000)
     kept = temperatures(payload)
-    check("os 3 itens ALTA sobreviveram", kept.count("ALTA") == 3, f"veio {kept}")
-    check("nenhum BAIXA passou na frente de um MEDIA", "BAIXA" not in kept, f"veio {kept}")
+    check("os 3 itens HIGH sobreviveram", kept.count("HIGH") == 3, f"veio {kept}")
+    check("nenhum LOW passou na frente de um MEDIUM", "LOW" not in kept, f"veio {kept}")
     blocks = list(text_blocks(payload["attachments"][0]["content"]))
-    check("o rodape avisa do corte", any("ficaram" in b.get("text", "") for b in blocks))
+    check("o rodape avisa do corte", any("omitted" in b.get("text", "") for b in blocks))
 
     full = os.path.join(tmp, "full.json")
     run(["scripts/build_card.py", "--in", "evals/fixtures/digest-15.json", "--out", full])
@@ -135,15 +135,15 @@ def eval_digest_validation(tmp: str) -> None:
     combined = proc.stdout + proc.stderr
     check("temperatura invalida recusada sem traceback",
           proc.returncode != 0 and "Traceback" not in combined, combined[-200:])
-    check("a mensagem explica os valores aceitos", "ALTA" in combined)
+    check("a mensagem explica os valores aceitos", "HIGH" in combined)
 
     alias = os.path.join(tmp, "alias.json")
     digest = json.load(open(os.path.join(FIXTURES, "digest-15.json"), encoding="utf-8"))
-    for card, value in zip(digest["cards"], ["HIGH", "MEDIUM", "LOW"]):
+    for card, value in zip(digest["cards"], ["ALTA", "MEDIA", "BAIXA"]):
         card["temperature"] = value
     json.dump(digest, open(alias, "w", encoding="utf-8"), ensure_ascii=False)
     proc = run(["scripts/build_card.py", "--in", alias, "--out", os.path.join(tmp, "a.json")])
-    check("HIGH/MEDIUM/LOW aceitos como alias", proc.returncode == 0, proc.stderr[-200:])
+    check("ALTA/MEDIA/BAIXA aceitos como alias", proc.returncode == 0, proc.stderr[-200:])
 
 
 def eval_webhook_secret(tmp: str) -> None:

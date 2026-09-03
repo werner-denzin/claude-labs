@@ -9,7 +9,7 @@ Boletim diario de IA para o comite de estrategia de IA da SiDi:
 
 1. Coleta as ultimas 24h de ~35 fontes (labs, imprensa, regulacao, engenharia,
    pesquisa, imprensa brasileira).
-2. Classifica cada item por **temperatura** — ALTA, MEDIA ou BAIXA — medindo
+2. Classifica cada item por **temperatura** — HIGH, MEDIUM ou LOW — medindo
    relevancia para o comite, nao popularidade da noticia.
 3. Seleciona os **15 mais relevantes**.
 4. Publica um **boletim em cards** (Adaptive Card) num canal do Teams, e guarda a
@@ -22,7 +22,7 @@ Boletim diario de IA para o comite de estrategia de IA da SiDi:
 | Formato de saida | **Cards, sem PDF.** O pedido original previa PDF; o usuario descartou depois de ver que o webhook do Teams nao anexa arquivo. O cartao carrega o boletim inteiro. |
 | Entrega | Webhook de canal do Teams, criado pelo **Workflows** (Power Automate). O conector legado esta em descontinuacao. |
 | Agendamento | **Routine agendada na nuvem** (`/schedule`), dias uteis as 08:00 BRT. Roda sem depender da maquina do usuario. |
-| Idioma | Boletim em portugues do Brasil. |
+| Idioma | **Boletim em ingles.** Excecao: cards cuja fonte principal e brasileira ficam em portugues. Decidido depois da primeira implementacao, que saia toda em pt-BR. |
 | Lentes da triagem | As quatro: estrategia corporativa, regulacao/governanca, engenharia/agentic coding, pesquisa/papers. |
 | Segredo | `TEAMS_WEBHOOK_URL` no ambiente; na nuvem, como **API credential**, nunca como variavel de ambiente. |
 | Branch | `claude/ai-research-skill-xoqo0i` |

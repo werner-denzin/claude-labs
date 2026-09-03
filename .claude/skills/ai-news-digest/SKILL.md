@@ -1,6 +1,6 @@
 ---
 name: ai-news-digest
-description: Radar diario de noticias de inteligencia artificial. Coleta as ultimas 24h de dezenas de fontes (labs, imprensa, regulacao, engenharia, pesquisa), classifica cada item por temperatura (ALTA/MEDIA/BAIXA), seleciona os 15 mais relevantes e publica um boletim em formato de cards num canal do Microsoft Teams. Use quando o pedido for "radar de IA", "newsletter de IA", "noticias de IA do dia", "digest de IA" ou quando uma routine agendada disparar o boletim diario.
+description: Daily AI news radar. Collects the last 24h from ~35 sources (labs, press, regulation, engineering, research), classifies each item by temperature (HIGH/MEDIUM/LOW), selects the 15 most relevant and publishes a card-format newsletter to a Microsoft Teams channel. The newsletter is written in English, except for items from Brazilian sources, which stay in Portuguese. Use for "AI radar", "AI newsletter", "AI news of the day", "AI digest", "radar de IA", "noticias de IA", or when a scheduled routine fires the daily newsletter.
 ---
 
 # Radar de IA — boletim diario
@@ -9,8 +9,22 @@ Publico: o comite de estrategia de IA da SiDi. Eles leem o cartao no Teams em
 menos de dois minutos, no comeco do dia, e precisam sair sabendo o que mudou e o
 que exige decisao. Escreva para esse leitor.
 
-O idioma padrao do boletim e portugues do Brasil. Titulos originais em ingles
-podem ser mantidos quando traduzir prejudicaria a busca pelo nome do produto.
+## Idioma
+
+O boletim sai **em ingles**: headline, descricoes, `not_relevant` e tudo que o
+leitor ve no cartao.
+
+**Excecao: itens de fonte brasileira.** Quando a fonte principal do card e uma
+fonte com `"lang": "pt-BR"` no catalogo (Olhar Digital, TecMundo, Canaltech,
+Mobile Time), o titulo e a descricao daquele card ficam **em portugues**. Sao
+noticias do mercado local, escritas para esse mercado; traduzir perde o termo que
+o leitor vai procurar depois.
+
+A moldura do cartao — cabecalho, rotulos de temperatura, rodape — e sempre em
+ingles, gerada pelo `build_card.py`. Voce nao precisa traduzir nada disso.
+
+Se um card consolida uma fonte brasileira **e** uma internacional, vale a regra da
+fonte principal: se o representante e o blog do lab, o card e em ingles.
 
 ## Fluxo
 
@@ -63,17 +77,18 @@ Depois classifique cada candidato pelas quatro lentes do comite:
 
 **Temperatura** e relevancia para esse comite, nao popularidade da noticia:
 
-- **ALTA** — muda ou pressiona uma decisao nos proximos ~90 dias. Fornecedor que
+- **HIGH** — muda ou pressiona uma decisao nos proximos ~90 dias. Fornecedor que
   a SiDi usa mexeu em modelo, preco ou termos; regra com data de vigencia;
   aquisicao que reorganiza o mercado de ferramentas; vulnerabilidade em algo em
-  producao. Se o leitor precisa agir ou avisar alguem, e ALTA.
-- **MEDIA** — vale acompanhar, ainda nao força decisao. Lancamento de concorrente,
-  benchmark relevante, movimento regulatorio em consulta publica.
-- **BAIXA** — contexto e sinal antecipado. Paper sem produto, opiniao bem
+  producao. Se o leitor precisa agir ou avisar alguem, e HIGH.
+- **MEDIUM** — vale acompanhar, ainda nao força decisao. Lancamento de
+  concorrente, benchmark relevante, movimento regulatorio em consulta publica.
+- **LOW** — contexto e sinal antecipado. Paper sem produto, opiniao bem
   fundamentada, numero de mercado.
 
-Calibragem: um dia normal tem **2 a 5 itens ALTA**. Se voce marcou dez, o criterio
-afrouxou. Se marcou zero num dia com lancamento de modelo grande, apertou demais.
+Calibragem: um dia normal tem **2 a 5 itens HIGH**. Se voce marcou dez, o
+criterio afrouxou. Se marcou zero num dia com lancamento de modelo grande,
+apertou demais.
 
 ### 4. Selecionar os 15
 
@@ -87,17 +102,17 @@ regulacao, o boletim e de regulacao.
 
 Grave `digest.json` no formato de `references/digest-schema.md`. Regras de escrita:
 
-- **Descricao: 3 a 5 linhas** (aprox. 200-400 caracteres). Diga o que aconteceu,
-  o numero que importa e por que o comite deveria se importar. Uma frase de
-  contexto vale mais que tres de narrativa.
+- **Descricao: 3 a 5 linhas** (aprox. 200-400 caracteres), no idioma da regra
+  acima. Diga o que aconteceu, o numero que importa e por que o comite deveria se
+  importar. Uma frase de contexto vale mais que tres de narrativa.
 - **Nunca invente.** Toda afirmacao tem que estar na fonte. Se a fonte diz
   "segundo pessoas a par do assunto", o card diz que e apuracao, nao fato.
 - **Separe anuncio, disponibilidade e rumor.** "Anunciou" nao e "ja da para usar".
 - **Sem linguagem de marketing.** Nada de "revolucionario", "game changer",
   "impressionante". Numeros e verbos.
-- `headline`: uma linha dizendo qual foi a historia do dia.
-- `not_relevant`: o que dominou o volume mas nao merece atencao. Dizer o que
-  **nao** importa e parte do servico.
+- `headline`: uma linha, em ingles, dizendo qual foi a historia do dia.
+- `not_relevant`: em ingles. O que dominou o volume mas nao merece atencao. Dizer
+  o que **nao** importa e parte do servico.
 - `sources_failed`: copie de `items.json` e acrescente os bloqueios da etapa 2.
 
 ### 6. Montar e publicar o cartao
@@ -131,6 +146,8 @@ Grave a versao em markdown em `reports/AAAA-MM-DD-radar-ia.md` seguindo
   `assets/sources.json`.
 - **Poucos itens na janela** (menos de 15 depois da triagem): publique menos
   cards e diga que o dia foi fraco. Nao complete com ruido para chegar a 15.
+- **Nenhuma fonte brasileira no dia**: normal. Nao force um card local so para
+  cumprir a excecao de idioma.
 - **Rede bloqueada** (`403`, `host_not_allowed`): o ambiente esta com acesso
   restrito. Ver `references/scheduling.md`.
 

@@ -20,18 +20,22 @@ from datetime import date, datetime
 # itens mais frios antes de estourar, em vez de deixar o POST falhar.
 MAX_PAYLOAD_BYTES = 25_000  # ajustavel via --max-bytes
 
+# O boletim sai em ingles. Itens vindos de fontes brasileiras mantem titulo e
+# descricao em portugues; so a moldura do cartao e traduzida.
 TEMPERATURES = {
-    "ALTA": {"emoji": "\U0001f534", "label": "ALTA", "color": "attention", "rank": 0},
-    "MEDIA": {"emoji": "\U0001f7e0", "label": "MEDIA", "color": "warning", "rank": 1},
-    "BAIXA": {"emoji": "\U0001f535", "label": "BAIXA", "color": "accent", "rank": 2},
+    "HIGH": {"emoji": "\U0001f534", "label": "HIGH", "color": "attention", "rank": 0},
+    "MEDIUM": {"emoji": "\U0001f7e0", "label": "MEDIUM", "color": "warning", "rank": 1},
+    "LOW": {"emoji": "\U0001f535", "label": "LOW", "color": "accent", "rank": 2},
 }
-# Aceita os rotulos em ingles do pedido original.
-ALIASES = {"HIGH": "ALTA", "MEDIUM": "MEDIA", "MÉDIA": "MEDIA", "LOW": "BAIXA"}
+# Aceita os rotulos em portugues, para nao quebrar digests antigos.
+ALIASES = {"ALTA": "HIGH", "MEDIA": "MEDIUM", "MÉDIA": "MEDIUM", "BAIXA": "LOW"}
 
-WEEKDAYS = ["segunda", "terca", "quarta", "quinta", "sexta", "sabado", "domingo"]
+WEEKDAYS = [
+    "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
+]
 MONTHS = [
-    "janeiro", "fevereiro", "marco", "abril", "maio", "junho",
-    "julho", "agosto", "setembro", "outubro", "novembro", "dezembro",
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
 ]
 
 
@@ -40,7 +44,7 @@ def normalize_temperature(value: str) -> dict:
     key = ALIASES.get(key, key)
     if key not in TEMPERATURES:
         raise ValueError(
-            f"temperatura invalida: {value!r} (use ALTA, MEDIA ou BAIXA)"
+            f"temperatura invalida: {value!r} (use HIGH, MEDIUM ou LOW)"
         )
     return TEMPERATURES[key]
 
@@ -50,7 +54,7 @@ def format_date(iso: str) -> str:
         day = date.fromisoformat(iso)
     except ValueError:
         return iso
-    return f"{WEEKDAYS[day.weekday()]}, {day.day} de {MONTHS[day.month - 1]} de {day.year}"
+    return f"{WEEKDAYS[day.weekday()]}, {MONTHS[day.month - 1]} {day.day}, {day.year}"
 
 
 def text_block(text: str, **kwargs) -> dict:
@@ -79,7 +83,7 @@ def build_item(index: int, item: dict) -> dict:
     if others:
         extra = ", ".join(f"[{o['source']}]({o['url']})" for o in others[:3])
         rest = len(others) - 3
-        source += f"  ·  tambem em {extra}"
+        source += f"  ·  also in {extra}"
         if rest > 0:
             source += f" (+{rest})"
     body.append(
@@ -89,25 +93,25 @@ def build_item(index: int, item: dict) -> dict:
 
 
 def build_card(digest: dict, items: list[dict]) -> dict:
-    counts = {"ALTA": 0, "MEDIA": 0, "BAIXA": 0}
+    counts = {"HIGH": 0, "MEDIUM": 0, "LOW": 0}
     for item in items:
         counts[normalize_temperature(item["temperature"])["label"]] += 1
     stats = digest.get("stats", {})
 
     header = [
         text_block(
-            f"Radar de IA — {format_date(digest['date'])}",
+            f"AI Radar — {format_date(digest['date'])}",
             size="Large",
             weight="Bolder",
         ),
         text_block(
-            f"{len(items)} destaques  ·  "
-            f"\U0001f534 {counts['ALTA']} alta  "
-            f"\U0001f7e0 {counts['MEDIA']} media  "
-            f"\U0001f535 {counts['BAIXA']} baixa"
+            f"{len(items)} highlights  ·  "
+            f"\U0001f534 {counts['HIGH']} high  "
+            f"\U0001f7e0 {counts['MEDIUM']} medium  "
+            f"\U0001f535 {counts['LOW']} low"
             + (
-                f"  ·  {stats['items_considered']} itens de "
-                f"{stats.get('sources_ok', '?')} fontes nas ultimas "
+                f"  ·  {stats['items_considered']} items from "
+                f"{stats.get('sources_ok', '?')} sources in the last "
                 f"{digest.get('window_hours', 24)}h"
                 if stats.get("items_considered")
                 else ""
@@ -128,7 +132,7 @@ def build_card(digest: dict, items: list[dict]) -> dict:
     if digest.get("not_relevant"):
         footer.append(
             text_block(
-                "**Ficou de fora:** " + "; ".join(digest["not_relevant"]),
+                "**Left out:** " + "; ".join(digest["not_relevant"]),
                 size="Small",
                 isSubtle=True,
                 spacing="Medium",
@@ -141,7 +145,7 @@ def build_card(digest: dict, items: list[dict]) -> dict:
         rest = len(failed) - 6
         footer.append(
             text_block(
-                f"⚠️ {len(failed)} fonte(s) nao responderam: {names}"
+                f"⚠️ {len(failed)} source(s) did not respond: {names}"
                 + (f" (+{rest})" if rest > 0 else ""),
                 size="Small",
                 isSubtle=True,
@@ -151,8 +155,8 @@ def build_card(digest: dict, items: list[dict]) -> dict:
         )
     footer.append(
         text_block(
-            "Gerado pela skill `ai-news-digest`. "
-            "Temperatura = relevancia para a estrategia de IA, nao popularidade.",
+            "Generated by the `ai-news-digest` skill. "
+            "Temperature = relevance to AI strategy, not popularity.",
             size="Small",
             isSubtle=True,
             spacing="Medium",
@@ -180,7 +184,7 @@ def build_card(digest: dict, items: list[dict]) -> dict:
 
 def fit_to_limit(digest: dict, max_bytes: int = MAX_PAYLOAD_BYTES) -> tuple[dict, int]:
     """Monta o cartao cortando os itens mais frios ate caber no limite do Teams."""
-    order = {"ALTA": 0, "MEDIA": 1, "BAIXA": 2}
+    order = {"HIGH": 0, "MEDIUM": 1, "LOW": 2}
     items = sorted(
         digest["cards"],
         key=lambda c: (
@@ -196,8 +200,8 @@ def fit_to_limit(digest: dict, max_bytes: int = MAX_PAYLOAD_BYTES) -> tuple[dict
             if dropped:
                 payload["attachments"][0]["content"]["body"].append(
                     text_block(
-                        f"✂️ {dropped} item(ns) de menor temperatura ficaram "
-                        "de fora por limite de tamanho da mensagem do Teams.",
+                        f"✂️ {dropped} lower-temperature item(s) omitted "
+                        "due to the Teams message size limit.",
                         size="Small",
                         isSubtle=True,
                     )
@@ -209,15 +213,15 @@ def fit_to_limit(digest: dict, max_bytes: int = MAX_PAYLOAD_BYTES) -> tuple[dict
 
 
 def preview(digest: dict) -> str:
-    lines = [f"Radar de IA — {format_date(digest['date'])}"]
+    lines = [f"AI Radar — {format_date(digest['date'])}"]
     if digest.get("headline"):
         lines.append(digest["headline"])
     lines.append("")
     for index, item in enumerate(digest["cards"], start=1):
         temp = normalize_temperature(item["temperature"])
-        lines.append(f"{temp['emoji']} {temp['label']:5} {index}. {item['title']}")
+        lines.append(f"{temp['emoji']} {temp['label']:6} {index}. {item['title']}")
         lines.append(f"        {item['description']}")
-        lines.append(f"        fonte: {item['source_name']} — {item['source_url']}")
+        lines.append(f"        source: {item['source_name']} — {item['source_url']}")
         lines.append("")
     return "\n".join(lines)
 
