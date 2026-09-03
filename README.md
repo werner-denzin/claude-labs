@@ -4,15 +4,15 @@ A lab for Claude Code experiments. It currently holds one thing: **`ai-news-dige
 a daily radar on **software engineering with AI**, written for SiDi's AI strategy
 committee.
 
-Every weekday morning it collects the last 24 hours from a small, deliberately chosen catalog, judges how
+Every weekday morning it collects the last 24 hours from a deliberately small catalog of 19 sources, judges how
 much each item matters, keeps the 15 that matter most, and publishes them as a
 card newsletter in a Microsoft Teams channel.
 
-Roughly half the newsletter is engineering: coding agent releases (Claude Code,
-Cline, Cursor, Codex, Gemini CLI, Zed, opencode, goose), MCP and eval
-infrastructure, GitHub and IDE platform changes, practice writeups, and
-`arXiv cs.SE`. The other half is the AI strategy and regulation a committee
-member cannot afford to miss.
+The catalog has two tiers. **Primary:** the labs (OpenAI, Anthropic, Google), the
+people building them, investors, and NVIDIA. **Supporting:** press, engineering
+and research sources, because the primary tier cannot report on itself — the labs
+announce but do not analyse, the people publish on X which has no fetchable feed,
+and the VC firms blog about portfolio companies rather than deals.
 
 ## Solution overview
 
@@ -23,9 +23,9 @@ flowchart TD
         MANUAL["Manual run<br>ask Claude for the AI radar"]
     end
 
-    CATALOG[("assets/sources.json<br>13 sources<br>labs · people · investors · hardware")]
+    CATALOG[("assets/sources.json<br>19 sources<br>labs · people · investors<br>hardware · press · research")]
     FETCH["scripts/fetch_feeds.py<br>parallel RSS/Atom, 24h window<br>topic + pre-release filters<br>deduplication"]
-    ITEMS[("items.json<br>a few candidates a day<br>+ failures + duplicate hints")]
+    ITEMS[("items.json<br>~12 candidates a day<br>+ failures + duplicate hints")]
     WEB["WebFetch<br>sources with no feed:<br>Anthropic, Meta AI, MarkTechPost"]
 
     TRIAGE{"Claude triage<br>consolidate duplicates and releases<br>score temperature<br>select 15, ~8 engineering<br>write descriptions"}

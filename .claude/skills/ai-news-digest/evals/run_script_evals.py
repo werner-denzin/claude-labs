@@ -84,7 +84,7 @@ def eval_collect_window(tmp: str) -> None:
     no_feed = {f["id"] for f in data["sources_failed"] if "no RSS feed" in f["error"]}
     check(
         "feedless sources appear in sources_failed with a reason",
-        no_feed >= {"anthropic", "meta-ai"},
+        no_feed >= {"anthropic", "a16z"},
         f"got {no_feed}",
     )
     filtered = [s for s in data["sources_ok"] if s.get("off_topic", 0) > 0]

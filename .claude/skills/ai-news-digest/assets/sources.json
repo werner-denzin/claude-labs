@@ -1,5 +1,5 @@
 {
-  "_comment": "AI radar source catalog. Deliberately small: fewer sources means a smaller triage context and lower token cost per run. Four groups: labs (OpenAI, Anthropic, Google), the people building them, investors, and hardware. Fields: id, name, feed (RSS/Atom; null when the source publishes none - read 'site' with WebFetch instead), site, lang (also decides the card's language), category, weight (1-5). Optional: topic_filter (only items mentioning AI get through), max_items, kind ('release' = version feed), note. Validated against the live network on 2026-09-03. NOTE: X/Twitter has no fetchable feed, so the people here are covered only by their blogs, which are low volume.",
+  "_comment": "AI radar source catalog. Deliberately small: fewer sources means a smaller triage context and lower token cost per run. Two tiers. PRIMARY, chosen by the user: labs (OpenAI, Anthropic, Google), the people building them, investors, and NVIDIA. SUPPORTING press, engineering and research, added because the primary tier cannot report on itself -- the labs announce but do not analyse, the people publish on X which has no fetchable feed, and the VC firms blog about portfolio companies rather than deals. Fields: id, name, feed (RSS/Atom; null when the source publishes none - read 'site' with WebFetch), site, lang (also decides the card's language), category, weight (1-5). Optional: topic_filter, max_items, kind, note. Validated against the live network on 2026-09-03. Do NOT add github.com releases.atom feeds: the cloud sandbox scopes GitHub access to the cloned repository and returns 403 for every other repo.",
   "sources": [
     {
       "id": "openai",
@@ -125,6 +125,67 @@
       "category": "hardware",
       "weight": 4,
       "topic_filter": true
+    },
+    {
+      "id": "techcrunch-ai",
+      "name": "TechCrunch AI",
+      "feed": "https://techcrunch.com/category/artificial-intelligence/feed/",
+      "site": "https://techcrunch.com/category/artificial-intelligence/",
+      "lang": "en",
+      "category": "press",
+      "weight": 4,
+      "note": "Carries the funding, valuation and M&A news the VC blogs do not."
+    },
+    {
+      "id": "the-decoder",
+      "name": "The Decoder",
+      "feed": "https://the-decoder.com/feed/",
+      "site": "https://the-decoder.com/",
+      "lang": "en",
+      "category": "press",
+      "weight": 4,
+      "note": "Highest signal per item. Reports what the lab founders say, which their own feeds do not."
+    },
+    {
+      "id": "arstechnica-ai",
+      "name": "Ars Technica AI",
+      "feed": "https://arstechnica.com/ai/feed/",
+      "site": "https://arstechnica.com/ai/",
+      "lang": "en",
+      "category": "press",
+      "weight": 4,
+      "note": "Depth and scepticism; strongest on legal and policy."
+    },
+    {
+      "id": "latent-space",
+      "name": "Latent Space",
+      "feed": "https://www.latent.space/feed",
+      "site": "https://www.latent.space/",
+      "lang": "en",
+      "category": "engineering",
+      "weight": 4,
+      "note": "Agentic coding coverage. Editorial stand-in for the GitHub release feeds, which the cloud sandbox blocks."
+    },
+    {
+      "id": "arxiv-se",
+      "name": "arXiv cs.SE (Software Engineering)",
+      "feed": "https://export.arxiv.org/rss/cs.SE",
+      "site": "https://arxiv.org/list/cs.SE/recent",
+      "lang": "en",
+      "category": "research",
+      "weight": 3,
+      "max_items": 10
+    },
+    {
+      "id": "github-changelog",
+      "name": "GitHub Changelog",
+      "feed": "https://github.blog/changelog/feed/",
+      "site": "https://github.blog/changelog/",
+      "lang": "en",
+      "category": "engineering",
+      "weight": 3,
+      "topic_filter": true,
+      "note": "Copilot enterprise controls and model deprecations. github.blog is unaffected by the sandbox's GitHub API restriction."
     }
   ]
 }

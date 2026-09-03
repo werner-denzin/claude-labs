@@ -79,14 +79,20 @@ Then classify each candidate against the committee's four lenses:
 
 | Lens | What counts | Share |
 | --- | --- | --- |
-| **Engineering** | Coding agents and their releases (Claude Code, Cline, Cursor, Codex, Gemini CLI, Zed, opencode, goose), MCP and protocol changes, agent frameworks, evals like SWE-bench, IDE and platform changes, and practice writeups with evidence behind them. What changes how SiDi's teams build. | **~8 of 15** |
-| **Strategy** | Moves a platform, vendor, build-vs-buy or cost decision: model launch and deprecation, pricing, partnership, acquisition, licence change. | ~3 |
+| **Strategy** | Moves a platform, vendor, build-vs-buy or cost decision: model launch and deprecation, pricing, partnership, acquisition, funding, licence change. The catalog leans this way by design. | ~6 of 15 |
+| **Engineering** | Agentic coding practice, MCP and protocol changes, IDE and platform changes such as GitHub's Copilot controls, and practice writeups with evidence behind them. What changes how SiDi's teams build. | ~4 |
+| **Research** | arXiv cs.SE and lab results not yet in practice. Prefer papers an engineer could act on over general ML theory. | ~3 |
 | **Regulation** | EU AI Act, LGPD/ANPD, NIST, court rulings, compliance requirements, security incidents. What the committee has to take to the table. | ~2 |
-| **Research** | arXiv cs.SE and lab results that have not become practice yet. Prefer papers an engineer could act on over general ML theory. | ~2 |
 
-The shares are a target, not a quota. If the day genuinely has five engineering
-items worth publishing, publish five and fill the rest honestly — but check you
-have not simply let the louder general-AI press crowd out the tool feeds, which
+The shares are a target, not a quota, and they follow what this catalog can
+actually supply: roughly 12 items a day, weighted towards the labs, the press
+covering them, and the money. If a day genuinely has two engineering items worth
+publishing, publish two.
+
+The four people in the catalog (Karpathy, Boris Cherny, Thariq, Sam Altman) and
+two of the three investors published nothing in a measured seven-day window,
+because they post on X, which has no fetchable feed. Expect their categories to
+be empty most days, and pick up what they say through the press instead.
 are quieter and easier to overlook.
 
 **Temperature** is relevance to this committee, not popularity of the news:
