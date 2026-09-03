@@ -76,7 +76,7 @@ reports why it failed.
 | --- | --- |
 | `CLAUDE.md` | Project instructions Claude loads every session: what the skill is, the rules that must hold when changing it, the activation checklist, and the backlog. |
 | `README.md` | This file. |
-| `reports/` | Archive of published newsletters, one markdown file per day. A Teams card stops being searchable after a few weeks; this does not. |
+| `reports/` | Archive of published newsletters, one file per day as `YYYY-MM-DD-ai-radar.md`. What goes to Teams is the Adaptive Card; this is the readable record of it, because a Teams card stops being searchable after a few weeks. |
 | `.claude/skills/ai-news-digest/` | The skill itself. |
 
 ### Inside the skill
