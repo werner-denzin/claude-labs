@@ -66,7 +66,7 @@
       "id": "temperature-calibration",
       "type": "judgment",
       "description": "Temperature measures relevance to the committee, not popularity.",
-      "scenario": "A day with: (a) a billion-dollar acquisition that reshapes the tooling market, (b) a consumer GPU launch, (c) an arXiv cs.SE paper on agent harnesses, (d) an EU AI Act compliance deadline, (e) Claude Code shipping four versions whose notes are only bug fixes.",
+      "scenario": "A day with: (a) a billion-dollar acquisition that reshapes the tooling market, (b) a consumer GPU launch, (c) an arXiv cs.SE paper on agent harnesses, (d) an EU AI Act compliance deadline, (e) a coding agent shipping four versions whose notes are only bug fixes -- hypothetical, since no release feed is in the catalog today.",
       "expect": [
         "(a) is HIGH and (d) is HIGH",
         "(b) is not HIGH, despite the volume of coverage",

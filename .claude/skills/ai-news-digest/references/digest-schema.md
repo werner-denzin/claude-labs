@@ -28,12 +28,12 @@ The file the triage step writes and `build_card.py` consumes. UTF-8 JSON.
     "consumer hardware launches"
   ],
   "sources_failed": [                 // copy from items.json + the blocks from step 2
-    { "name": "MarkTechPost", "error": "HTTP 403" }
+    { "name": "Sequoia Capital", "error": "HTTP 403" }
   ],
   "stats": {
-    "items_considered": 93,
-    "sources_ok": 32,
-    "sources_total": 35
+    "items_considered": 40,
+    "sources_ok": 19,
+    "sources_total": 20
   }
 }
 ```

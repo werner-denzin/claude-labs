@@ -121,14 +121,16 @@ Some entries carry `"feed": null` because the source publishes no RSS at all.
 Where a sitemap exists the collector uses it and the source behaves like any
 other; where it does not, the entry shows up in `sources_failed` with "no RSS
 feed declared", which is not a defect — it is the catalog telling you to read it
-from the site:
+from the site. All three feedless entries in the catalog today have a sitemap, so
+none of them reports a failure.
 
-| Source | Situation as of 2026-09-03 |
-| --- | --- |
-| Anthropic News | Publishes no RSS. `/rss.xml`, `/news/rss.xml`, `/feed.xml` and `/engineering/rss.xml` all 404. |
-| Meta AI Blog | `ai.meta.com` returns 400 for every feed path. The `engineering.fb.com` feed (ML Applications) is in the catalog as `meta-engineering` and works. |
-| MarkTechPost | The feed returns 403 even with a browser User-Agent (WAF). Optional source. |
-| DeepLearning.AI | `/feed/`, `/rss.xml` and `/the-batch/rss.xml` all 404. Read via the sitemap as `the-batch`. `andrewng.org` has neither feed nor sitemap, so Andrew Ng is covered here rather than as a source of his own. |
+| Source | In the catalog | Situation as of 2026-09-03 |
+| --- | --- | --- |
+| Anthropic News | yes, `anthropic` | Publishes no RSS. `/rss.xml`, `/news/rss.xml`, `/feed.xml` and `/engineering/rss.xml` all 404. Read from `/sitemap.xml`. |
+| a16z | yes, `a16z` | No working feed path. Read from its sitemap. |
+| DeepLearning.AI | yes, `the-batch` | `/feed/`, `/rss.xml` and `/the-batch/rss.xml` all 404. Read from `/sitemap.xml`, excluding tag and issue pages. `andrewng.org` has neither feed nor sitemap, so Andrew Ng is covered here rather than as a source of his own. |
+| Meta AI Blog | no, left in `deeec82` | `ai.meta.com` returned 400 for every feed path. `engineering.fb.com` (ML Applications) does publish one, if the source is ever wanted back. |
+| MarkTechPost | no, never added | The feed returns 403 even with a browser User-Agent (WAF). |
 
 ## Validating the feeds
 
@@ -180,12 +182,19 @@ than the world's, reach for `topic_terms`.
 
 ## Release feeds
 
+No `kind: release` source is in the catalog today: GitHub `releases.atom` is the
+natural feed for a coding agent, and the cloud sandbox scopes GitHub access to
+the cloned repository and returns 403 for every other repo. The machinery below
+still runs and applies the day a release source is added from somewhere
+reachable.
+
 A `kind: release` source needs two things the others do not.
 
 **Pre-release filtering.** GitHub releases feeds carry alpha, beta, rc, nightly,
 snapshot, canary and internal staging tags alongside real versions. Measured on
-2026-09-03, that was 3 of 4 Zed entries, 2 of 3 Codex entries, and the only Cline
-and goose entries in the window. `PRERELEASE_RE` in `fetch_feeds.py` drops them
+2026-09-03, while those feeds were still in the catalog, that was 3 of 4 Zed
+entries, 2 of 3 Codex entries, and the only Cline and goose entries in the
+window. `PRERELEASE_RE` in `fetch_feeds.py` drops them
 and counts them under `sources_ok[].prerelease`, so a tool that looks silent can
 be told apart from one that only shipped betas.
 
