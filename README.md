@@ -30,7 +30,7 @@ times here and becomes one card.
 | `anthropic`             | Anthropic News                          | lab         | Sitemap                 | 0      | 6       |
 | `deepmind`              | Google DeepMind Blog                    | lab         | RSS/Atom                | 1      | 4       |
 | `google-ai`             | Google - The Keyword (AI)               | lab         | RSS/Atom                | 0      | 3       |
-| `karpathy`              | Andrej Karpathy                         | people      | RSS/Atom                | 0      | 0       |
+| `karpathy` †            | Andrej Karpathy                         | people      | RSS/Atom — retired      | 0      | 0       |
 | `boris-cherny`          | Boris Cherny                            | people      | RSS/Atom                | 0      | 0       |
 | `thariq`                | Thariq Shihipar                         | people      | RSS/Atom                | 0      | 0       |
 | `the-batch`             | The Batch (Andrew Ng / DeepLearning.AI) | people      | Sitemap                 | 0      | 7       |
@@ -56,12 +56,21 @@ times here and becomes one card.
 | `martin-fowler`         | Martin Fowler                           | engineering | RSS/Atom + topic filter | 0      | 3       |
 | `arxiv-se`              | arXiv cs.SE (Software Engineering)      | research    | RSS/Atom                | 10*    | 10*     |
 | `github-changelog`      | GitHub Changelog                        | engineering | RSS/Atom + topic filter | 3      | 5       |
-| **Total**               | **30 sources**                          |             |                         | **46** | **136** |
+| **Total**               | **30 sources**, 29 enabled              |             |                         | **46** | **136** |
 
-`*` capped by the source's own `max_items`. All 30 are `"enabled": true` today.
-A retired source keeps its row in `sources.json` with `"enabled": false` — the
-collector skips it, reports it under `sources_disabled`, and `--only <id>` still
-reads it so you can test one you have just disabled.
+`*` capped by the source's own `max_items`.
+
+`†` **retired 2026-09-04**, the first use of `"enabled": false`, and a worked
+example of what the mechanism is for. Karpathy's feed returned `403` on two
+consecutive cloud runs with no `x-deny-reason` header — bearblog refusing the
+request, not the environment's allowlist — while answering `200` from a laptop
+with the same user agent, so the block is on the origin and there is nothing to
+fix on our side. It had also published nothing in a measured 30-day window,
+because he posts on X. Keeping it enabled meant a failure line in every
+newsletter for a source that had never contributed an item, which is exactly how
+readers learn to ignore failure lines. The row stays, with the evidence in its
+`note`, so re-enabling is one word if either fact changes; `--only karpathy`
+still reads it for testing.
 
 The counts are a snapshot and drift. To take a fresh one:
 

@@ -49,13 +49,13 @@
     {
       "id": "karpathy",
       "name": "Andrej Karpathy",
-      "enabled": true,
+      "enabled": false,
       "feed": "https://karpathy.bearblog.dev/feed/",
       "site": "https://karpathy.bearblog.dev/",
       "lang": "en",
       "category": "people",
       "weight": 5,
-      "note": "Posts far more often on X, which has no fetchable feed. This blog is low volume."
+      "note": "RETIRED 2026-09-04: blocked from the cloud, and it published nothing anyway. Two consecutive routine runs got HTTP 403 with no x-deny-reason header, so it is bearblog refusing the request, not the environment's network allowlist. The same honest user agent gets 200 from a laptop, so the block is on the origin and there is nothing to fix on our side -- and its robots.txt permits the feed (Allow: /), which makes the refusal a blunt bot screen rather than a policy. Volume was zero in a measured 30-day window: Karpathy posts on X, which has no fetchable feed, and this blog is real but rare. Kept rather than deleted so re-enabling is one word if either fact changes. Pick up what he says through the press instead."
     },
     {
       "id": "boris-cherny",
