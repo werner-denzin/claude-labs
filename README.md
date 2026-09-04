@@ -213,6 +213,7 @@ the card will render. The Teams layout is still to be designed; until then
 | `references/digest-schema.md` | The contract between triage and rendering: what `digest.json` must contain and how it is validated. |
 | `references/sources.md` | Why each source is on the list, how to retire one without losing what was learned about it, how we identify ourselves to a server, how to fix a feed that moved, and how deduplication actually behaves. |
 | `references/teams-delivery.md` | How to create the channel webhook, the payload format, and the limits the code handles for you. |
+| `references/routine-prompt.md` | The scheduled routine's prompt. The routine stores its own copy on Anthropic's side, so this file is the versioned source of truth for it — the one part of the system that can drift silently. Deliberately thin: anything about the newsletter belongs in `SKILL.md`. |
 | `references/scheduling.md` | Running it daily at 08:00 BRT: the cloud routine, plus local systemd and GitHub Actions as alternatives. Includes cost and the network setting that silently empties the newsletter if missed. |
 | `evals/evals.json` | Eleven test cases. Six are mechanical; five judge editorial quality and need a human or an LLM judge. |
 | `evals/run_script_evals.py` | Runs the six mechanical cases as 45 assertions over collection, the enabled filter, the previous-report filter, size trimming, digest validation, and secret handling. |

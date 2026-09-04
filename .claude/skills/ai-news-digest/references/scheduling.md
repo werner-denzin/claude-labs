@@ -99,7 +99,9 @@ Claude asks for the rest and saves it. You can also create it at
 | Environment | **`Full Access`** — created 2026-09-03 with **Network access = Custom**. The name says Full; the setting is Custom, which means an allowlist, which means a host missing from it fails silently. Keep the list in sync with `assets/sources.json`. |
 | Connectors | Remove the ones the routine does not use — during a run it can call any tool from an included connector, writes included, without asking permission |
 
-The routine's prompt, roughly:
+The routine's prompt is versioned in `references/routine-prompt.md` — the
+routine stores its own copy, so that file is the source of truth and the routine
+has to be re-synced when it changes. Roughly:
 
 ```
 Run the ai-news-digest skill for today: collect the last 24h, classify by

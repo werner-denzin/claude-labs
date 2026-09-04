@@ -316,3 +316,4 @@ the flow above already do.
 | `references/sources.md` | Why each source is on the list; how to retire one; how we identify ourselves; how to validate the feeds. |
 | `references/teams-delivery.md` | How to create the channel webhook and the payload format. |
 | `references/scheduling.md` | Daily scheduling at 08:00 BRT, in all three options. |
+| `references/routine-prompt.md` | The scheduled routine's prompt, versioned here because the routine only holds a copy. Changing this file means re-syncing the routine. |

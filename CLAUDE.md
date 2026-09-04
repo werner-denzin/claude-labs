@@ -77,6 +77,16 @@ Rules that hold for any change to the skill:
   resembles a published title — because a story usually returns when something
   changed, and dropping that silently loses real news. The anchor is the newest
   file in `reports/`, not yesterday's date.
+- **The routine's prompt is versioned in
+  `references/routine-prompt.md`, and the routine holds a copy.** After any
+  change to `SKILL.md` or to how the skill behaves, read that file and ask
+  whether the prompt still tells the truth. If it does not: edit the file, apply
+  it to the routine, and update its **Last synced** line. Skipping the apply
+  leaves the live routine drifting, which is the failure this file exists to
+  prevent — the prompt spent weeks telling every run that "Anthropic and a16z
+  must be read with WebFetch" and that fewer than 15 items meant a thin day.
+  Keep the prompt thin: anything about the newsletter itself belongs in
+  `SKILL.md`, which is versioned, not in the prompt, which is a copy.
 - **A retired source is disabled, not deleted.** `"enabled": false` keeps the
   entry, its note and the reasoning that took work to establish; the collector
   skips it and reports it under `sources_disabled`, so `28/28` is never quietly
