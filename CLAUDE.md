@@ -65,6 +65,13 @@ Rules that hold for any change to the skill:
   environment's allowlist, one without it is the source refusing us — because
   this is the evidence a source gets disabled or removed on. Never write
   "expected" without saying why.
+- **Two artifacts, deliberately different lengths.** `reports/*.md` is the
+  complete and detailed edition — every card the editorial step selected. The
+  Teams card is the short version of it: if the payload would exceed what Teams
+  accepts, the coolest cards are left off *the card* and its footer points at the
+  report. The digest is never modified, so the archive never loses anything.
+  Selection is never constrained by how the card will render. The Teams layout
+  itself is still to be designed; until then "short" means "as many as fit".
 - **The last edition is not published twice.** The collector drops an item whose
   canonical URL was already published and *flags* one whose title merely
   resembles a published title — because a story usually returns when something

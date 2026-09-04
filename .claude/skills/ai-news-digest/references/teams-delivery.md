@@ -61,7 +61,7 @@ before spending a network call.
 
 | Limit | Handling |
 | --- | --- |
-| Messages above ~28 KB are rejected | `build_card.py` builds the card, measures its size **on the wire** (compact JSON) and drops the lowest-temperature items until it fits, with a footer note. `post_to_teams.py` refuses anything above 28 KB as a backstop. |
+| Messages above ~28 KB are rejected | Not a limit on the newsletter. The archived report always carries the complete edition; `build_card.py` measures the payload **on the wire** (compact JSON) and, if it would overflow, leaves the lowest-temperature cards off *the card only*, with a footer pointing at the report. The digest is never modified. `post_to_teams.py` refuses anything above 28 KB as a backstop. |
 | `429` and `5xx` from Power Automate | Up to 4 attempts with exponential backoff, honouring `Retry-After`. |
 | Network timeout | Same retry policy. |
 

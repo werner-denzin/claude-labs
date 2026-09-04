@@ -9,7 +9,7 @@ The file the triage step writes and `build_card.py` consumes. UTF-8 JSON.
   "generated_at": "2026-09-03T11:04:00-03:00",
   "headline": "One line, in English: what the story of the day was.",
 
-  "cards": [                          // required, 1 to 20 items
+  "cards": [                          // required, 1 to 20 items. All of them reach the report; the Teams card may show fewer
     {
       "rank": 1,                      // editorial order within the temperature band
       "title": "NVIDIA acquires Hugging Face for $12.9 billion",

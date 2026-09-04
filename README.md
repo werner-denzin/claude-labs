@@ -127,12 +127,12 @@ flowchart TD
     TRIAGE{"Claude triage<br>consolidate duplicates<br>score temperature<br>select 20: 10 engineering · 5 strategy<br>3 research · 2 regulation<br>write label + description<br>record blocks as anomalies"}
     DIGEST[("digest.json<br>the editorial product")]
 
-    BUILD["scripts/build_card.py<br>Adaptive Card<br>trims to the Teams size limit"]
+    BUILD["scripts/build_card.py<br>Adaptive Card — the short version<br>leaves the coolest cards off<br>if Teams would reject the payload"]
     CARD[("card.json<br>Teams message envelope")]
     POST["scripts/post_to_teams.py<br>retry with backoff<br>redacts the webhook URL"]
 
     TEAMS(["Teams channel"])
-    ARCHIVE["reports/YYYY-MM-DD-ai-radar.md<br>incl. Blocked / Unexpected Behaviors"]
+    ARCHIVE["reports/YYYY-MM-DD-ai-radar.md<br>the complete edition<br>incl. Blocked / Unexpected Behaviors"]
     SECRET["TEAMS_WEBHOOK_URL<br>never in the repo"]
 
     ROUTINE --> FETCH
@@ -171,6 +171,15 @@ reports why it failed.
 The dotted line from the archive back to the catalog is the slow loop: each
 report records what was blocked or behaved oddly, and a source that keeps
 appearing there earns an `"enabled": false`.
+
+**Two artifacts, deliberately different lengths.** `digest.json` is the edition,
+and every card in it reaches the archived report — that is the complete and
+detailed record. The Teams card is a shorter view of the same edition: Microsoft
+rejects a payload above ~28 KB, so if the edition does not fit, the coolest cards
+are left off the card and its footer points at the report. The digest is never
+modified, so nothing is lost, and editorial selection is never constrained by how
+the card will render. The Teams layout is still to be designed; until then
+"shorter" just means "as many as fit".
 
 ## Repository layout
 
@@ -246,6 +255,9 @@ python3 evals/run_script_evals.py --offline  # skips the one that hits the netwo
 - **Retire a source, don't delete it.** `"enabled": false` keeps the entry and
   the reasoning that took work to establish; the collector skips it and counts it
   under `sources_disabled`, so `28/28` is never quietly `28/30`.
+- **The report is complete; the card is short.** Selection is never limited by
+  the Teams payload size. Every selected card reaches `reports/*.md`; the card
+  shows what fits and links to the rest.
 - **Only triage spends model tokens.** Collection, card building and posting are
   deterministic Python. A measured run is 15 turns and 17.5K output tokens —
   $0.31 on Sonnet 5, $0.78 on Opus 5 — and the cost is dominated by the

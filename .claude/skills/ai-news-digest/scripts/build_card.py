@@ -17,8 +17,14 @@ import re
 import sys
 from datetime import date, datetime
 
-# Teams rejects cards above ~28 KB. We stay comfortably below and drop the
-# coldest items before overflowing, rather than letting the POST fail.
+# The archived report is the complete edition; this card is a view of it, and it
+# is allowed to be shorter. Teams rejects a payload above ~28 KB, so this ceiling
+# is a safety net under that -- not a limit on the newsletter. When the payload
+# would overflow, the coldest cards are left out of the *card* and the footer
+# points at the report, which still carries all of them.
+#
+# The number stops mattering once the Teams layout is designed and the card
+# carries a deliberate top-N instead of "as many as fit".
 MAX_PAYLOAD_BYTES = 25_000  # tunable via --max-bytes
 
 # The newsletter is written in English. Items from Brazilian sources keep their
@@ -217,7 +223,13 @@ def build_card(digest: dict, items: list[dict]) -> dict:
 
 
 def fit_to_limit(digest: dict, max_bytes: int = MAX_PAYLOAD_BYTES) -> tuple[dict, int]:
-    """Builds the card, dropping the coldest items until it fits the Teams limit."""
+    """Builds the card, leaving out the coldest items until it fits Teams.
+
+    `digest["cards"]` is never mutated -- the sort produces a new list and the
+    pops happen there. That is deliberate and load-bearing: step 7 writes the
+    archived report from the same digest, so the report keeps every card the
+    editorial step selected even when the card ships fewer.
+    """
     order = {"HIGH": 0, "MEDIUM": 1, "LOW": 2}
     items = sorted(
         digest["cards"],
@@ -234,8 +246,8 @@ def fit_to_limit(digest: dict, max_bytes: int = MAX_PAYLOAD_BYTES) -> tuple[dict
             if dropped:
                 payload["attachments"][0]["content"]["body"].append(
                     text_block(
-                        f"✂️ {dropped} lower-temperature item(s) omitted "
-                        "due to the Teams message size limit.",
+                        f"✂️ {dropped} cooler item(s) are not shown on this card. "
+                        "The complete edition is in the archived report.",
                         size="Small",
                         isSubtle=True,
                     )
@@ -265,7 +277,11 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--in", dest="src", required=True, help="digest.json")
     parser.add_argument("--out", default="-", help="payload file, or - for stdout")
-    parser.add_argument("--preview", action="store_true", help="print readable text instead of the JSON")
+    parser.add_argument(
+        "--preview",
+        action="store_true",
+        help="print the newsletter as readable text; with --out, also write the payload",
+    )
     parser.add_argument("--max-bytes", type=int, default=MAX_PAYLOAD_BYTES,
                         help="payload ceiling; above it the coldest items are dropped")
     args = parser.parse_args()
@@ -298,13 +314,19 @@ def main() -> int:
                 f"{card['source_url']!r}"
             )
 
+    # --preview used to return here, which silently threw away an --out the
+    # caller had asked for: a scheduled run passed both, got no card.json, and
+    # the next step died on a missing file. Both now do what they say.
     if args.preview:
         print(preview(digest))
-        return 0
+        if args.out == "-":
+            return 0
 
     payload, dropped = fit_to_limit(digest, args.max_bytes)
     text = json.dumps(payload, ensure_ascii=False, indent=2)
     if args.out == "-":
+        # Only reachable without --preview; printing both to stdout would
+        # interleave the readable newsletter with the payload.
         print(text)
     else:
         with open(args.out, "w", encoding="utf-8") as handle:

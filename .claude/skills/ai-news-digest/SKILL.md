@@ -181,6 +181,11 @@ change in a coding agent, it is too tight.
 
 Sort by temperature and, within it, by impact. Cut at 20.
 
+The 20 are the **edition**: they all go into `digest.json` and all of them reach
+the archived report. The Teams card is a *view* of that edition and is allowed to
+be shorter — so never drop a card that deserves a slot because of how the card
+will render. Size is `build_card.py`'s problem, not yours.
+
 Aim for the shares in the lens table: roughly ten engineering, five strategy,
 three research and two regulation. Fill engineering first — it is the largest
 share and the hardest to fill, and by the time you have sorted by temperature the
@@ -250,8 +255,15 @@ python3 .claude/skills/ai-news-digest/scripts/post_to_teams.py --payload card.js
 ```
 
 `build_card.py --preview` prints the newsletter as text for a final read before
-publishing. It also drops the coldest items if the card exceeds the Teams size
-limit, so never let the POST fail on size.
+publishing.
+
+**Two artifacts, deliberately different lengths.** The archived report is the
+complete and detailed edition — every card the editorial step selected. The Teams
+card is the short version: Microsoft rejects a payload above ~28 KB, so if the
+edition does not fit, `build_card.py` leaves the coolest cards off *the card* and
+its footer points the reader at the report. Nothing is lost, and the digest is
+never modified. Until the Teams layout is designed, "short" means "as many as
+fit"; after that it will mean a deliberate top-N.
 
 `post_to_teams.py` reads the webhook URL from `TEAMS_WEBHOOK_URL` (or from the
 file in `TEAMS_WEBHOOK_FILE`). **That URL is a credential: never write it to a
@@ -264,7 +276,9 @@ When running with no webhook configured, stop at `--dry-run`, show the
 ### 7. Archive the newsletter
 
 Write the markdown version to `reports/YYYY-MM-DD-ai-radar.md` following
-`assets/report-template.md`. It is the readable record of what was published.
+`assets/report-template.md`. **This is the complete edition** — write every card
+from `digest.json`, including any the Teams card left off for size. It is the
+searchable record, and the card links back to it.
 
 **Always render the `Blocked / Unexpected Behaviors` section**, from `anomalies`,
 with "None." when the run was clean. A missing section is indistinguishable from
@@ -287,11 +301,18 @@ a block was a one-off or a pattern worth disabling the source over.
 
 ## Files
 
+**Every path below is relative to this skill's own directory**,
+`.claude/skills/ai-news-digest/` — not to the repository root. `assets/` and
+`references/` do not exist at the root, and reading them from there is the first
+thing a run gets wrong: the 2026-09-04 routine spent three failed `Read` calls
+before finding them. From the repository root, prefix them, as the commands in
+the flow above already do.
+
 | File | What it is for |
 | --- | --- |
-| `assets/sources.json` | Source catalog. Edit here to add, remove or reweight. |
+| `assets/sources.json` | Source catalog. Edit here to add, remove or reweight. `enabled: false` retires one without losing what was learned about it. |
 | `assets/report-template.md` | Structure of the markdown newsletter. |
 | `references/digest-schema.md` | Schema of the `digest.json` that step 5 writes. |
-| `references/sources.md` | Why each source is on the list; how to validate the feeds. |
+| `references/sources.md` | Why each source is on the list; how to retire one; how we identify ourselves; how to validate the feeds. |
 | `references/teams-delivery.md` | How to create the channel webhook and the payload format. |
 | `references/scheduling.md` | Daily scheduling at 08:00 BRT, in all three options. |

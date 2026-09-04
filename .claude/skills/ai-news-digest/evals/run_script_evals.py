@@ -240,7 +240,11 @@ def eval_card_size_limit(tmp: str) -> None:
     check("all 3 HIGH items survived", kept.count("HIGH") == 3, f"got {kept}")
     check("no LOW kept ahead of a MEDIUM", "LOW" not in kept, f"got {kept}")
     blocks = list(text_blocks(payload["attachments"][0]["content"]))
-    check("the footer announces the trim", any("omitted" in b.get("text", "") for b in blocks))
+    check(
+        "the footer says cards were left off and where the full edition is",
+        any("not shown on this card" in b.get("text", "") for b in blocks),
+        f'footer: {[b.get("text", "")[:60] for b in blocks if "✂️" in b.get("text", "")]}',
+    )
 
     full = os.path.join(tmp, "full.json")
     run(["scripts/build_card.py", "--in", "evals/fixtures/digest-15.json", "--out", full])
@@ -253,6 +257,47 @@ def eval_card_size_limit(tmp: str) -> None:
         "a 20-card newsletter fits without trimming",
         proc.returncode == 0 and len(temperatures(json.load(open(full20)))) == 20,
         proc.stderr[-200:],
+    )
+
+    # The two-artifact model depends on this: the card may be shorter, the
+    # archived report never is. If the trim ever mutated the digest, the report
+    # written from it in step 7 would silently lose cards too.
+    src = os.path.join(FIXTURES, "digest-20.json")
+    before = json.load(open(src, encoding="utf-8"))
+    trimmed = os.path.join(tmp, "trimmed.json")
+    run([
+        "scripts/build_card.py", "--in", src, "--out", trimmed, "--max-bytes", "8000",
+    ])
+    after = json.load(open(src, encoding="utf-8"))
+    check(
+        "trimming the card leaves the digest intact, so the report stays complete",
+        len(after["cards"]) == len(before["cards"]) == 20,
+        f'{len(before["cards"])} -> {len(after["cards"])}',
+    )
+    footer = [
+        b.get("text", "")
+        for b in text_blocks(json.load(open(trimmed))["attachments"][0]["content"])
+    ]
+    check(
+        "and the card says the complete edition is in the report",
+        any("complete edition" in t and "report" in t for t in footer),
+        f"footer: {[t for t in footer if t.startswith(chr(0x2702))]}",
+    )
+
+    both = os.path.join(tmp, "preview-and-out.json")
+    proc = run([
+        "scripts/build_card.py", "--in", "evals/fixtures/digest-20.json",
+        "--out", both, "--preview",
+    ])
+    check(
+        "--preview with --out prints the newsletter and still writes the payload",
+        proc.returncode == 0 and os.path.exists(both) and "AI Radar" in proc.stdout,
+        f"exists={os.path.exists(both)} stdout={proc.stdout[:80]!r}",
+    )
+    proc = run(["scripts/build_card.py", "--in", "evals/fixtures/digest-20.json", "--preview"])
+    check(
+        "--preview alone prints no JSON payload to stdout",
+        proc.returncode == 0 and '"type": "AdaptiveCard"' not in proc.stdout,
     )
 
     texts = [b.get("text", "") for b in text_blocks(payload["attachments"][0]["content"])]
