@@ -8,9 +8,12 @@ Every weekday morning it collects the last 24 hours from a catalog of 30 sources
 much each item matters, keeps the 20 that matter most, and publishes them as a
 card newsletter in a Microsoft Teams channel.
 
-The catalog has two tiers. **Primary:** the labs (OpenAI, Anthropic, Google), the
-people building them, investors, and NVIDIA. **Supporting:** press, engineering
-and research sources, because the primary tier cannot report on itself — the labs
+The catalog has three groups. **The engineering core** — twelve sources, the
+largest group and the reason the radar exists: LangGraph, harness engineering,
+context engineering, prompt engineering, MCP, agent memory, guardrails, evals,
+and the coding agents themselves. **Primary:** the labs (OpenAI, Anthropic,
+Google), the people building them, investors, and NVIDIA. **Supporting:** press
+and research, because the primary tier cannot report on itself — the labs
 announce but do not analyse, the people publish on X which has no fetchable feed,
 and the VC firms blog about portfolio companies rather than deals.
 
@@ -55,7 +58,10 @@ times here and becomes one card.
 | `github-changelog`      | GitHub Changelog                        | engineering | RSS/Atom + topic filter | 3      | 5       |
 | **Total**               | **30 sources**                          |             |                         | **46** | **136** |
 
-`*` capped by the source's own `max_items`.
+`*` capped by the source's own `max_items`. All 30 are `"enabled": true` today.
+A retired source keeps its row in `sources.json` with `"enabled": false` — the
+collector skips it, reports it under `sources_disabled`, and `--only <id>` still
+reads it so you can test one you have just disabled.
 
 The counts are a snapshot and drift. To take a fresh one:
 
@@ -114,11 +120,11 @@ flowchart TD
     end
 
     CATALOG[("assets/sources.json<br>30 sources<br>12 engineering · 4 labs · 5 people<br>3 investors · 3 press · hardware · research")]
-    FETCH["scripts/fetch_feeds.py<br>parallel RSS/Atom, 24h window<br>topic + pre-release filters<br>deduplication"]
-    ITEMS[("items.json<br>~44 candidates a day<br>+ failures + duplicate hints")]
+    FETCH["scripts/fetch_feeds.py<br>reads only enabled sources<br>parallel, 24h window<br>topic + pre-release filters<br>deduplication"]
+    ITEMS[("items.json<br>~44 candidates a day<br>+ failures + disabled<br>+ duplicate hints")]
     SITEMAP["sitemap.xml<br>the 5 sources with no feed:<br>Anthropic News + Engineering<br>a16z · The Batch · LangChain"]
 
-    TRIAGE{"Claude triage<br>consolidate duplicates<br>score temperature<br>select 20: 10 engineering · 5 strategy<br>3 research · 2 regulation<br>write label + description"}
+    TRIAGE{"Claude triage<br>consolidate duplicates<br>score temperature<br>select 20: 10 engineering · 5 strategy<br>3 research · 2 regulation<br>write label + description<br>record blocks as anomalies"}
     DIGEST[("digest.json<br>the editorial product")]
 
     BUILD["scripts/build_card.py<br>Adaptive Card<br>trims to the Teams size limit"]
@@ -126,7 +132,7 @@ flowchart TD
     POST["scripts/post_to_teams.py<br>retry with backoff<br>redacts the webhook URL"]
 
     TEAMS(["Teams channel"])
-    ARCHIVE["reports/YYYY-MM-DD-ai-radar.md"]
+    ARCHIVE["reports/YYYY-MM-DD-ai-radar.md<br>incl. Blocked / Unexpected Behaviors"]
     SECRET["TEAMS_WEBHOOK_URL<br>never in the repo"]
 
     ROUTINE --> FETCH
@@ -142,6 +148,7 @@ flowchart TD
     CARD --> POST
     POST --> TEAMS
     DIGEST --> ARCHIVE
+    ARCHIVE -. "a source blocked again and again<br>→ enabled: false" .-> CATALOG
     SECRET -. read at runtime .-> POST
 
     classDef script fill:#e8f0fe,stroke:#4285f4,color:#111
@@ -149,8 +156,7 @@ flowchart TD
     classDef judgment fill:#fef7e0,stroke:#f9ab00,color:#111
     classDef secret fill:#fce8e6,stroke:#d93025,color:#111
     class FETCH,BUILD,POST script
-    class CATALOG,ITEMS,DIGEST,CARD,ARCHIVE data
-    class SITEMAP script
+    class CATALOG,ITEMS,DIGEST,CARD,ARCHIVE,SITEMAP data
     class TRIAGE judgment
     class SECRET secret
 ```
@@ -160,6 +166,10 @@ step that needs judgment, and it is where Claude does the actual editorial work:
 merging the same story across outlets and languages, deciding what is hot, and
 writing each card. Everything around it is plumbing that either succeeds or
 reports why it failed.
+
+The dotted line from the archive back to the catalog is the slow loop: each
+report records what was blocked or behaved oddly, and a source that keeps
+appearing there earns an `"enabled": false`.
 
 ## Repository layout
 
@@ -177,15 +187,15 @@ reports why it failed.
 | --- | --- |
 | `SKILL.md` | The entry point. Claude reads this to run the newsletter: the seven-step flow, the temperature rubric, the four committee lenses, and the writing rules. Everything else in the folder is referenced from here. |
 | `assets/sources.json` | The source catalog, the base of truth for everything else in this repo, and the file you edit most. Each entry carries a feed or a sitemap, a weight, a language, and optional flags. `enabled: false` retires a source without deleting what was learned about it; `lang` decides the card's language; `kind: release` marks a version feed. When it changes, `CLAUDE.md`, this file, `SKILL.md` and `references/sources.md` change with it. |
-| `assets/report-template.md` | Shape of the markdown newsletter archived in `reports/`. |
-| `scripts/fetch_feeds.py` | Collector. Fetches every feed in parallel, filters to the time window, drops off-topic items from general sources and alpha/beta/nightly builds from release feeds, deduplicates, and reports every failure. Standard library only. |
+| `assets/report-template.md` | Shape of the markdown newsletter archived in `reports/`, including the `Blocked / Unexpected Behaviors` section that the catalog decisions get made from. |
+| `scripts/fetch_feeds.py` | Collector. Reads the sources marked `enabled`, fetches them in parallel, filters to the time window, drops off-topic items from general sources and alpha/beta/nightly builds from release feeds, deduplicates, and reports every failure — distinguishing a `403` from the network allowlist (`x-deny-reason`) from one where the source refused us. Identifies itself as `ai-news-digest/1.0`, never as a browser. Standard library only. |
 | `scripts/build_card.py` | Renderer. Turns `digest.json` into a Teams Adaptive Card, validates the digest, and drops the coldest items if the card would exceed the Teams size limit. |
 | `scripts/post_to_teams.py` | Publisher. POSTs to the channel webhook with retry and backoff, and redacts the URL from every line it prints. |
 | `references/digest-schema.md` | The contract between triage and rendering: what `digest.json` must contain and how it is validated. |
-| `references/sources.md` | Why each source is on the list, how to fix a feed that moved, and how deduplication actually behaves. |
+| `references/sources.md` | Why each source is on the list, how to retire one without losing what was learned about it, how we identify ourselves to a server, how to fix a feed that moved, and how deduplication actually behaves. |
 | `references/teams-delivery.md` | How to create the channel webhook, the payload format, and the limits the code handles for you. |
 | `references/scheduling.md` | Running it daily at 08:00 BRT: the cloud routine, plus local systemd and GitHub Actions as alternatives. Includes cost and the network setting that silently empties the newsletter if missed. |
-| `evals/evals.json` | Eight test cases. Four are mechanical; four judge editorial quality and need a human or an LLM judge. |
+| `evals/evals.json` | Ten test cases. Five are mechanical; five judge editorial quality and need a human or an LLM judge. |
 | `evals/run_script_evals.py` | Runs the five mechanical cases as 37 assertions over collection, the enabled filter, size trimming, digest validation, and secret handling. |
 | `evals/fixtures/` | Sample `digest.json` and `card.json` used by those assertions. |
 
@@ -219,7 +229,18 @@ python3 evals/run_script_evals.py --offline  # skips the one that hits the netwo
 - **Standard library only.** The VM has no `pip` and the cloud environment may
   not either, so the scripts add no dependencies.
 - **A source that failed is reported, never hidden.** The reader has to know when
-  a collection was partial.
+  a collection was partial. Blocks and oddities also get their own section in the
+  archived report — `Blocked / Unexpected Behaviors`, always rendered, saying
+  "None." on a clean run — recording what happened *and what it means*, since
+  that is the evidence a source gets retired on.
+- **We identify ourselves honestly.** The collector sends
+  `ai-news-digest/1.0 (+<repo>; SiDi AI Radar feed reader)`, never a browser
+  string. It reads public feeds that sites publish to be read, once a day, one
+  request each. If a source blocks that user agent it becomes a declared failure
+  or it leaves the catalog — never a spoofed UA, a rotated IP or a proxy.
+- **Retire a source, don't delete it.** `"enabled": false` keeps the entry and
+  the reasoning that took work to establish; the collector skips it and counts it
+  under `sources_disabled`, so `28/28` is never quietly `28/30`.
 - **Only triage spends model tokens.** Collection, card building and posting are
   deterministic Python. A measured run is 15 turns and 17.5K output tokens —
   $0.31 on Sonnet 5, $0.78 on Opus 5 — and the cost is dominated by the
@@ -235,5 +256,14 @@ python3 evals/run_script_evals.py --offline  # skips the one that hits the netwo
 
 ## Status
 
-The skill works and is tested against the live network. It is not yet running on
-its own — see **Not live yet** in `CLAUDE.md` for the three remaining steps.
+**Scheduled and running.** The routine `AI Radar (archive)` fires weekdays at
+08:00 BRT (`0 11 * * 1-5` UTC) on the `Full Access` environment, on Claude
+Sonnet 5, cloning this repo each run. Verified on 2026-09-04: 29/30 sources
+answered through the environment's allowlist, and the run committed
+`reports/2026-09-04-ai-radar.md` to `main` on its own.
+
+**One step short of live.** No Teams webhook is configured, so the routine runs
+in archive-only mode: it collects, triages, validates the payload with
+`--dry-run`, and pushes the markdown report — but publishes nothing to the
+channel. Creating the webhook is the last step; see **Not live yet** in
+`CLAUDE.md` and `references/teams-delivery.md`.

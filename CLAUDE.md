@@ -32,20 +32,19 @@ investors.
 - Skill: `.claude/skills/ai-news-digest/SKILL.md`
 - Published newsletters: `reports/`
 
-### Not live yet
+### Live, in archive-only mode
 
-The skill runs manually today — collection, triage and
-`build_card.py --preview` all work without a webhook; only the final POST needs
-the secret. Three steps to make it run on its own:
+The routine `AI Radar (archive)` runs weekdays at 08:00 BRT (`0 11 * * 1-5` UTC)
+on the `Full Access` environment, on Claude Sonnet 5, cloning this repo each run.
+Two of the three activation steps are done: the repo is on the remote, and the
+routine exists and works — verified 2026-09-04, 29/30 sources answered through
+the environment's allowlist and the run pushed its own report to `main`.
 
-1. Create the Teams channel webhook and store the URL — steps in
-   `references/teams-delivery.md`.
-2. Push this repo to GitHub: the routine clones `werner-denzin/claude-labs` on
-   every run, so the skill has to be on the remote.
-3. Create the routine with `/schedule`, pointing at an environment with
-   **Network access = Custom or Full**. The `Default` environment is *Trusted*
-   and blocks every news source (`403 host_not_allowed`) — the most likely cause
-   of an empty newsletter at 08:00. Cost and limits in `references/scheduling.md`.
+**One step left.** No Teams webhook is configured, so the routine stops at
+`--dry-run` and publishes nothing to the channel; it commits the markdown report
+instead. To finish it, create the channel webhook and put the URL in the
+routine's environment — steps in `references/teams-delivery.md`. Never in a
+repository file.
 
 Rules that hold for any change to the skill:
 
