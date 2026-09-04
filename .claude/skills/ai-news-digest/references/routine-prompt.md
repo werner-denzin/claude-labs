@@ -11,8 +11,9 @@ meant a thin day, weeks after both had stopped being true.
 changes, the routine has to be re-synced, or the drift starts again.
 
 - Routine: `AI Radar (archive)`, `trig_01M3gcVsY2GipoQNvYtffPRA`
-- Last synced: **not yet** — the live routine still holds the pre-2026-09-04
-  version. Update this line with the date whenever you apply a change.
+- Last synced: **2026-09-04**, applied with `RemoteTrigger update` and confirmed
+  byte-identical in the response's stored prompt. Update this line with the date
+  whenever you apply a change.
 
 ## Keep it thin
 
