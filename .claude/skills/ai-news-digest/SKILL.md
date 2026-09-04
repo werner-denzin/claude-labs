@@ -47,6 +47,12 @@ python3 .claude/skills/ai-news-digest/scripts/fetch_feeds.py \
 Runs in a few seconds, in parallel. Widen `--hours` when a holiday or a weekend
 falls in the middle — Mondays usually want `--hours 72`.
 
+Only sources marked `"enabled": true` in the catalog are read. A retired one
+stays in the file with `"enabled": false`, keeping its note and the reason it
+was dropped, and appears in `counts.sources_disabled` and the `sources_disabled`
+list — so `29/30` never silently counts a source nobody meant to read. To test
+one that is disabled, name it with `--only`, which overrides the filter.
+
 Read `items.json`. Besides the items it carries:
 
 - `sources_failed` — sources that did not answer. They **go into the
@@ -202,6 +208,20 @@ rules:
 - `not_relevant`: what dominated the volume but does not deserve attention.
   Saying what does **not** matter is part of the service.
 - `sources_failed`: copy from `items.json` and add the blocks from step 2.
+- `anomalies`: **every source that was blocked, refused us, moved, or behaved in
+  a way you had to work around.** This is the record used to decide whether a
+  source gets disabled or removed, so write what was observed *and what it
+  means* — not just a status code:
+  - a `403` **with** `x-deny-reason` is the environment's network allowlist, not
+    the source; a `403` **without** it is the source refusing us;
+  - a source that answered `200` and returned nothing it normally publishes;
+  - a sitemap re-stamping old posts as new (the LangChain case);
+  - a feed that moved, returned HTML, or whose entire output was dropped by the
+    topic filter.
+  Leave it empty on a clean run — the report still renders the section, saying
+  none. Never write "expected" unless you can say why: the 2026-09-04 run called
+  Karpathy's 403 "expected — no fetchable feed" when that feed answers `200`
+  from a laptop.
 
 ### 6. Build and publish the card
 
@@ -227,6 +247,12 @@ When running with no webhook configured, stop at `--dry-run`, show the
 
 Write the markdown version to `reports/YYYY-MM-DD-ai-radar.md` following
 `assets/report-template.md`. It is the readable record of what was published.
+
+**Always render the `Blocked / Unexpected Behaviors` section**, from `anomalies`,
+with "None." when the run was clean. A missing section is indistinguishable from
+a clean run, and this section is what the catalog decisions are made from — the
+archive is the history, so `grep -l "<source name>" reports/*.md` answers whether
+a block was a one-off or a pattern worth disabling the source over.
 
 ## When something goes wrong
 

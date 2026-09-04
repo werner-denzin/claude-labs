@@ -43,7 +43,24 @@ Brazilian one, in which case it stays in Portuguese.}}
 {{What dominated the day's volume and does not deserve the committee's
 attention, and why.}}
 
+## Blocked / Unexpected Behaviors
+
+{{One line per source that was blocked, refused us, moved, or behaved in a way
+the run had to work around. Always render this section, with "None." when the
+run was clean -- an absent section must never be mistakable for a clean run.
+This is the record used to decide whether to disable or remove a source, so say
+what was observed and what it means, not just the status code.}}
+
+- **{{SOURCE}}** — {{what happened}}. {{What it means: the environment's
+  allowlist, the source refusing us, a feed that moved, a sitemap re-stamping
+  old posts as new. If a 403 carried `x-deny-reason`, say so -- that one is the
+  network allowlist, not the source.}}
+
 ## Sources that did not respond
+
+{{The mechanical list, copied from items.json: source and status. Every entry
+here must also appear above with its interpretation -- this section is the raw
+fact, that one is the judgment about what to do with it.}}
 
 - {{SOURCE}} — {{ERROR}}
 

@@ -176,7 +176,7 @@ reports why it failed.
 | Path | What it is |
 | --- | --- |
 | `SKILL.md` | The entry point. Claude reads this to run the newsletter: the seven-step flow, the temperature rubric, the four committee lenses, and the writing rules. Everything else in the folder is referenced from here. |
-| `assets/sources.json` | The source catalog, the base of truth for everything else in this repo, and the file you edit most. Each entry carries a feed or a sitemap, a weight, a language, and optional flags. `lang` decides the card's language; `kind: release` marks a version feed. When it changes, `CLAUDE.md`, this file, `SKILL.md` and `references/sources.md` change with it. |
+| `assets/sources.json` | The source catalog, the base of truth for everything else in this repo, and the file you edit most. Each entry carries a feed or a sitemap, a weight, a language, and optional flags. `enabled: false` retires a source without deleting what was learned about it; `lang` decides the card's language; `kind: release` marks a version feed. When it changes, `CLAUDE.md`, this file, `SKILL.md` and `references/sources.md` change with it. |
 | `assets/report-template.md` | Shape of the markdown newsletter archived in `reports/`. |
 | `scripts/fetch_feeds.py` | Collector. Fetches every feed in parallel, filters to the time window, drops off-topic items from general sources and alpha/beta/nightly builds from release feeds, deduplicates, and reports every failure. Standard library only. |
 | `scripts/build_card.py` | Renderer. Turns `digest.json` into a Teams Adaptive Card, validates the digest, and drops the coldest items if the card would exceed the Teams size limit. |
@@ -186,7 +186,7 @@ reports why it failed.
 | `references/teams-delivery.md` | How to create the channel webhook, the payload format, and the limits the code handles for you. |
 | `references/scheduling.md` | Running it daily at 08:00 BRT: the cloud routine, plus local systemd and GitHub Actions as alternatives. Includes cost and the network setting that silently empties the newsletter if missed. |
 | `evals/evals.json` | Eight test cases. Four are mechanical; four judge editorial quality and need a human or an LLM judge. |
-| `evals/run_script_evals.py` | Runs the four mechanical cases as 30 assertions over collection, size trimming, digest validation, and secret handling. |
+| `evals/run_script_evals.py` | Runs the five mechanical cases as 37 assertions over collection, the enabled filter, size trimming, digest validation, and secret handling. |
 | `evals/fixtures/` | Sample `digest.json` and `card.json` used by those assertions. |
 
 ## Running it by hand
@@ -207,7 +207,7 @@ In practice you just ask Claude for the AI radar and it walks the whole flow.
 Run the checks with:
 
 ```bash
-python3 evals/run_script_evals.py            # 30 assertions
+python3 evals/run_script_evals.py            # 37 assertions
 python3 evals/run_script_evals.py --offline  # skips the one that hits the network
 ```
 

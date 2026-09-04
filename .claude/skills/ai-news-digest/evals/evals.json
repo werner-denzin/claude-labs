@@ -1,5 +1,5 @@
 {
-  "_comment": "Test cases for the ai-news-digest skill. The first four need no LLM judgment and are run by evals/run_script_evals.py as 30 assertions; the rest evaluate editorial judgment and need a human or an LLM judge.",
+  "_comment": "Test cases for the ai-news-digest skill. The first four need no LLM judgment and are run by evals/run_script_evals.py as 37 assertions; the rest evaluate editorial judgment and need a human or an LLM judge.",
   "evals": [
     {
       "id": "collect-window",
@@ -14,6 +14,19 @@
         "the sitemap sources (Anthropic News, Anthropic Engineering, a16z, The Batch, LangChain) are read, not reported as failures",
         "sources_ok[].off_topic > 0 for at least one of the seven filtered sources",
         "no item appears twice under the same URL"
+      ]
+    },
+    {
+      "id": "enabled-filter",
+      "type": "script",
+      "description": "A source marked \"enabled\": false is kept in the catalog but not read.",
+      "run": "python3 scripts/fetch_feeds.py --hours 24 --out /tmp/eval-items.json",
+      "expect": [
+        "a disabled source appears in neither sources_ok nor sources_failed",
+        "it is still listed under sources_disabled, with its note",
+        "counts.sources_total excludes it and counts.sources_disabled counts it",
+        "--only <id> reads it anyway, so a disabled source can still be tested",
+        "--include-disabled reads the whole catalog"
       ]
     },
     {

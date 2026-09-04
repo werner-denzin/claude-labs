@@ -532,6 +532,11 @@ def main() -> int:
     parser.add_argument("--workers", type=int, default=16)
     parser.add_argument("--only", default="", help="comma-separated list of source ids")
     parser.add_argument(
+        "--include-disabled",
+        action="store_true",
+        help='read sources marked "enabled": false too (they are skipped by default)',
+    )
+    parser.add_argument(
         "--merge-threshold",
         type=float,
         default=JACCARD_THRESHOLD,
@@ -543,9 +548,19 @@ def main() -> int:
 
     with open(args.sources, encoding="utf-8") as handle:
         sources = json.load(handle)["sources"]
+
+    # A retired source stays in the catalog with "enabled": false, so the entry
+    # keeps its note, its weight and the reason it was dropped -- and so turning
+    # it back on is one word rather than research. Absent means enabled: a
+    # hand-added entry works without the flag.
+    disabled = [s for s in sources if s.get("enabled", True) is False]
     if args.only:
+        # Naming a source explicitly overrides the filter: that is how you test
+        # one you have just disabled.
         wanted = {s.strip() for s in args.only.split(",") if s.strip()}
         sources = [s for s in sources if s["id"] in wanted]
+    elif not args.include_disabled:
+        sources = [s for s in sources if s.get("enabled", True) is not False]
 
     now = datetime.now(timezone.utc)
     cutoff = now - timedelta(hours=args.hours)
@@ -603,14 +618,21 @@ def main() -> int:
         "window_hours": args.hours,
         "window_start": cutoff.isoformat(),
         "counts": {
+            # sources_total counts what was actually read, so "29/30" never
+            # silently includes a source nobody meant to read.
             "sources_total": len(sources),
             "sources_ok": len(ok),
             "sources_failed": len(failed),
+            "sources_disabled": len(disabled),
             "items_raw": raw_count,
             "items_deduped": len(items),
         },
         "sources_ok": sorted(ok, key=lambda s: -s["in_window"]),
         "sources_failed": failed,
+        "sources_disabled": [
+            {"id": s["id"], "name": s["name"], "note": s.get("note", "")}
+            for s in disabled
+        ],
         "items": items,
     }
 
@@ -622,7 +644,9 @@ def main() -> int:
             handle.write(text)
         print(
             f"{len(items)} items ({raw_count} before deduplication) from "
-            f"{len(ok)}/{len(sources)} sources -> {args.out}",
+            f"{len(ok)}/{len(sources)} sources"
+            + (f", {len(disabled)} disabled" if disabled else "")
+            + f" -> {args.out}",
             file=sys.stderr,
         )
         if failed:

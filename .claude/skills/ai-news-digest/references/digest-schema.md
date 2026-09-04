@@ -28,6 +28,10 @@ The file the triage step writes and `build_card.py` consumes. UTF-8 JSON.
   "not_relevant": [                   // optional, in English: what dominated the volume and does not deserve attention
     "consumer hardware launches"
   ],
+  "anomalies": [                      // optional; feeds the report's "Blocked / Unexpected Behaviors" section
+    { "source": "Andrej Karpathy",
+      "detail": "HTTP 403 with no x-deny-reason header, so the source refused us rather than the sandbox. The feed answers 200 from a laptop, so this is cloud-egress filtering, not a dead feed." }
+  ],
   "sources_failed": [                 // copy from items.json + the blocks from step 2
     { "name": "Sequoia Capital", "error": "HTTP 403" }
   ],
@@ -80,6 +84,14 @@ before generating the payload.
 - `label` renders under the title, uppercased. It is required and cannot be left
   empty: a card with nothing to categorise it is a card the reader has to open
   the description to place.
+- `anomalies` is what a human reviews to decide whether a source should be
+  disabled or removed. It is wider than `sources_failed`: a source that answered
+  `200` and returned nothing it normally would, a sitemap re-stamping old posts
+  as new, a feed that moved, a source whose entire output was dropped by the
+  topic filter. `build_card.py` does not render it — the Teams card keeps its
+  one-line failure summary, and the detail lives in the archived report where the
+  decision gets made. Recurrence is the signal: `grep -l "<source name>"
+  reports/*.md` shows whether today was an accident or a pattern.
 - `also_covered_by` comes from `items.json`, but it is editable: if you merged
   items the script did not (the typical case being English and Portuguese
   covering the same story), add them here.

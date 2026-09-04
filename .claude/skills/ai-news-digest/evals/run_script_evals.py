@@ -93,11 +93,66 @@ def eval_collect_window(tmp: str) -> None:
         not (sitemap_ids & failed_ids),
         f"these failed: {sitemap_ids & failed_ids}",
     )
+    check(
+        "counts report how many sources are disabled",
+        "sources_disabled" in data["counts"],
+        f'counts keys: {sorted(data["counts"])}',
+    )
+    check(
+        "sources_total counts only what was read",
+        data["counts"]["sources_total"]
+        == data["counts"]["sources_ok"] + data["counts"]["sources_failed"],
+        f'{data["counts"]}',
+    )
+
     filtered = [s for s in data["sources_ok"] if s.get("off_topic", 0) > 0]
     check("the topic filter dropped items", bool(filtered))
     check(
         "no item duplicated by URL",
         len({i["url"] for i in data["items"]}) == len(data["items"]),
+    )
+
+
+def eval_enabled_filter(tmp: str) -> None:
+    print("\n[enabled-filter] a disabled source is kept but not read")
+    catalog = json.load(open(os.path.join(SKILL, "assets", "sources.json"), encoding="utf-8"))
+    total = len(catalog["sources"])
+    off = {"karpathy", "sequoia"}
+    for source in catalog["sources"]:
+        if source["id"] in off:
+            source["enabled"] = False
+    path = os.path.join(tmp, "half-disabled.json")
+    json.dump(catalog, open(path, "w", encoding="utf-8"), ensure_ascii=False)
+
+    out = os.path.join(tmp, "enabled.json")
+    proc = run(["scripts/fetch_feeds.py", "--sources", path, "--hours", "24", "--out", out])
+    check("exits 0", proc.returncode == 0, proc.stderr[-200:])
+    if proc.returncode != 0:
+        return
+    data = json.load(open(out, encoding="utf-8"))
+    read = {s["id"] for s in data["sources_ok"]} | {s["id"] for s in data["sources_failed"]}
+    check("the disabled sources were not read", not (off & read), f"read anyway: {off & read}")
+    check(
+        "they are still reported, not vanished",
+        {s["id"] for s in data["sources_disabled"]} == off,
+        f'sources_disabled: {[s["id"] for s in data["sources_disabled"]]}',
+    )
+    check(
+        "sources_total excludes them",
+        data["counts"]["sources_total"] == total - len(off)
+        and data["counts"]["sources_disabled"] == len(off),
+        f'{data["counts"]}',
+    )
+
+    proc = run([
+        "scripts/fetch_feeds.py", "--sources", path, "--hours", "720",
+        "--only", "karpathy", "--out", os.path.join(tmp, "only.json"),
+    ])
+    data = json.load(open(os.path.join(tmp, "only.json"), encoding="utf-8"))
+    check(
+        "--only overrides the filter, so a disabled source can be tested",
+        proc.returncode == 0 and data["counts"]["sources_total"] == 1,
+        f'{data["counts"]}',
     )
 
 
@@ -223,8 +278,10 @@ def main() -> int:
     with tempfile.TemporaryDirectory() as tmp:
         if args.offline:
             print("\n[collect-window] skipped (--offline)")
+            print("[enabled-filter] skipped (--offline)")
         else:
             eval_collect_window(tmp)
+            eval_enabled_filter(tmp)
         eval_card_size_limit(tmp)
         eval_digest_validation(tmp)
         eval_webhook_secret(tmp)

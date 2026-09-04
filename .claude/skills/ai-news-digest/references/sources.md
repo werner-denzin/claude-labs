@@ -6,6 +6,7 @@ Edit `assets/sources.json`. Each entry:
 | --- | --- |
 | `id` | Unique key. Used by `--only` and in failure reports. |
 | `name` | The name shown on the card. |
+| `enabled` | `true` = read on every run. `false` = retired: kept in the file with its note and weight, skipped by the collector, and reported under `sources_disabled`. Absent means enabled. |
 | `feed` | RSS/Atom. `null` when the source publishes no feed — then use `sitemap`, or fall back to reading `site` with WebFetch. |
 | `sitemap` | Optional, for sources with no feed: `{"url": "...", "contains": "/news/"}`. The collector reads the sitemap, keeps URLs containing that substring, and dates them by `<lastmod>`. Add `"excludes": ["/tag/"]` to drop index pages that share the path. |
 | `site` | Human-facing page. Fallback when the feed dies, and the WebFetch target. |
@@ -179,6 +180,28 @@ us. Without that distinction a dead source gets explained away as a policy block
 or a missing allowlist entry gets blamed on the source: the 2026-09-04 routine
 run reported Karpathy's 403 as "expected — no fetchable feed" when the feed
 answers `200` from a laptop.
+
+## Retiring a source
+
+Set `"enabled": false`. Do not delete the entry.
+
+The entry carries the reasoning that took work to establish — why the feed is
+read from a sitemap, which paths returned 404, what its volume was, why its
+topic gate is shaped the way it is. Deleting it throws that away and the next
+person re-derives it. Disabling keeps it as history, and turning the source back
+on is one word rather than an afternoon.
+
+The collector skips disabled sources, counts them in
+`counts.sources_disabled`, and lists them under `sources_disabled` so a run's
+`28/28` is never quietly a `28/30`. Two escape hatches: `--only <id>` reads a
+named source whether or not it is enabled, which is how you test one you have
+just disabled, and `--include-disabled` reads the whole file.
+
+**What justifies disabling one.** The `Blocked / Unexpected Behaviors` section of
+each archived report is the evidence: a source that appears there repeatedly is
+the case for retirement. `grep -l "<source name>" reports/*.md` gives the
+history. A single bad day is not a pattern — a transient DNS failure and a TLS
+timeout both showed up in local runs on 2026-09-03 and both were gone on retry.
 
 ## How we identify ourselves
 

@@ -60,6 +60,17 @@ Rules that hold for any change to the skill:
   past a block. If a source refuses `ai-news-digest/1.0`, it becomes a declared
   failure or it leaves the catalog — no spoofed user agent, rotated IP or proxy.
   Details and the measurement in `references/sources.md`.
+- **A block or an oddity goes in the report's `Blocked / Unexpected Behaviors`
+  section**, always rendered, saying "None." on a clean run. It records what was
+  observed *and what it means* — a `403` carrying `x-deny-reason` is the
+  environment's allowlist, one without it is the source refusing us — because
+  this is the evidence a source gets disabled or removed on. Never write
+  "expected" without saying why.
+- **A retired source is disabled, not deleted.** `"enabled": false` keeps the
+  entry, its note and the reasoning that took work to establish; the collector
+  skips it and reports it under `sources_disabled`, so `28/28` is never quietly
+  `28/30`. `--only <id>` still reads it, which is how you test one you just
+  disabled.
 - **The model is pinned to Claude Sonnet 5** in `.claude/settings.json`, which
   covers both an interactive session here and the cloud routine that clones the
   repo. A measured run costs $0.31 metered, against $0.78 on Opus 5 — the
@@ -72,6 +83,9 @@ Rules that hold for any change to the skill:
 - Read the previous day's `reports/` entry to say what changed since yesterday.
 - Watch the LangChain sitemap: it bulk-stamps `lastmod` on a rebuild, so a day
   with several same-dated LangChain items may be old posts resurfacing.
+- Review the `Blocked / Unexpected Behaviors` sections across `reports/` every
+  so often — `grep -l "<source name>" reports/*.md` — and disable whatever keeps
+  appearing there.
 - Still uncovered on the engineering agenda: the MCP spec (no feed anywhere),
   Cline, Codex's own changelog. Optional low-volume additions measured and left
   out: JetBrains AI, the Pragmatic Engineer, Hamel Husain, Chip Huyen.

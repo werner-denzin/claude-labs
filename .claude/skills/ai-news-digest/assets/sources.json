@@ -4,6 +4,7 @@
     {
       "id": "openai",
       "name": "OpenAI News",
+      "enabled": true,
       "feed": "https://openai.com/news/rss.xml",
       "site": "https://openai.com/news/",
       "lang": "en",
@@ -13,20 +14,22 @@
     {
       "id": "anthropic",
       "name": "Anthropic News",
+      "enabled": true,
       "feed": null,
       "site": "https://www.anthropic.com/news",
       "lang": "en",
       "category": "lab",
       "weight": 5,
-      "note": "No public RSS (11 paths checked 2026-09-03, all 404). Read via the sitemap, which carries /news/ URLs with lastmod dates. Titles come from the URL slug and have no summary, so read the page before writing a card.",
       "sitemap": {
         "url": "https://www.anthropic.com/sitemap.xml",
         "contains": "/news/"
-      }
+      },
+      "note": "No public RSS (11 paths checked 2026-09-03, all 404). Read via the sitemap, which carries /news/ URLs with lastmod dates. Titles come from the URL slug and have no summary, so read the page before writing a card."
     },
     {
       "id": "deepmind",
       "name": "Google DeepMind Blog",
+      "enabled": true,
       "feed": "https://deepmind.google/blog/rss.xml",
       "site": "https://deepmind.google/discover/blog/",
       "lang": "en",
@@ -36,6 +39,7 @@
     {
       "id": "google-ai",
       "name": "Google - The Keyword (AI)",
+      "enabled": true,
       "feed": "https://blog.google/innovation-and-ai/technology/ai/rss/",
       "site": "https://blog.google/innovation-and-ai/technology/ai/",
       "lang": "en",
@@ -45,6 +49,7 @@
     {
       "id": "karpathy",
       "name": "Andrej Karpathy",
+      "enabled": true,
       "feed": "https://karpathy.bearblog.dev/feed/",
       "site": "https://karpathy.bearblog.dev/",
       "lang": "en",
@@ -55,6 +60,7 @@
     {
       "id": "boris-cherny",
       "name": "Boris Cherny",
+      "enabled": true,
       "feed": "https://bcherny.github.io/feed.xml",
       "site": "https://bcherny.github.io/",
       "lang": "en",
@@ -65,6 +71,7 @@
     {
       "id": "thariq",
       "name": "Thariq Shihipar",
+      "enabled": true,
       "feed": "https://thariq.io/rss.xml",
       "site": "https://thariq.io/",
       "lang": "en",
@@ -75,13 +82,13 @@
     {
       "id": "the-batch",
       "name": "The Batch (Andrew Ng / DeepLearning.AI)",
+      "enabled": true,
       "feed": null,
       "site": "https://www.deeplearning.ai/the-batch/",
       "lang": "en",
       "category": "people",
       "weight": 4,
       "max_items": 8,
-      "note": "Andrew Ng's weekly letter plus DeepLearning.AI's news roundup. No RSS (/feed/, /rss.xml and /the-batch/rss.xml all 404 on 2026-09-03); read via the sitemap, which carries full timestamps. andrewng.org is not a separate source: it publishes no feed and no sitemap, and the letters land here. Titles come from the URL slug and have no summary, so read the page before writing a card.",
       "sitemap": {
         "url": "https://www.deeplearning.ai/sitemap.xml",
         "contains": "/the-batch/",
@@ -89,11 +96,13 @@
           "/the-batch/tag/",
           "/the-batch/issue-"
         ]
-      }
+      },
+      "note": "Andrew Ng's weekly letter plus DeepLearning.AI's news roundup. No RSS (/feed/, /rss.xml and /the-batch/rss.xml all 404 on 2026-09-03); read via the sitemap, which carries full timestamps. andrewng.org is not a separate source: it publishes no feed and no sitemap, and the letters land here. Titles come from the URL slug and have no summary, so read the page before writing a card."
     },
     {
       "id": "sam-altman",
       "name": "Sam Altman",
+      "enabled": true,
       "feed": "https://blog.samaltman.com/posts.atom",
       "site": "https://blog.samaltman.com/",
       "lang": "en",
@@ -104,20 +113,22 @@
     {
       "id": "a16z",
       "name": "Andreessen Horowitz",
+      "enabled": true,
       "feed": null,
       "site": "https://a16z.com/",
       "lang": "en",
       "category": "investor",
       "weight": 3,
-      "note": "No RSS at any conventional path (checked 2026-09-03). Read via post-sitemap.xml, which carries lastmod dates. Titles come from the URL slug and have no summary.",
       "sitemap": {
         "url": "https://a16z.com/post-sitemap.xml",
         "contains": "a16z.com/"
-      }
+      },
+      "note": "No RSS at any conventional path (checked 2026-09-03). Read via post-sitemap.xml, which carries lastmod dates. Titles come from the URL slug and have no summary."
     },
     {
       "id": "ycombinator",
       "name": "Y Combinator Blog",
+      "enabled": true,
       "feed": "https://www.ycombinator.com/blog/rss",
       "site": "https://www.ycombinator.com/blog",
       "lang": "en",
@@ -127,6 +138,7 @@
     {
       "id": "sequoia",
       "name": "Sequoia Capital",
+      "enabled": true,
       "feed": "https://www.sequoiacap.com/feed/",
       "site": "https://www.sequoiacap.com/",
       "lang": "en",
@@ -136,6 +148,7 @@
     {
       "id": "nvidia",
       "name": "NVIDIA Blog",
+      "enabled": true,
       "feed": "https://blogs.nvidia.com/feed/",
       "site": "https://blogs.nvidia.com/",
       "lang": "en",
@@ -148,6 +161,7 @@
     {
       "id": "nvidia-newsroom",
       "name": "NVIDIA Newsroom",
+      "enabled": true,
       "feed": "https://nvidianews.nvidia.com/releases.xml",
       "site": "https://nvidianews.nvidia.com/",
       "lang": "en",
@@ -160,6 +174,7 @@
     {
       "id": "techcrunch-ai",
       "name": "TechCrunch AI",
+      "enabled": true,
       "feed": "https://techcrunch.com/category/artificial-intelligence/feed/",
       "site": "https://techcrunch.com/category/artificial-intelligence/",
       "lang": "en",
@@ -170,6 +185,7 @@
     {
       "id": "the-decoder",
       "name": "The Decoder",
+      "enabled": true,
       "feed": "https://the-decoder.com/feed/",
       "site": "https://the-decoder.com/",
       "lang": "en",
@@ -180,6 +196,7 @@
     {
       "id": "arstechnica-ai",
       "name": "Ars Technica AI",
+      "enabled": true,
       "feed": "https://arstechnica.com/ai/feed/",
       "site": "https://arstechnica.com/ai/",
       "lang": "en",
@@ -190,6 +207,7 @@
     {
       "id": "latent-space",
       "name": "Latent Space",
+      "enabled": true,
       "feed": "https://www.latent.space/feed",
       "site": "https://www.latent.space/",
       "lang": "en",
@@ -200,36 +218,39 @@
     {
       "id": "anthropic-engineering",
       "name": "Anthropic Engineering",
+      "enabled": true,
       "feed": null,
       "site": "https://www.anthropic.com/engineering",
       "lang": "en",
       "category": "engineering",
       "weight": 5,
-      "note": "The canonical source for the agenda this radar exists for: context engineering, harness design, agent skills, advanced tool use, Claude Code internals. Same sitemap as the anthropic entry, filtered to /engineering/ instead of /news/. Roughly one post a month -- silent most days, and worth a HIGH card when it fires.",
       "sitemap": {
         "url": "https://www.anthropic.com/sitemap.xml",
         "contains": "/engineering/"
-      }
+      },
+      "note": "The canonical source for the agenda this radar exists for: context engineering, harness design, agent skills, advanced tool use, Claude Code internals. Same sitemap as the anthropic entry, filtered to /engineering/ instead of /news/. Roughly one post a month -- silent most days, and worth a HIGH card when it fires."
     },
     {
       "id": "langchain",
       "name": "LangChain Blog",
+      "enabled": true,
       "feed": null,
       "site": "https://blog.langchain.com/",
       "lang": "en",
       "category": "engineering",
       "weight": 4,
-      "max_items": 4,
       "topic_exclude": "newsletter|customers|case stud|webinar|conference|hiring|interrupt",
-      "note": "LangGraph, LangSmith, MCP integration and agent memory -- the only source in the catalog covering that stack directly. Webflow site, no RSS: read from www.langchain.com/sitemap.xml. CAVEAT: the sitemap bulk-stamps lastmod on a site rebuild -- 92 posts over 30 days carried only 23 distinct timestamps, one cluster of 21. Hence max_items 4 and the exclusion of newsletters and customer stories. If a day shows four LangChain items with the same date, check the post itself before writing a card.",
+      "max_items": 4,
       "sitemap": {
         "url": "https://www.langchain.com/sitemap.xml",
         "contains": "/blog/"
-      }
+      },
+      "note": "LangGraph, LangSmith, MCP integration and agent memory -- the only source in the catalog covering that stack directly. Webflow site, no RSS: read from www.langchain.com/sitemap.xml. CAVEAT: the sitemap bulk-stamps lastmod on a site rebuild -- 92 posts over 30 days carried only 23 distinct timestamps, one cluster of 21. Hence max_items 4 and the exclusion of newsletters and customer stories. If a day shows four LangChain items with the same date, check the post itself before writing a card."
     },
     {
       "id": "simon-willison",
       "name": "Simon Willison",
+      "enabled": true,
       "feed": "https://simonwillison.net/atom/everything/",
       "site": "https://simonwillison.net/",
       "lang": "en",
@@ -242,6 +263,7 @@
     {
       "id": "github-ai",
       "name": "GitHub AI & ML Blog",
+      "enabled": true,
       "feed": "https://github.blog/ai-and-ml/feed/",
       "site": "https://github.blog/ai-and-ml/",
       "lang": "en",
@@ -252,6 +274,7 @@
     {
       "id": "infoq-ai",
       "name": "InfoQ AI, ML & Data Engineering",
+      "enabled": true,
       "feed": "https://feed.infoq.com/ai-ml-data-eng/",
       "site": "https://www.infoq.com/ai-ml-data-eng/",
       "lang": "en",
@@ -263,6 +286,7 @@
     {
       "id": "huggingface",
       "name": "Hugging Face Blog",
+      "enabled": true,
       "feed": "https://huggingface.co/blog/feed.xml",
       "site": "https://huggingface.co/blog",
       "lang": "en",
@@ -274,6 +298,7 @@
     {
       "id": "cursor",
       "name": "Cursor Changelog",
+      "enabled": true,
       "feed": "https://www.cursor.com/changelog/rss.xml",
       "site": "https://www.cursor.com/changelog",
       "lang": "en",
@@ -284,6 +309,7 @@
     {
       "id": "zed",
       "name": "Zed Blog",
+      "enabled": true,
       "feed": "https://zed.dev/blog.rss",
       "site": "https://zed.dev/blog",
       "lang": "en",
@@ -294,6 +320,7 @@
     {
       "id": "sourcegraph",
       "name": "Sourcegraph Blog",
+      "enabled": true,
       "feed": "https://sourcegraph.com/blog/rss.xml",
       "site": "https://sourcegraph.com/blog",
       "lang": "en",
@@ -304,6 +331,7 @@
     {
       "id": "martin-fowler",
       "name": "Martin Fowler",
+      "enabled": true,
       "feed": "https://martinfowler.com/feed.atom",
       "site": "https://martinfowler.com/",
       "lang": "en",
@@ -315,6 +343,7 @@
     {
       "id": "arxiv-se",
       "name": "arXiv cs.SE (Software Engineering)",
+      "enabled": true,
       "feed": "https://export.arxiv.org/rss/cs.SE",
       "site": "https://arxiv.org/list/cs.SE/recent",
       "lang": "en",
@@ -325,14 +354,15 @@
     {
       "id": "github-changelog",
       "name": "GitHub Changelog",
+      "enabled": true,
       "feed": "https://github.blog/changelog/feed/",
       "site": "https://github.blog/changelog/",
       "lang": "en",
       "category": "engineering",
       "weight": 3,
       "topic_filter": true,
-      "note": "Covers all of GitHub, so it needs a gate. Uses its own vocabulary: the global filter dropped 'Enterprise-managed settings support any default model', a real Copilot governance change.",
-      "topic_terms": "copilot|\\bagent|\\bmcp\\b|model context protocol|\\bmodels?\\b|\\bllm\\b|\\bai\\b|code review|codespaces|premium request"
+      "topic_terms": "copilot|\\bagent|\\bmcp\\b|model context protocol|\\bmodels?\\b|\\bllm\\b|\\bai\\b|code review|codespaces|premium request",
+      "note": "Covers all of GitHub, so it needs a gate. Uses its own vocabulary: the global filter dropped 'Enterprise-managed settings support any default model', a real Copilot governance change."
     }
   ]
 }
