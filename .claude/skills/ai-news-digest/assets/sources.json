@@ -1,5 +1,5 @@
 {
-  "_comment": "AI radar source catalog. Deliberately small: fewer sources means a smaller triage context and lower token cost per run. Two tiers. PRIMARY, chosen by the user: labs (OpenAI, Anthropic, Google), the people building them, investors, and NVIDIA. SUPPORTING press, engineering and research, added because the primary tier cannot report on itself -- the labs announce but do not analyse, the people publish on X which has no fetchable feed, and the VC firms blog about portfolio companies rather than deals. Fields: id, name, feed (RSS/Atom; null when the source publishes none - read 'site' with WebFetch), site, lang (also decides the card's language), category, weight (1-5). Optional: topic_filter, max_items, kind, note. Validated against the live network on 2026-09-03. Do NOT add github.com releases.atom feeds: the cloud sandbox scopes GitHub access to the cloned repository and returns 403 for every other repo.",
+  "_comment": "AI radar source catalog. Three groups. ENGINEERING CORE (12 sources, the largest and the reason the radar exists): LangGraph and agent frameworks, harness engineering, context engineering, prompt engineering, MCP, agent memory, guardrails, evals, tool use, and the coding agents themselves. PRIMARY, chosen by the user: labs (OpenAI, Anthropic, Google), the people building them, investors, and NVIDIA. SUPPORTING press and research, because the primary tier cannot report on itself -- the labs announce but do not analyse, the people publish on X which has no fetchable feed, and the VC firms blog about portfolio companies rather than deals. Fields: id, name, feed (RSS/Atom; null when the source publishes none - read 'site' with WebFetch, or set 'sitemap'), site, lang (also decides the card's language), category, weight (1-5). Optional: topic_filter, topic_terms, topic_exclude, max_items, kind, note. Validated against the live network on 2026-09-03. Do NOT add github.com releases.atom feeds: the cloud sandbox scopes GitHub access to the cloned repository and returns 403 for every other repo.",
   "sources": [
     {
       "id": "openai",
@@ -85,7 +85,10 @@
       "sitemap": {
         "url": "https://www.deeplearning.ai/sitemap.xml",
         "contains": "/the-batch/",
-        "excludes": ["/the-batch/tag/", "/the-batch/issue-"]
+        "excludes": [
+          "/the-batch/tag/",
+          "/the-batch/issue-"
+        ]
       }
     },
     {
@@ -193,6 +196,121 @@
       "category": "engineering",
       "weight": 4,
       "note": "Agentic coding coverage. Editorial stand-in for the GitHub release feeds, which the cloud sandbox blocks."
+    },
+    {
+      "id": "anthropic-engineering",
+      "name": "Anthropic Engineering",
+      "feed": null,
+      "site": "https://www.anthropic.com/engineering",
+      "lang": "en",
+      "category": "engineering",
+      "weight": 5,
+      "note": "The canonical source for the agenda this radar exists for: context engineering, harness design, agent skills, advanced tool use, Claude Code internals. Same sitemap as the anthropic entry, filtered to /engineering/ instead of /news/. Roughly one post a month -- silent most days, and worth a HIGH card when it fires.",
+      "sitemap": {
+        "url": "https://www.anthropic.com/sitemap.xml",
+        "contains": "/engineering/"
+      }
+    },
+    {
+      "id": "langchain",
+      "name": "LangChain Blog",
+      "feed": null,
+      "site": "https://blog.langchain.com/",
+      "lang": "en",
+      "category": "engineering",
+      "weight": 4,
+      "max_items": 4,
+      "topic_exclude": "newsletter|customers|case stud|webinar|conference|hiring|interrupt",
+      "note": "LangGraph, LangSmith, MCP integration and agent memory -- the only source in the catalog covering that stack directly. Webflow site, no RSS: read from www.langchain.com/sitemap.xml. CAVEAT: the sitemap bulk-stamps lastmod on a site rebuild -- 92 posts over 30 days carried only 23 distinct timestamps, one cluster of 21. Hence max_items 4 and the exclusion of newsletters and customer stories. If a day shows four LangChain items with the same date, check the post itself before writing a card.",
+      "sitemap": {
+        "url": "https://www.langchain.com/sitemap.xml",
+        "contains": "/blog/"
+      }
+    },
+    {
+      "id": "simon-willison",
+      "name": "Simon Willison",
+      "feed": "https://simonwillison.net/atom/everything/",
+      "site": "https://simonwillison.net/",
+      "lang": "en",
+      "category": "engineering",
+      "weight": 5,
+      "topic_filter": true,
+      "max_items": 8,
+      "note": "Daily hands-on practice with Claude Code, Codex and every new model. The ai-assisted-programming tag feed exists but carries only 4 posts in 30 days; the everything feed carries 26, so it is read with the topic gate instead."
+    },
+    {
+      "id": "github-ai",
+      "name": "GitHub AI & ML Blog",
+      "feed": "https://github.blog/ai-and-ml/feed/",
+      "site": "https://github.blog/ai-and-ml/",
+      "lang": "en",
+      "category": "engineering",
+      "weight": 4,
+      "note": "Copilot practice and evaluation writeups from the team that ships it -- 90% of its posts land on this radar's agenda. Complements github-changelog, which carries the platform changes."
+    },
+    {
+      "id": "infoq-ai",
+      "name": "InfoQ AI, ML & Data Engineering",
+      "feed": "https://feed.infoq.com/ai-ml-data-eng/",
+      "site": "https://www.infoq.com/ai-ml-data-eng/",
+      "lang": "en",
+      "category": "engineering",
+      "weight": 3,
+      "topic_filter": true,
+      "note": "Production practice: context engineering, prompt compression, agent architecture. Edited for engineers rather than for the AI press cycle."
+    },
+    {
+      "id": "huggingface",
+      "name": "Hugging Face Blog",
+      "feed": "https://huggingface.co/blog/feed.xml",
+      "site": "https://huggingface.co/blog",
+      "lang": "en",
+      "category": "engineering",
+      "weight": 3,
+      "topic_filter": true,
+      "note": "Agent memory, structured outputs, fine-tuning and evaluation, with runnable code. Mixed with model-release posts, hence the topic gate."
+    },
+    {
+      "id": "cursor",
+      "name": "Cursor Changelog",
+      "feed": "https://www.cursor.com/changelog/rss.xml",
+      "site": "https://www.cursor.com/changelog",
+      "lang": "en",
+      "category": "engineering",
+      "weight": 4,
+      "note": "A coding agent the teams may use, and the only agent changelog reachable from the sandbox -- GitHub releases.atom is 403 for every repo but the cloned one. Entries are named by feature, not by version, so kind: release is not set."
+    },
+    {
+      "id": "zed",
+      "name": "Zed Blog",
+      "feed": "https://zed.dev/blog.rss",
+      "site": "https://zed.dev/blog",
+      "lang": "en",
+      "category": "engineering",
+      "weight": 3,
+      "note": "Editor and agent-panel work. Two posts in 30 days; silent most days, on-topic when it fires."
+    },
+    {
+      "id": "sourcegraph",
+      "name": "Sourcegraph Blog",
+      "feed": "https://sourcegraph.com/blog/rss.xml",
+      "site": "https://sourcegraph.com/blog",
+      "lang": "en",
+      "category": "engineering",
+      "weight": 3,
+      "note": "Amp and code-search-driven agents. Low volume, high on-topic rate."
+    },
+    {
+      "id": "martin-fowler",
+      "name": "Martin Fowler",
+      "feed": "https://martinfowler.com/feed.atom",
+      "site": "https://martinfowler.com/",
+      "lang": "en",
+      "category": "engineering",
+      "weight": 3,
+      "topic_filter": true,
+      "note": "Practice writing on LLMs in software teams, from the person the audience already reads on everything else. Topic-gated because the feed also carries general architecture writing."
     },
     {
       "id": "arxiv-se",

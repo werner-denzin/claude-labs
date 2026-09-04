@@ -22,68 +22,84 @@ Edit `assets/sources.json`. Each entry:
 
 ## The catalog today
 
-Twenty sources, in the two tiers the `_comment` in `sources.json` describes.
-Fewer sources means a smaller triage context and a cheaper run, so every addition
-has to earn its place against that cost.
+Thirty sources, in the two tiers the `_comment` in `sources.json` describes, plus
+an engineering core that is the reason the radar exists.
 
-**Primary — chosen by the user.** The labs (OpenAI, Anthropic, DeepMind, Google's
-Keyword blog), the people building them (Karpathy, Boris Cherny, Thariq, Sam
-Altman, Andrew Ng's The Batch), the investors (a16z, Y Combinator, Sequoia) and
-NVIDIA. The announcement is born here; everyone else covers it afterwards, so
-when an item appears both at the source and in the press, the card carries the
-source's link.
+**Engineering — twelve sources, the largest group.** The agenda EVOLV
+development exercises: LangGraph and agent frameworks, harness engineering,
+context engineering, prompt engineering, MCP, agent memory, guardrails, evals and
+observability, tool use, and the coding agents themselves.
 
-**Supporting — because the primary tier cannot report on itself.** The labs
-announce but do not analyse, the people mostly publish on X which has no
-fetchable feed, and the VC firms blog about portfolio companies rather than
-deals. So: TechCrunch AI for funding and M&A, The Decoder for what the founders
-say, Ars Technica AI for depth and for legal and policy, Latent Space for
-agentic coding, arXiv cs.SE for research an engineer could act on, and GitHub
-Changelog for Copilot's enterprise controls and model deprecations.
+| Source | What it covers that nothing else does |
+| --- | --- |
+| Anthropic Engineering | Context engineering, harness design, agent skills, advanced tool use, Claude Code internals. About one post a month; each is worth a card. |
+| LangChain Blog | LangGraph, LangSmith, MCP integration, agent memory. The only source on that stack. |
+| Simon Willison | Daily practice with Claude Code, Codex and every new model. |
+| Latent Space | Agentic coding, editorially — it stands in for the release feeds the sandbox blocks. |
+| GitHub AI & ML, GitHub Changelog | Copilot practice and evaluation; platform and governance changes. |
+| InfoQ AI/ML | Production practice: context engineering, prompt compression, agent architecture. |
+| Hugging Face | Agent memory, structured outputs, evaluation, with runnable code. |
+| Cursor, Zed, Sourcegraph | The agents' own shipping notes. |
+| Martin Fowler | LLM practice for software teams. |
 
-### What this catalog cannot see
+**Primary — chosen by the user.** The labs (OpenAI, Anthropic, DeepMind,
+Google's Keyword blog), the people building them (Karpathy, Boris Cherny,
+Thariq, Sam Altman, Andrew Ng's The Batch), the investors (a16z, Y Combinator,
+Sequoia) and NVIDIA. The announcement is born here; when an item appears both at
+the source and in the press, the card carries the source's link.
 
-Worth knowing before you conclude a quiet day means a quiet market.
+**Supporting press.** TechCrunch AI for funding and M&A, The Decoder for what
+the founders say, Ars Technica AI for depth and for legal and policy. The
+primary tier cannot report on itself.
 
-**Coding agents.** There is no release feed in the catalog. GitHub
-`releases.atom` would be the fastest, least mediated signal there is — the notes
-land before anyone writes about them — but the cloud sandbox scopes GitHub
-access to the cloned repository and returns 403 for every other repo. Latent
-Space and GitHub Changelog stand in for it, editorially and partially. The
-`kind: release` machinery in `fetch_feeds.py` still works and is ready for the
-day a coding agent is added from somewhere reachable.
+**Research.** arXiv cs.SE, capped at 10 items a day.
 
-**The people.** Karpathy, Boris Cherny, Thariq and Sam Altman publish on X.
-Their blogs are real but rare — measured over a seven-day window, all four
-produced nothing. Expect those categories empty most days and pick up what they
-said through the press.
+### Why the engineering core was rebuilt
 
-**Regulation.** No source covers it directly since the catalog was cut. The EU AI
-Act, LGPD/ANPD and court rulings reach the radar only through Ars Technica and
-TechCrunch. If the Brazilian regulatory agenda heats up (PL 2338, ANPD), that gap
-has to be closed with local sources.
+Measured on 2026-09-03 across the then-20 sources, over 30 days: **zero** items
+on LangGraph or LangChain, one on MCP, one on context engineering, two on harness
+engineering. 44 items in a month touched the agenda at all — 1.5 a day, against a
+target of ten engineering cards a day.
+
+Ten sources closed that gap, each validated live before being added. After the
+change, 19 of 44 items in a 24h window are on the agenda. The cost is real and
+was accepted deliberately: collection went from 20 sources to 30 and from ~39 to
+~44 candidates a day, which is a larger triage context and a more expensive run.
+
+### What this catalog still cannot see
+
+**Coding agent releases.** GitHub `releases.atom` is the fastest, least mediated
+signal there is, and the cloud sandbox returns 403 for every repo but the cloned
+one. Cursor's changelog is the only agent shipping-notes feed reachable; Claude
+Code, Cline, Codex and goose are covered only through Simon Willison, Latent
+Space and the press.
+
+**MCP itself.** The spec site publishes no feed at any conventional path. MCP
+news arrives through LangChain, Anthropic Engineering and InfoQ.
+
+**Regulation.** No source covers it directly. The EU AI Act, LGPD/ANPD and court
+rulings reach the radar only through Ars Technica and TechCrunch.
 
 **The local market.** No Brazilian source is in the catalog today, so the
-Portuguese-language rule in `SKILL.md` is currently inert — correct, and waiting
-for a `pt-BR` source to return.
+Portuguese-language rule in `SKILL.md` is currently inert.
+
+**The people.** Karpathy, Boris Cherny, Thariq and Sam Altman publish on X.
+Measured over seven days, all four produced nothing.
 
 ## Weights
 
 `weight` breaks ties in triage and picks the representative when two items
 deduplicate into one.
 
-**5 — the primary source of its own news.** OpenAI, Anthropic, DeepMind, and the
-three Claude Code people whose posts, when they come, are first-hand.
+**5 — the primary source of its own news.** OpenAI, Anthropic (news and
+engineering), DeepMind, Simon Willison, and the three Claude Code people.
 
 **4 — strong analysis and reporting.** Google's Keyword blog, Sam Altman, The
-Batch, NVIDIA (blog and newsroom), TechCrunch AI, The Decoder, Ars Technica AI
-and Latent Space. The Batch earns this tier: Andrew Ng's weekly letter is one of
-the few places where someone with a practitioner's standing says what a week of
-releases means, and DeepLearning.AI's roundup around it is written for engineers.
+Batch, NVIDIA, TechCrunch AI, The Decoder, Ars Technica AI, Latent Space,
+LangChain, GitHub AI, Cursor.
 
-**3 — context and volume.** The three investor blogs, GitHub Changelog and arXiv
-cs.SE. They rarely carry the day on their own, but they are the only window onto
-deal flow, platform governance and research.
+**3 — context and volume.** The three investor blogs, GitHub Changelog, InfoQ,
+Hugging Face, Zed, Sourcegraph, Martin Fowler and arXiv cs.SE.
 
 ## Sources with no feed
 
@@ -91,8 +107,9 @@ Three ways to cover a source that publishes no RSS, best first.
 
 **A sitemap with `<lastmod>`.** Many sites publish one even when they publish no
 feed, and it carries exactly what the window filter needs: a URL and a date. Set
-`sitemap` and leave `feed` null. Anthropic, a16z and The Batch are read this way,
-which is why none of them appears in the failure line any more.
+`sitemap` and leave `feed` null. Anthropic News, Anthropic Engineering, a16z, The
+Batch and LangChain are read this way, which is why none of them appears in the
+failure line any more.
 
 Three caveats. The title is derived from the URL slug, so
 `/news/enterprise-frontier-safeguards` becomes "Enterprise frontier safeguards" —
@@ -108,6 +125,14 @@ tag listings and 383 weekly roundups, and every one of them would have come out
 as an item. `excludes` drops them by substring. For The Batch the roundup
 (`/the-batch/issue-368`) is excluded on purpose and loses nothing — it only
 collects the same week's stories, and Andrew Ng's letter has its own URL.
+
+And a sitemap can lie about what is new. LangChain's re-stamps `lastmod` on
+every rebuild: 92 posts over 30 days carried only 23 distinct timestamps, with
+one cluster of 21 posts sharing a single second. A 24h window can therefore fill
+with posts from months ago. The entry limits the damage with `max_items: 4` and a
+`topic_exclude` for newsletters and customer stories, and `SKILL.md` tells triage
+to open a LangChain post before writing its card. A source that did this and had
+no editorial step behind it would not be worth adding.
 
 **WebFetch on the `site`.** Works, but costs a model call per source and returned
 empty content for two sites in a cloud run. Use it when there is no sitemap.
@@ -126,7 +151,9 @@ none of them reports a failure.
 
 | Source | In the catalog | Situation as of 2026-09-03 |
 | --- | --- | --- |
-| Anthropic News | yes, `anthropic` | Publishes no RSS. `/rss.xml`, `/news/rss.xml`, `/feed.xml` and `/engineering/rss.xml` all 404. Read from `/sitemap.xml`. |
+| Anthropic News | yes, `anthropic` | Publishes no RSS. `/rss.xml`, `/news/rss.xml`, `/feed.xml` and `/engineering/rss.xml` all 404. Read from `/sitemap.xml`, filtered to `/news/`. |
+| Anthropic Engineering | yes, `anthropic-engineering` | Same site, same sitemap, filtered to `/engineering/` — 25 posts, roughly one a month, and the canonical source for context engineering and harness design. |
+| LangChain | yes, `langchain` | Webflow site: `/rss/` and `/feed/` return the page itself. Read from `www.langchain.com/sitemap.xml`, filtered to `/blog/`. Its `lastmod` is bulk-stamped on a rebuild — see the caveat below. |
 | a16z | yes, `a16z` | No working feed path. Read from its sitemap. |
 | DeepLearning.AI | yes, `the-batch` | `/feed/`, `/rss.xml` and `/the-batch/rss.xml` all 404. Read from `/sitemap.xml`, excluding tag and issue pages. `andrewng.org` has neither feed nor sitemap, so Andrew Ng is covered here rather than as a source of his own. |
 | Meta AI Blog | no, left in `deeec82` | `ai.meta.com` returned 400 for every feed path. `engineering.fb.com` (ML Applications) does publish one, if the source is ever wanted back. |

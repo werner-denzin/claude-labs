@@ -70,6 +70,12 @@ TOPIC_RE = re.compile(
     r"coding agent|agentic|agent(s|ic)? (coding|workflow|harness|loop)|"
     r"swe-?bench|terminal-?bench|mcp|model context protocol|tool use|"
     r"subagent|code review|pull request|refactor|codebase|ide|sdk|cli|"
+    # --- the agent-engineering agenda the radar exists for ---------------
+    r"langgraph|langchain|langsmith|llamaindex|dspy|pydantic ai|"
+    r"context engineering|prompt engineering|context window|long context|"
+    r"harness|scaffold|orchestrat|agent memory|guardrail|prompt injection|"
+    r"jailbreak|function calling|structured output|agent skill|skills?|"
+    r"eval|evals|evaluation|observability|tracing|vector (database|store)|"
     # --- general AI ------------------------------------------------------
     r"a\.?i\.?|artificial intelligence|inteligencia artificial|intelig[eê]ncia artificial|"
     r"machine learning|aprendizado de m[aá]quina|deep learning|rede neural|neural network|"

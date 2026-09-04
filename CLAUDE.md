@@ -5,23 +5,26 @@ A lab for Claude Code experiments.
 ## The `ai-news-digest` skill
 
 A daily radar on **software engineering with AI** for SiDi's AI strategy
-committee: it collects the last 24h from 20 sources, classifies each item by
+committee: it collects the last 24h from 30 sources, classifies each item by
 temperature (HIGH/MEDIUM/LOW), selects 20, and publishes a card-format newsletter
 to a Teams channel.
 
 The lens shares are engineering 10, strategy 5, research 3, regulation 2 of the
 20. Engineering leads by design: it is what the committee is here for.
-Engineering reaches the radar through Latent Space, GitHub Changelog and
-`arXiv cs.SE`, plus whatever the press writes about tooling; there is no
-coding-agent release feed, because the cloud sandbox scopes GitHub access to the
-cloned repository and returns 403 for every other repo. Strategy and regulation
-come from the labs themselves, the press covering them, and the investors.
 
-**The catalog does not yet supply that share.** The two engineering sources
-produced 5 items in the last 24h and 12 in a week (measured 2026-09-03), so ten
-engineering cards a day depends on the press supplying the rest, judged by lens
-rather than by source. Closing that gap means adding engineering sources — the
-backlog item below.
+**Engineering means the agenda EVOLV development exercises** — LangGraph and
+agent frameworks, harness engineering, context engineering, prompt engineering,
+MCP, agent memory, guardrails, evals and observability, tool use, and the coding
+agents themselves (Claude Code, Codex, Cursor, Copilot, Zed). Twelve of the
+thirty sources exist for it, led by Anthropic Engineering, LangChain, Simon
+Willison, GitHub AI, InfoQ and Hugging Face. On a measured day, 19 of 44
+candidates touch that agenda.
+
+There is still no coding-agent release feed: the cloud sandbox scopes GitHub
+access to the cloned repository and returns 403 for every other repo, so Cursor's
+changelog is the only agent shipping notes the collector can read. Strategy and
+regulation come from the labs themselves, the press covering them, and the
+investors.
 
 `assets/sources.json` is the base of truth for all of this. When it changes,
 `CLAUDE.md`, `README.md`, `SKILL.md` and `references/sources.md` change with it.
@@ -57,10 +60,11 @@ Rules that hold for any change to the skill:
 ### Backlog
 
 - Read the previous day's `reports/` entry to say what changed since yesterday.
-- **Add engineering sources to support the 10-of-20 share.** Reachable
-  candidates that are not GitHub release feeds: Simon Willison's
-  `ai-assisted-programming` tag, Sourcegraph, JetBrains AI, the MCP spec, InfoQ,
-  the Pragmatic Engineer, Martin Fowler, Cursor's changelog.
+- Watch the LangChain sitemap: it bulk-stamps `lastmod` on a rebuild, so a day
+  with several same-dated LangChain items may be old posts resurfacing.
+- Still uncovered on the engineering agenda: the MCP spec (no feed anywhere),
+  Cline, Codex's own changelog. Optional low-volume additions measured and left
+  out: JetBrains AI, the Pragmatic Engineer, Hamel Husain, Chip Huyen.
 - Add Brazilian regulatory sources (PL 2338, ANPD) once that agenda heats up.
   Nothing in the catalog covers regulation directly today; it arrives only when
   Ars Technica or TechCrunch reports it.

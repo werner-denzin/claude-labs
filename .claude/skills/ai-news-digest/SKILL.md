@@ -1,6 +1,6 @@
 ---
 name: ai-news-digest
-description: Daily radar on software engineering with AI. Collects the last 24h from a deliberately small catalog -- the labs (OpenAI, Anthropic, Google), the people building them (Karpathy, Andrew Ng's The Batch), investors and NVIDIA -- classifies each item by temperature (HIGH/MEDIUM/LOW), selects up to 20, and publishes a card newsletter to a Microsoft Teams channel. Written in English, except cards whose main source is Brazilian. Use for "AI radar", "AI newsletter", "AI news of the day", "AI digest", "coding agent news", "radar de IA", "noticias de IA", or when a scheduled routine fires the daily newsletter.
+description: Daily radar on software engineering with AI. Collects the last 24h from a curated catalog -- an engineering core (Anthropic Engineering, LangChain, Simon Willison, Latent Space, GitHub, InfoQ, Hugging Face, Cursor) covering LangGraph, harness and context engineering, MCP, agent memory, guardrails, Claude Code and Codex, plus the labs, the people building them, investors and NVIDIA -- classifies each item by temperature (HIGH/MEDIUM/LOW), selects up to 20, and publishes a card newsletter to a Microsoft Teams channel. Written in English, except cards whose main source is Brazilian. Use for "AI radar", "AI newsletter", "AI news of the day", "AI digest", "coding agent news", "radar de IA", "noticias de IA", or when a scheduled routine fires the daily newsletter.
 ---
 
 # AI Radar — daily newsletter
@@ -59,9 +59,14 @@ Read `items.json`. Besides the items it carries:
 
 ### 2. Sources with no feed
 
-Anthropic, a16z and The Batch publish no RSS. The collector reads them from
-their sitemaps instead, so they arrive like any other item and need no extra
-step.
+Five sources publish no RSS: Anthropic News, Anthropic Engineering, a16z, The
+Batch and LangChain. The collector reads them from their sitemaps instead, so
+they arrive like any other item and need no extra step.
+
+**LangChain needs one check.** Its sitemap re-stamps `lastmod` on a site rebuild
+— 92 posts over 30 days carried only 23 distinct timestamps, one cluster of 21 —
+so a day showing several LangChain items with the same date may be old posts
+resurfacing. Open the post before writing the card.
 
 Two things to know when one of them is a candidate: the **title is derived from
 the URL slug**, so it is close to the headline but not it, and there is **no
@@ -84,21 +89,24 @@ Then classify each candidate against the committee's four lenses:
 
 | Lens | What counts | Share |
 | --- | --- | --- |
-| **Engineering** | Agentic coding practice, MCP and protocol changes, IDE and platform changes such as GitHub's Copilot controls, and practice writeups with evidence behind them. What changes how SiDi's teams build. | **~10 of 20** |
+| **Engineering** | The agenda EVOLV development actually exercises: **LangGraph** and agent frameworks, **harness engineering**, **context engineering**, **prompt engineering**, **MCP**, **agent memory**, **guardrails** and prompt injection, evals and observability, tool use and structured output, and the coding agents themselves (**Claude Code**, **Codex**, Cursor, Copilot, Zed). Plus the IDE and platform changes around them, and practice writeups with evidence behind them. | **~10 of 20** |
 | **Strategy** | Moves a platform, vendor, build-vs-buy or cost decision: model launch and deprecation, pricing, partnership, acquisition, funding, licence change. | ~5 |
 | **Research** | arXiv cs.SE and lab results not yet in practice. Prefer papers an engineer could act on over general ML theory. | ~3 |
 | **Regulation** | EU AI Act, LGPD/ANPD, NIST, court rulings, compliance requirements, security incidents. What the committee has to take to the table. | ~2 |
 
-The shares are a target, not a quota. **Engineering is the one to fight for**,
-and it is the one the catalog struggles to fill: the two engineering sources
-supplied 5 items in the last 24h and 12 in a week, against roughly 39 candidates
-a day overall. So most engineering cards will come from the press and the labs,
-judged by what the item does rather than by which source carried it — a pricing
-change in a coding agent is engineering, wherever it was reported.
+The shares are a target, not a quota, and **engineering is the one to fight
+for**. Twelve of the thirty sources exist for it, and on a measured day 19 of 44
+candidates touched that agenda — enough for ten cards without reaching.
+
+Judge by what the item *does*, not by which source carried it: a pricing change
+in a coding agent is engineering whether it came from the vendor or from
+TechCrunch, and an arXiv paper nobody has shipped is research even when it is
+about agent harnesses.
 
 If a day genuinely has four engineering items worth publishing, publish four and
 say the day was thin on engineering. Do not fill the gap with press items that
-merely mention a developer tool.
+merely mention a developer tool, or with vendor case studies whose only evidence
+is a number the vendor supplied.
 
 The four people in the catalog (Karpathy, Boris Cherny, Thariq, Sam Altman) and
 two of the three investors published nothing in a measured seven-day window,

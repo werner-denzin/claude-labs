@@ -11,8 +11,8 @@
         "counts.items_deduped > 0",
         "every item is published inside the window",
         "every entry in sources_failed carries an explicit reason",
-        "the sitemap sources (Anthropic, a16z, The Batch) are read, not reported as failures",
-        "sources_ok[].off_topic > 0 for at least one of the three filtered sources (NVIDIA blog, NVIDIA newsroom, GitHub Changelog)",
+        "the sitemap sources (Anthropic News, Anthropic Engineering, a16z, The Batch, LangChain) are read, not reported as failures",
+        "sources_ok[].off_topic > 0 for at least one of the seven filtered sources",
         "no item appears twice under the same URL"
       ]
     },

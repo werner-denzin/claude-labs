@@ -4,7 +4,7 @@ A lab for Claude Code experiments. It currently holds one thing: **`ai-news-dige
 a daily radar on **software engineering with AI**, written for SiDi's AI strategy
 committee.
 
-Every weekday morning it collects the last 24 hours from a deliberately small catalog of 20 sources, judges how
+Every weekday morning it collects the last 24 hours from a catalog of 30 sources, judges how
 much each item matters, keeps the 20 that matter most, and publishes them as a
 card newsletter in a Microsoft Teams channel.
 
@@ -21,32 +21,41 @@ the last 24 hours, **d-7** the last 7 days, both measured on 2026-09-03 and both
 counted before deduplication — the same story from four outlets counts four
 times here and becomes one card.
 
-| `id`               | Name                                    | Category    | How it is read          | d-1    | d-7     |
-| ------------------ | --------------------------------------- | ----------- | ----------------------- | ------ | ------- |
-| `openai`           | OpenAI News                             | lab         | RSS/Atom                | 4      | 14      |
-| `anthropic`        | Anthropic News                          | lab         | Sitemap                 | 0      | 6       |
-| `deepmind`         | Google DeepMind Blog                    | lab         | RSS/Atom                | 1      | 4       |
-| `google-ai`        | Google - The Keyword (AI)               | lab         | RSS/Atom                | 0      | 3       |
-| `karpathy`         | Andrej Karpathy                         | people      | RSS/Atom                | 0      | 0       |
-| `boris-cherny`     | Boris Cherny                            | people      | RSS/Atom                | 0      | 0       |
-| `thariq`           | Thariq Shihipar                         | people      | RSS/Atom                | 0      | 0       |
-| `the-batch`        | The Batch (Andrew Ng / DeepLearning.AI) | people      | Sitemap                 | 0      | 7       |
-| `sam-altman`       | Sam Altman                              | people      | RSS/Atom                | 0      | 0       |
-| `a16z`             | Andreessen Horowitz                     | investor    | Sitemap                 | 0      | 0       |
-| `ycombinator`      | Y Combinator Blog                       | investor    | RSS/Atom                | 0      | 0       |
-| `sequoia`          | Sequoia Capital                         | investor    | RSS/Atom                | 0      | 0       |
-| `nvidia`           | NVIDIA Blog                             | hardware    | RSS/Atom + topic filter | 2      | 3       |
-| `nvidia-newsroom`  | NVIDIA Newsroom                         | hardware    | RSS/Atom + topic filter | 2      | 4       |
-| `techcrunch-ai`    | TechCrunch AI                           | press       | RSS/Atom                | 7      | 19      |
-| `the-decoder`      | The Decoder                             | press       | RSS/Atom                | 8      | 10      |
-| `arstechnica-ai`   | Ars Technica AI                         | press       | RSS/Atom                | 2      | 10      |
-| `latent-space`     | Latent Space                            | engineering | RSS/Atom                | 2      | 7       |
-| `arxiv-se`         | arXiv cs.SE (Software Engineering)      | research    | RSS/Atom                | 10*    | 10*     |
-| `github-changelog` | GitHub Changelog                        | engineering | RSS/Atom + topic filter | 3      | 5       |
-| **Total**          | **20 sources**                          |             |                         | **41** | **102** |
+| `id`                    | Name                                    | Category    | How it is read          | d-1    | d-7     |
+| ----------------------- | --------------------------------------- | ----------- | ----------------------- | ------ | ------- |
+| `openai`                | OpenAI News                             | lab         | RSS/Atom                | 3      | 14      |
+| `anthropic`             | Anthropic News                          | lab         | Sitemap                 | 0      | 6       |
+| `deepmind`              | Google DeepMind Blog                    | lab         | RSS/Atom                | 1      | 4       |
+| `google-ai`             | Google - The Keyword (AI)               | lab         | RSS/Atom                | 0      | 3       |
+| `karpathy`              | Andrej Karpathy                         | people      | RSS/Atom                | 0      | 0       |
+| `boris-cherny`          | Boris Cherny                            | people      | RSS/Atom                | 0      | 0       |
+| `thariq`                | Thariq Shihipar                         | people      | RSS/Atom                | 0      | 0       |
+| `the-batch`             | The Batch (Andrew Ng / DeepLearning.AI) | people      | Sitemap                 | 0      | 7       |
+| `sam-altman`            | Sam Altman                              | people      | RSS/Atom                | 0      | 0       |
+| `a16z`                  | Andreessen Horowitz                     | investor    | Sitemap                 | 0      | 0       |
+| `ycombinator`           | Y Combinator Blog                       | investor    | RSS/Atom                | 0      | 0       |
+| `sequoia`               | Sequoia Capital                         | investor    | RSS/Atom                | 0      | 0       |
+| `nvidia`                | NVIDIA Blog                             | hardware    | RSS/Atom + topic filter | 2      | 3       |
+| `nvidia-newsroom`       | NVIDIA Newsroom                         | hardware    | RSS/Atom + topic filter | 2      | 4       |
+| `techcrunch-ai`         | TechCrunch AI                           | press       | RSS/Atom                | 7      | 19      |
+| `the-decoder`           | The Decoder                             | press       | RSS/Atom                | 8      | 10      |
+| `arstechnica-ai`        | Ars Technica AI                         | press       | RSS/Atom                | 2      | 10      |
+| `latent-space`          | Latent Space                            | engineering | RSS/Atom                | 2      | 7       |
+| `anthropic-engineering` | Anthropic Engineering                   | engineering | Sitemap                 | 0      | 0       |
+| `langchain`             | LangChain Blog                          | engineering | Sitemap                 | 3      | 3       |
+| `simon-willison`        | Simon Willison                          | engineering | RSS/Atom + topic filter | 1*     | 8*      |
+| `github-ai`             | GitHub AI & ML Blog                     | engineering | RSS/Atom                | 1      | 3       |
+| `infoq-ai`              | InfoQ AI, ML & Data Engineering         | engineering | RSS/Atom + topic filter | 1      | 12      |
+| `huggingface`           | Hugging Face Blog                       | engineering | RSS/Atom + topic filter | 0      | 3       |
+| `cursor`                | Cursor Changelog                        | engineering | RSS/Atom                | 0      | 1       |
+| `zed`                   | Zed Blog                                | engineering | RSS/Atom                | 0      | 1       |
+| `sourcegraph`           | Sourcegraph Blog                        | engineering | RSS/Atom                | 0      | 0       |
+| `martin-fowler`         | Martin Fowler                           | engineering | RSS/Atom + topic filter | 0      | 3       |
+| `arxiv-se`              | arXiv cs.SE (Software Engineering)      | research    | RSS/Atom                | 10*    | 10*     |
+| `github-changelog`      | GitHub Changelog                        | engineering | RSS/Atom + topic filter | 3      | 5       |
+| **Total**               | **30 sources**                          |             |                         | **46** | **136** |
 
-`*` capped by the source's own `max_items`; arXiv cs.SE publishes far more than
-10 a day and is deliberately held there.
+`*` capped by the source's own `max_items`.
 
 The counts are a snapshot and drift. To take a fresh one:
 
@@ -56,28 +65,44 @@ python3 scripts/fetch_feeds.py --hours 168 --out /tmp/d7.json
 # per source: sources_ok[].in_window in each file
 ```
 
-**The engineering share is not covered by this catalog.** The lens table asks for
-ten engineering cards of twenty; the two engineering sources supplied 5 items in
-the last 24h and 12 in the week. The gap has to be closed either by the press
-(judged by lens — a coding-agent pricing change is engineering wherever it was
-reported) or by adding sources. The backlog item in `CLAUDE.md` lists the
-reachable candidates: Simon Willison's `ai-assisted-programming` tag, Sourcegraph,
-JetBrains AI, the MCP spec, InfoQ, the Pragmatic Engineer, Martin Fowler and
-Cursor's changelog — none of them a GitHub release feed, which the sandbox blocks.
+### Twelve engineering sources, and why
 
-Two more things the numbers say plainly. **The people and the investors publish
-almost nothing**: seven of the twenty sources returned zero in a full week,
-because Karpathy, Boris Cherny, Thariq and Sam Altman post on X, which has no
-fetchable feed, and the VC firms blog about portfolio companies rather than
-deals. They stay in the catalog because when they do publish it is first-hand,
-and they cost nothing on a quiet day. **The press carries the volume**:
-TechCrunch, The Decoder and Ars Technica together are 39 of the 102 items in a
-week.
+The radar exists for one agenda — LangGraph, harness engineering, context
+engineering, prompt engineering, MCP, agent memory, guardrails, Claude Code and
+Codex — and until 2026-09-03 the catalog barely touched it. Measured over 30
+days across the then-20 sources: **zero** items on LangGraph or LangChain, one on
+MCP, one on context engineering, two on harness engineering. 44 items in a month,
+1.5 a day, against a target of ten engineering cards a day.
 
-The three sitemap sources publish no RSS at all and are read from
-`sitemap.xml`; the topic filter is what keeps NVIDIA's gaming beat and
-GitHub's non-AI changelog out. `references/sources.md` has the reasoning per
-source, and how to add or fix one.
+Ten sources were added to close that, each validated live before it went in:
+
+| Source | Why it is here | Volume |
+| --- | --- | --- |
+| Anthropic Engineering | The canonical source for this agenda: context engineering, harness design, agent skills, advanced tool use, Claude Code internals. Read from the same sitemap as Anthropic News, filtered to `/engineering/`. | ~1/month, and a HIGH card when it fires |
+| LangChain Blog | The only source covering LangGraph, LangSmith and agent memory directly. | 3/day |
+| Simon Willison | Daily hands-on practice with Claude Code, Codex and every new model. | 0.9/day |
+| GitHub AI & ML | Copilot practice and evaluation writeups. 90% of its posts are on-agenda. | 0.3/day |
+| InfoQ AI/ML | Production practice, edited for engineers. 86% on-agenda. | 0.5/day |
+| Hugging Face | Agent memory, structured outputs, evaluation, with runnable code. | 0.9/day |
+| Cursor Changelog | A coding agent's own changelog — the only one reachable from the sandbox. | 0.2/day |
+| Zed, Sourcegraph | Editor and code-search agents. Quiet, on-topic when they fire. | 0.1/day each |
+| Martin Fowler | LLM practice for software teams, for an audience that already reads him. | 0.3/day |
+
+After the change, **19 of the 44 items in a 24h window are on that agenda**, up
+from 1.5 a day. That is what makes ten engineering cards of twenty possible.
+
+Two things the numbers still say plainly. **The people and the investors publish
+almost nothing**: seven sources returned zero in a full week, because Karpathy,
+Boris Cherny, Thariq and Sam Altman post on X, which has no fetchable feed, and
+the VC firms blog about portfolio companies rather than deals. They stay because
+when they do publish it is first-hand, and they cost nothing on a quiet day.
+**The press still carries the general volume**: TechCrunch, The Decoder and Ars
+Technica are 39 of the 136 weekly items.
+
+The five sitemap sources publish no RSS at all; the topic filter is what keeps
+NVIDIA's gaming beat, Hugging Face's model-release posts and Fowler's general
+architecture writing out. `references/sources.md` has the reasoning per source,
+the LangChain sitemap caveat, and how to add or fix one.
 
 ## Solution overview
 
@@ -88,7 +113,7 @@ flowchart TD
         MANUAL["Manual run<br>ask Claude for the AI radar"]
     end
 
-    CATALOG[("assets/sources.json<br>20 sources<br>labs · people · investors<br>hardware · press · research")]
+    CATALOG[("assets/sources.json<br>30 sources<br>12 engineering · 4 labs · 5 people<br>3 investors · 3 press · hardware · research")]
     FETCH["scripts/fetch_feeds.py<br>parallel RSS/Atom, 24h window<br>topic + pre-release filters<br>deduplication"]
     ITEMS[("items.json<br>~12 candidates a day<br>+ failures + duplicate hints")]
     SITEMAP["sitemap.xml<br>sources with no feed:<br>Anthropic, a16z, The Batch"]
@@ -197,8 +222,7 @@ python3 evals/run_script_evals.py --offline  # skips the one that hits the netwo
 - **The quiet feeds win ties.** Latent Space, GitHub Changelog and `arXiv cs.SE`
   publish far less than the AI press, so the triage step targets a share of
   engineering items — ten of the twenty — rather than picking by volume or
-  recency. That share is above what the catalog supplies today; see the note
-  under the source table.
+  recency.
 - **English everywhere**, with one exception: cards whose main source is a
   Brazilian outlet keep their title and description in Portuguese, because they
   are local-market stories written for that market. No `pt-BR` source is in the
