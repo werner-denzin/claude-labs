@@ -299,7 +299,8 @@ Write the markdown version to `reports/YYYY-MM-DD-ai-radar.md` following
 from `digest.json`, including any the Teams card left off for size. It is the
 searchable record, and the card links back to it.
 
-**The header carries the lens mix as got/target.** Generate it, never count it:
+**The header's summary table carries the lens mix as got/target**, in its
+`Categories` row. Generate it, never count it:
 
 ```bash
 python3 .claude/skills/ai-news-digest/scripts/build_card.py --in digest.json --lens-mix
