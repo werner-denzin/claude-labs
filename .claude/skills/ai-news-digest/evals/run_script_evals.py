@@ -156,6 +156,73 @@ def eval_enabled_filter(tmp: str) -> None:
     )
 
 
+def eval_previous_report_filter(tmp: str) -> None:
+    print("\n[previous-report] what the last edition published is not published again")
+    base = os.path.join(tmp, "no-prev.json")
+    proc = run(["scripts/fetch_feeds.py", "--hours", "24", "--no-previous", "--out", base])
+    check("--no-previous collects without filtering", proc.returncode == 0, proc.stderr[-200:])
+    if proc.returncode != 0:
+        return
+    plain = json.load(open(base, encoding="utf-8"))
+    check("and reports no previous report", plain["previous_report"] is None)
+    if not plain["items"]:
+        check("collected something to test with", False, "no items in the window")
+        return
+
+    published = plain["items"][0]          # same URL -> must be dropped
+    paraphrased = plain["items"][-1]       # same story, different URL -> must be flagged
+    rejected = plain["items"][1] if len(plain["items"]) > 2 else published
+
+    report = os.path.join(tmp, "2026-01-01-ai-radar.md")
+    with open(report, "w", encoding="utf-8") as handle:
+        handle.write(
+            "# AI Radar\n\n"
+            f"### 1. {published['title']}\n\n`Label`\n\nText.\n\n"
+            f"**Source:** [Outlet]({published['url']})\n\n"
+            f"### 2. {paraphrased['title']}\n\n`Label`\n\nText.\n\n"
+            "**Source:** [Outlet](https://example.invalid/not-collected-today)\n\n"
+            "## Left out\n\n"
+            f"- rejected — [Outlet]({rejected['url']})\n"
+        )
+
+    out = os.path.join(tmp, "with-prev.json")
+    proc = run(["scripts/fetch_feeds.py", "--hours", "24", "--previous", report, "--out", out])
+    check("exits 0 with a previous report", proc.returncode == 0, proc.stderr[-200:])
+    if proc.returncode != 0:
+        return
+    data = json.load(open(out, encoding="utf-8"))
+    urls = {i["url"] for i in data["items"]}
+
+    check(
+        "an item already published under the same URL is dropped",
+        published["url"] not in urls,
+    )
+    check(
+        "and counted, not silently vanished",
+        data["counts"]["items_already_published"] >= 1
+        and data["previous_report"]["dropped_same_url"] >= 1,
+        f'{data["counts"]}',
+    )
+    same_story = [i for i in data["items"] if i.get("in_previous_report")]
+    check(
+        "an item matching a published title is flagged, not dropped",
+        any(i["url"] == paraphrased["url"] for i in same_story),
+        f"flagged: {[i['title'][:40] for i in same_story]}",
+    )
+    check(
+        "the flag names the report and the title it matched",
+        all(
+            {"report", "title", "similarity"} <= set(i["in_previous_report"])
+            for i in same_story
+        ),
+    )
+    check(
+        "a URL that only appeared under 'Left out' is not suppressed",
+        rejected["url"] in urls or rejected["url"] == published["url"],
+        "an item the previous edition rejected must stay collectable",
+    )
+
+
 def eval_card_size_limit(tmp: str) -> None:
     print("\n[card-size-limit] the card drops the coldest items first")
     out = os.path.join(tmp, "small.json")
@@ -279,9 +346,11 @@ def main() -> int:
         if args.offline:
             print("\n[collect-window] skipped (--offline)")
             print("[enabled-filter] skipped (--offline)")
+            print("[previous-report] skipped (--offline)")
         else:
             eval_collect_window(tmp)
             eval_enabled_filter(tmp)
+            eval_previous_report_filter(tmp)
         eval_card_size_limit(tmp)
         eval_digest_validation(tmp)
         eval_webhook_secret(tmp)

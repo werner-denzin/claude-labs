@@ -1,5 +1,5 @@
 {
-  "_comment": "Test cases for the ai-news-digest skill. The first four need no LLM judgment and are run by evals/run_script_evals.py as 37 assertions; the rest evaluate editorial judgment and need a human or an LLM judge.",
+  "_comment": "Test cases for the ai-news-digest skill. The first four need no LLM judgment and are run by evals/run_script_evals.py as 45 assertions; the rest evaluate editorial judgment and need a human or an LLM judge.",
   "evals": [
     {
       "id": "collect-window",
@@ -27,6 +27,21 @@
         "counts.sources_total excludes it and counts.sources_disabled counts it",
         "--only <id> reads it anyway, so a disabled source can still be tested",
         "--include-disabled reads the whole catalog"
+      ]
+    },
+    {
+      "id": "previous-report-filter",
+      "type": "script",
+      "description": "What the last published edition already carried is not published again.",
+      "run": "python3 scripts/fetch_feeds.py --hours 24 --previous reports/<newest>.md --out /tmp/eval-items.json",
+      "expect": [
+        "an item whose canonical URL appears on a source line of the previous report is dropped",
+        "counts.items_already_published and previous_report.dropped_same_url record how many",
+        "an item whose title resembles a published title is flagged with in_previous_report, not dropped",
+        "the flag carries the matched report, title and similarity",
+        "a URL that appeared only under the previous report's 'Left out' is NOT suppressed",
+        "--no-previous disables the comparison and reports previous_report: null",
+        "no reports/ directory is not an error -- the first run has nothing to compare against"
       ]
     },
     {

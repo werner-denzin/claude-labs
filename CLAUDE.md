@@ -65,6 +65,11 @@ Rules that hold for any change to the skill:
   environment's allowlist, one without it is the source refusing us — because
   this is the evidence a source gets disabled or removed on. Never write
   "expected" without saying why.
+- **The last edition is not published twice.** The collector drops an item whose
+  canonical URL was already published and *flags* one whose title merely
+  resembles a published title — because a story usually returns when something
+  changed, and dropping that silently loses real news. The anchor is the newest
+  file in `reports/`, not yesterday's date.
 - **A retired source is disabled, not deleted.** `"enabled": false` keeps the
   entry, its note and the reasoning that took work to establish; the collector
   skips it and reports it under `sources_disabled`, so `28/28` is never quietly
@@ -79,7 +84,9 @@ Rules that hold for any change to the skill:
 
 ### Backlog
 
-- Read the previous day's `reports/` entry to say what changed since yesterday.
+- Say what changed since the last edition, not just what is new — the
+  comparison against the last report already flags returning stories with
+  `in_previous_report`, so the material is there.
 - Watch the LangChain sitemap: it bulk-stamps `lastmod` on a rebuild, so a day
   with several same-dated LangChain items may be old posts resurfacing.
 - Review the `Blocked / Unexpected Behaviors` sections across `reports/` every

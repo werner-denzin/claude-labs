@@ -181,6 +181,39 @@ or a missing allowlist entry gets blamed on the source: the 2026-09-04 routine
 run reported Karpathy's 403 as "expected — no fetchable feed" when the feed
 answers `200` from a laptop.
 
+## Not publishing the same story twice
+
+The collector compares what it found against the newest file in `reports/` and
+gives two different verdicts.
+
+**Same canonical URL: dropped.** The committee has read that article. There is
+no new information in serving it again, so it never reaches triage, and
+`counts.items_already_published` records how many went.
+
+**Similar title, different URL: flagged, never dropped.** A story that comes back
+usually comes back because something changed — "NVIDIA agrees to acquire" becomes
+"the deal closed" — and a mechanical drop would lose the part that matters. The
+item arrives carrying `in_previous_report` with the matched title and a
+similarity score, and triage decides. This follows the same principle as
+cross-language deduplication: where a machine cannot tell repetition from
+development, it hands the judgment over instead of guessing.
+
+The threshold is `PREV_TITLE_THRESHOLD = 0.45`, looser than the 0.60 used to
+merge two outlets covering the same hour, because a follow-up is written fresh
+and shares fewer words. Measured against the 2026-09-03 edition: "Nvidia buys
+Hugging Face, the GitHub of AI, for $13 billion" scores 0.5 against "NVIDIA
+agrees to acquire Hugging Face for $12.93 billion", and "NVIDIA to Acquire
+Hugging Face" scores 0.67.
+
+**The anchor is the last report, not yesterday's.** If a run is skipped for a
+holiday or a failure, the last edition the committee actually read may be three
+days old, and that is the one not to repeat.
+
+**Only the source lines count as published.** A URL that appears in the previous
+report's `Left out` section was considered and rejected, which is not the same as
+published — if it turns out to matter, it must still be collectable. The
+regression test for that is in the eval suite.
+
 ## Retiring a source
 
 Set `"enabled": false`. Do not delete the entry.

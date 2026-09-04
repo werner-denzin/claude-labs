@@ -120,8 +120,8 @@ flowchart TD
     end
 
     CATALOG[("assets/sources.json<br>30 sources<br>12 engineering · 4 labs · 5 people<br>3 investors · 3 press · hardware · research")]
-    FETCH["scripts/fetch_feeds.py<br>reads only enabled sources<br>parallel, 24h window<br>topic + pre-release filters<br>deduplication"]
-    ITEMS[("items.json<br>~44 candidates a day<br>+ failures + disabled<br>+ duplicate hints")]
+    FETCH["scripts/fetch_feeds.py<br>reads only enabled sources<br>parallel, 24h window<br>topic + pre-release filters<br>deduplication<br>drops what the last report published"]
+    ITEMS[("items.json<br>~41 candidates a day<br>+ failures + disabled<br>+ duplicate hints<br>+ returning-story flags")]
     SITEMAP["sitemap.xml<br>the 5 sources with no feed:<br>Anthropic News + Engineering<br>a16z · The Batch · LangChain"]
 
     TRIAGE{"Claude triage<br>consolidate duplicates<br>score temperature<br>select 20: 10 engineering · 5 strategy<br>3 research · 2 regulation<br>write label + description<br>record blocks as anomalies"}
@@ -141,6 +141,7 @@ flowchart TD
     FETCH --> ITEMS
     CATALOG -. "feed is null" .-> SITEMAP
     SITEMAP --> FETCH
+    ARCHIVE -. "the last edition:<br>same URL dropped,<br>same story flagged" .-> FETCH
     ITEMS --> TRIAGE
     TRIAGE --> DIGEST
     DIGEST --> BUILD
@@ -195,8 +196,8 @@ appearing there earns an `"enabled": false`.
 | `references/sources.md` | Why each source is on the list, how to retire one without losing what was learned about it, how we identify ourselves to a server, how to fix a feed that moved, and how deduplication actually behaves. |
 | `references/teams-delivery.md` | How to create the channel webhook, the payload format, and the limits the code handles for you. |
 | `references/scheduling.md` | Running it daily at 08:00 BRT: the cloud routine, plus local systemd and GitHub Actions as alternatives. Includes cost and the network setting that silently empties the newsletter if missed. |
-| `evals/evals.json` | Ten test cases. Five are mechanical; five judge editorial quality and need a human or an LLM judge. |
-| `evals/run_script_evals.py` | Runs the five mechanical cases as 37 assertions over collection, the enabled filter, size trimming, digest validation, and secret handling. |
+| `evals/evals.json` | Eleven test cases. Six are mechanical; five judge editorial quality and need a human or an LLM judge. |
+| `evals/run_script_evals.py` | Runs the six mechanical cases as 45 assertions over collection, the enabled filter, the previous-report filter, size trimming, digest validation, and secret handling. |
 | `evals/fixtures/` | Sample `digest.json` and `card.json` used by those assertions. |
 
 ## Running it by hand
@@ -217,7 +218,7 @@ In practice you just ask Claude for the AI radar and it walks the whole flow.
 Run the checks with:
 
 ```bash
-python3 evals/run_script_evals.py            # 37 assertions
+python3 evals/run_script_evals.py            # 45 assertions
 python3 evals/run_script_evals.py --offline  # skips the one that hits the network
 ```
 
@@ -228,6 +229,10 @@ python3 evals/run_script_evals.py --offline  # skips the one that hits the netwo
   or a reply.
 - **Standard library only.** The VM has no `pip` and the cloud environment may
   not either, so the scripts add no dependencies.
+- **The last edition is not published twice.** An item whose canonical URL was
+  already published is dropped and counted; one whose title merely resembles a
+  published title is flagged for triage, never dropped — a story that comes back
+  usually comes back because something changed.
 - **A source that failed is reported, never hidden.** The reader has to know when
   a collection was partial. Blocks and oddities also get their own section in the
   archived report — `Blocked / Unexpected Behaviors`, always rendered, saying

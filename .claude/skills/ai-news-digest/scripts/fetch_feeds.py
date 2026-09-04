@@ -327,6 +327,72 @@ def parse_sitemap(raw: bytes, contains: str, excludes: tuple[str, ...] = ()) -> 
 # Normalization and deduplication
 # --------------------------------------------------------------------------- #
 
+# The published report is the only durable record of what the committee has
+# already read, so it is what "already published" is measured against. Its two
+# stable shapes in assets/report-template.md: a card title on "### N. Title",
+# and the sources on a "**Source:** [Name](url)" line.
+PREV_TITLE_RE = re.compile(r"^#{3}\s+\d+\.\s+(.+?)\s*$", re.MULTILINE)
+PREV_SOURCE_LINE_RE = re.compile(r"^\*\*Source:\*\*\s+(.+?)\s*$", re.MULTILINE)
+MD_LINK_RE = re.compile(r"\]\((https?://[^)\s]+)\)")
+
+# How close a title has to be to a previously published one to be flagged as the
+# same story. Deliberately looser than JACCARD_THRESHOLD: a follow-up is written
+# fresh, so it shares fewer words than two outlets covering the same hour.
+PREV_TITLE_THRESHOLD = 0.45
+
+
+def find_reports_dir(start: str) -> str | None:
+    """Walks up from `start` looking for a reports/ directory."""
+    path = os.path.abspath(start)
+    while True:
+        candidate = os.path.join(path, "reports")
+        if os.path.isdir(candidate):
+            return candidate
+        parent = os.path.dirname(path)
+        if parent == path:
+            return None
+        path = parent
+
+
+def load_previous_report(path: str) -> dict:
+    """Fingerprints one archived report: the URLs and titles it published.
+
+    Only the source lines are read, not every link in the file -- a URL in the
+    "Left out" section was considered and rejected, which is not the same as
+    published, and should not suppress the item if it turns out to matter later.
+    """
+    with open(path, encoding="utf-8") as handle:
+        text = handle.read()
+    urls = {
+        canonical_url(url)
+        for line in PREV_SOURCE_LINE_RE.findall(text)
+        for url in MD_LINK_RE.findall(line)
+    }
+    titles = [
+        (title, title_tokens(title))
+        for title in PREV_TITLE_RE.findall(text)
+    ]
+    return {
+        "path": path,
+        "name": os.path.basename(path),
+        "urls": urls,
+        "titles": titles,
+    }
+
+
+def newest_report(reports_dir: str) -> str | None:
+    """The most recent report by filename, which is date-ordered.
+
+    Deliberately "the last one", not "yesterday's": if a run was skipped for a
+    holiday or a failure, the last edition the committee actually read may be
+    three days old, and that is the one not to repeat.
+    """
+    names = sorted(
+        n for n in os.listdir(reports_dir) if re.match(r"^\d{4}-\d{2}-\d{2}-.*\.md$", n)
+    )
+    return os.path.join(reports_dir, names[-1]) if names else None
+
+
 def canonical_url(url: str) -> str:
     try:
         parts = urllib.parse.urlsplit(url)
@@ -532,6 +598,16 @@ def main() -> int:
     parser.add_argument("--workers", type=int, default=16)
     parser.add_argument("--only", default="", help="comma-separated list of source ids")
     parser.add_argument(
+        "--previous",
+        default="",
+        help="report to compare against (default: the newest file in reports/)",
+    )
+    parser.add_argument(
+        "--no-previous",
+        action="store_true",
+        help="do not compare against the last published report",
+    )
+    parser.add_argument(
         "--include-disabled",
         action="store_true",
         help='read sources marked "enabled": false too (they are skipped by default)',
@@ -561,6 +637,15 @@ def main() -> int:
         sources = [s for s in sources if s["id"] in wanted]
     elif not args.include_disabled:
         sources = [s for s in sources if s.get("enabled", True) is not False]
+
+    previous = None
+    if not args.no_previous:
+        chosen = args.previous
+        if not chosen:
+            reports_dir = find_reports_dir(os.path.dirname(os.path.abspath(args.sources)))
+            chosen = newest_report(reports_dir) if reports_dir else None
+        if chosen:
+            previous = load_previous_report(chosen)
 
     now = datetime.now(timezone.utc)
     cutoff = now - timedelta(hours=args.hours)
@@ -605,6 +690,36 @@ def main() -> int:
     items = deduplicate(items, args.merge_threshold)
     for index, item in enumerate(items, start=1):
         item["id"] = f"n{index:03d}"
+    # Against the last published edition. Two different verdicts on purpose:
+    #
+    #   same canonical URL  -> dropped. It is the same article the committee has
+    #                          already read; there is no new information in it.
+    #   similar title       -> kept and flagged. A story that comes back usually
+    #                          comes back because something changed -- "agrees to
+    #                          acquire" becomes "the deal closed" -- and dropping
+    #                          that silently would lose real news. Triage decides.
+    already_published = 0
+    if previous:
+        surviving = []
+        for item in items:
+            if canonical_url(item["url"]) in previous["urls"]:
+                already_published += 1
+                continue
+            tokens = item.get("_tokens") or title_tokens(item["title"])
+            best = max(
+                ((jaccard(tokens, prev_tokens), prev_title)
+                 for prev_title, prev_tokens in previous["titles"]),
+                default=(0.0, ""),
+            )
+            if best[0] >= PREV_TITLE_THRESHOLD:
+                item["in_previous_report"] = {
+                    "report": previous["name"],
+                    "title": best[1],
+                    "similarity": round(best[0], 2),
+                }
+            surviving.append(item)
+        items = surviving
+
     for item in items:
         # Not confirmed duplicates: pairs similar enough for triage to check
         # whether they tell the same story (useful across languages).
@@ -626,7 +741,20 @@ def main() -> int:
             "sources_disabled": len(disabled),
             "items_raw": raw_count,
             "items_deduped": len(items),
+            "items_already_published": already_published,
         },
+        "previous_report": (
+            {
+                "name": previous["name"],
+                "cards": len(previous["titles"]),
+                "dropped_same_url": already_published,
+                "flagged_same_story": sum(
+                    1 for i in items if i.get("in_previous_report")
+                ),
+            }
+            if previous
+            else None
+        ),
         "sources_ok": sorted(ok, key=lambda s: -s["in_window"]),
         "sources_failed": failed,
         "sources_disabled": [
@@ -646,6 +774,11 @@ def main() -> int:
             f"{len(items)} items ({raw_count} before deduplication) from "
             f"{len(ok)}/{len(sources)} sources"
             + (f", {len(disabled)} disabled" if disabled else "")
+            + (
+                f", {already_published} already in {previous['name']}"
+                if already_published
+                else ""
+            )
             + f" -> {args.out}",
             file=sys.stderr,
         )

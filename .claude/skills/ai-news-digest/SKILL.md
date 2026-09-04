@@ -53,6 +53,21 @@ was dropped, and appears in `counts.sources_disabled` and the `sources_disabled`
 list — so `29/30` never silently counts a source nobody meant to read. To test
 one that is disabled, name it with `--only`, which overrides the filter.
 
+**The last edition is not published twice.** Before you see them, items are
+compared against the newest file in `reports/` — "the last one", not
+"yesterday's", so a skipped day does not reopen the gap:
+
+- **same canonical URL → dropped**, and counted in
+  `counts.items_already_published`. The same article; nothing new in it.
+- **similar title → kept and flagged** with `in_previous_report`
+  (`{report, title, similarity}`). A story usually comes back *because something
+  changed* — "agrees to acquire" becoming "the deal closed" — so this is your
+  call, not the script's. Publish it when the news is the change and say what
+  changed; drop it when it is the same story retold.
+
+`previous_report` in the payload names the edition and both counts. `--no-previous`
+turns the comparison off.
+
 Read `items.json`. Besides the items it carries:
 
 - `sources_failed` — sources that did not answer. They **go into the
@@ -206,7 +221,10 @@ rules:
   Numbers and verbs.
 - `headline`: one line naming the story of the day.
 - `not_relevant`: what dominated the volume but does not deserve attention.
-  Saying what does **not** matter is part of the service.
+  Saying what does **not** matter is part of the service. When
+  `counts.items_already_published` is non-zero, say so here — "N items already
+  covered in the <date> edition" — so a short newsletter is legible as
+  deduplicated rather than as a thin day.
 - `sources_failed`: copy from `items.json` and add the blocks from step 2.
 - `anomalies`: **every source that was blocked, refused us, moved, or behaved in
   a way you had to work around.** This is the record used to decide whether a
