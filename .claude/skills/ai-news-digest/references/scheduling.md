@@ -22,6 +22,63 @@ into metered billing.
 Available on Pro, Max, Team and Enterprise. Requires a claude.ai login — it does
 not work with a Console API key, nor with Bedrock/Foundry.
 
+### What a run actually costs
+
+Measured on 2026-09-03 by running the whole flow and reading the per-message
+`usage` from the session transcript
+(`~/.claude/projects/<project>/<session-id>.jsonl`). Not an estimate. One caveat
+on the method: the transcript carries duplicate entries — 115 of 270 on that run
+— so deduplicate by `message.id` before summing, or the total nearly doubles.
+
+The run: 30/30 sources, 44 candidates, 20 cards, one WebFetch, 15 assistant
+turns, 3 minutes 10 seconds wall clock.
+
+| | Tokens |
+| --- | --- |
+| Fresh input | 30 |
+| Cache writes | 32,753 |
+| Cache reads (fresh session) | 267,709 |
+| Output | 17,534 |
+
+**Where the cost actually goes.** Billed input is almost entirely cache reads —
+the conversation re-read on every turn — so a run's cost is set by the size of
+the session it runs inside, not by the newsletter. The same run measured $3.00
+when appended to an hour-long engineering session carrying 296K tokens of
+context, and $0.78 projected for the empty session a routine starts with. The
+newsletter's own work adds only ~30K tokens of context. Output was 17.5K tokens:
+`digest.json` for 20 cards, the archived markdown, and the reasoning between.
+
+| Model | Per run | 21 weekdays |
+| --- | --- | --- |
+| Claude Opus 5 ($5/$25 per MTok in/out) | $0.78 | $16.32 |
+| **Claude Sonnet 5 ($2/$10)** — the configured model | **$0.31** | **$6.53** |
+
+Cache rates assumed at the standard multipliers (writes 1.25x input, reads 0.10x
+input); the per-million input and output rates are the published ones. The
+conclusion is not sensitive to the cache assumption — with free cache reads the
+Opus 5 run would still be $0.64.
+
+**On the subscription, none of this is billed in dollars.** The table is what the
+run would cost metered — under usage credits, or against the API. It is also the
+number to watch when the catalog grows: collection is free (stdlib Python, no
+model), but every source added enlarges `items.json`, which is the second-largest
+input after the conversation itself.
+
+### Which model
+
+`.claude/settings.json` pins the project to **Claude Sonnet 5**, so an
+interactive session in this repository and the cloud routine that clones it both
+run on it. Changing that one file changes both.
+
+The saving is real — 60% against Opus 5 — but note what is being economised on.
+Collection, card building and posting are deterministic Python and cost nothing
+either way; the model is spent entirely on the step that needs judgment:
+consolidating the same story across seven outlets, calibrating temperature
+against a committee's interests, and writing 20 cards that a reader trusts. If
+the newsletter starts merging stories it should not, or marking everything
+MEDIUM, the model is the first thing to put back. The `type: judgment` cases in
+`evals/evals.json` exist for exactly that check.
+
 ### Creating it
 
 ```

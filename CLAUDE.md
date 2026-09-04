@@ -56,6 +56,12 @@ Rules that hold for any change to the skill:
   the cloud environment may not either. No new dependencies.
 - **A source that failed goes into the newsletter as a declared failure**, never
   as silence. The reader has to know the collection was partial.
+- **The model is pinned to Claude Sonnet 5** in `.claude/settings.json`, which
+  covers both an interactive session here and the cloud routine that clones the
+  repo. A measured run costs $0.31 metered, against $0.78 on Opus 5 — the
+  breakdown, and what the saving trades against, is in
+  `references/scheduling.md`. Triage is the only step that spends model tokens,
+  so if the editorial quality drops, the model is the first thing to put back.
 
 ### Backlog
 

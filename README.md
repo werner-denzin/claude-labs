@@ -166,6 +166,7 @@ reports why it failed.
 | Path | What it is |
 | --- | --- |
 | `CLAUDE.md` | Project instructions Claude loads every session: what the skill is, the rules that must hold when changing it, the activation checklist, and the backlog. |
+| `.claude/settings.json` | Pins the project to Claude Sonnet 5 — one file covering both an interactive session here and the cloud routine that clones the repo. A measured run costs $0.31; see `references/scheduling.md`. |
 | `README.md` | This file. |
 | `reports/` | Archive of published newsletters, one file per day as `YYYY-MM-DD-ai-radar.md`. What goes to Teams is the Adaptive Card; this is the readable record of it, because a Teams card stops being searchable after a few weeks. |
 | `.claude/skills/ai-news-digest/` | The skill itself. |
@@ -219,6 +220,10 @@ python3 evals/run_script_evals.py --offline  # skips the one that hits the netwo
   not either, so the scripts add no dependencies.
 - **A source that failed is reported, never hidden.** The reader has to know when
   a collection was partial.
+- **Only triage spends model tokens.** Collection, card building and posting are
+  deterministic Python. A measured run is 15 turns and 17.5K output tokens —
+  $0.31 on Sonnet 5, $0.78 on Opus 5 — and the cost is dominated by the
+  conversation being re-read each turn, not by the newsletter.
 - **The quiet feeds win ties.** Latent Space, GitHub Changelog and `arXiv cs.SE`
   publish far less than the AI press, so the triage step targets a share of
   engineering items — ten of the twenty — rather than picking by volume or
