@@ -58,6 +58,20 @@ input); the per-million input and output rates are the published ones. The
 conclusion is not sensitive to the cache assumption — with free cache reads the
 Opus 5 run would still be $0.64.
 
+**The report footer carries a forecast of this**, from
+`build_card.py --run-note`, calibrated against the measurement above: the token
+coefficients are the run's cache-read and cache-write spread over the 44 items in
+play and its output spread over the 20 cards written. It reproduces $0.31 on
+Sonnet 5 for that run by construction, and independently lands on $0.7769 against
+the $0.78 measured on Opus 5 — the price ratio does that part, which is a small
+check that the shape is right.
+
+It is a single-point calibration. It ignores page reads and any session context
+the run inherits, and it will drift as the flow changes, so treat it as an order
+of magnitude rather than a quote. **To re-anchor it**, take a fresh measurement
+by the method above and update `CACHE_READ_TOKENS_PER_ITEM`,
+`CACHE_WRITE_TOKENS_PER_ITEM` and `OUTPUT_TOKENS_PER_CARD` in `build_card.py`.
+
 **On the subscription, none of this is billed in dollars.** The table is what the
 run would cost metered — under usage credits, or against the API. It is also the
 number to watch when the catalog grows: collection is free (stdlib Python, no

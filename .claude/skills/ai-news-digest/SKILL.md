@@ -313,6 +313,21 @@ python3 .claude/skills/ai-news-digest/scripts/build_card.py --in digest.json --l
 python3 .claude/skills/ai-news-digest/scripts/build_card.py --in digest.json --try-list
 ```
 
+**And the footer's run note**, which needs the `items.json` from step 1 because
+that is where the run's start time lives:
+
+```bash
+python3 .claude/skills/ai-news-digest/scripts/build_card.py \
+  --in digest.json --run-note /tmp/items.json
+# Run: 3m 12s (192,431 ms) from collection to report · 43 items, 20 cards ·
+# forecast ~$0.31 on claude-sonnet-5 (estimate, not measured usage)
+```
+
+The elapsed time is measured. **The cost is not** — a run cannot read its own
+token usage, so it is a forecast from one calibrated measurement, and the line
+says so rather than implying a bill. Pass `--model` if the run used something
+other than Sonnet 5.
+
 That line is how a short lens becomes visible to the reader and to whoever reads
 the archive later. It is the only place the shortfall is recorded: step 4 tells
 you to say when the day was thin on engineering, and this is where it gets said —

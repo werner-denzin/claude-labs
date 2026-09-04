@@ -50,6 +50,72 @@ LABEL_MAX_CHARS = 24
 TRY_MAX_PER_EDITION = 3
 TRY_EFFORT_MAX_CHARS = 32
 
+# --- the footer's run note -------------------------------------------------- #
+#
+# Elapsed time is measured. Cost is NOT: a run cannot read its own token usage,
+# so this is a forecast from one real measurement, and the footer says so.
+#
+# Anchor: the 2026-09-04 run, whose per-message usage was read from the session
+# transcript -- 44 items collected, 20 cards written, 267,709 cache-read tokens,
+# 32,753 cache-write, 17,534 output. Spread over what drives each term (context
+# re-read scales with the items in play, output with the cards written) that
+# gives the coefficients below, so the model reproduces $0.31 on Sonnet 5 for
+# that run by construction.
+#
+# Single-point calibration: treat it as an order of magnitude, not a quote. It
+# ignores page reads (WebFetch) and any session context the run inherits, and it
+# will drift as the flow changes. Re-anchor it when a fresh measurement exists;
+# the method is in references/scheduling.md.
+CACHE_READ_TOKENS_PER_ITEM = 6_084
+CACHE_WRITE_TOKENS_PER_ITEM = 744
+OUTPUT_TOKENS_PER_CARD = 877
+
+# USD per million tokens: input, output. Cache write is 1.25x input, read 0.10x.
+MODEL_PRICES = {
+    "claude-sonnet-5": (2.00, 10.00),
+    "claude-opus-5": (5.00, 25.00),
+    "claude-haiku-4-5": (1.00, 5.00),
+}
+DEFAULT_MODEL = "claude-sonnet-5"
+
+
+def forecast_usd(items: int, cards: int, model: str = DEFAULT_MODEL) -> float | None:
+    """Rough USD for a run of this shape. None when the model is unpriced."""
+    price = MODEL_PRICES.get(model)
+    if price is None:
+        return None
+    per_in, per_out = price
+    cache_read = items * CACHE_READ_TOKENS_PER_ITEM * (per_in * 0.10)
+    cache_write = items * CACHE_WRITE_TOKENS_PER_ITEM * (per_in * 1.25)
+    output = cards * OUTPUT_TOKENS_PER_CARD * per_out
+    return (cache_read + cache_write + output) / 1_000_000
+
+
+def human_duration(ms: int) -> str:
+    seconds, milliseconds = divmod(int(ms), 1000)
+    minutes, seconds = divmod(seconds, 60)
+    if minutes:
+        return f"{minutes}m {seconds}s"
+    return f"{seconds}.{milliseconds // 100}s"
+
+
+def run_note(items_path: str, cards: int, model: str = DEFAULT_MODEL) -> str:
+    """The report footer's one line: measured time, forecast cost."""
+    with open(items_path, encoding="utf-8") as handle:
+        collected = json.load(handle)
+    started = datetime.fromisoformat(collected["generated_at"])
+    elapsed_ms = int(
+        (datetime.now(started.tzinfo) - started).total_seconds() * 1000
+    )
+    item_count = collected.get("counts", {}).get("items_deduped", 0)
+    usd = forecast_usd(item_count, cards, model)
+    cost = f"~${usd:.2f}" if usd is not None else "not priced"
+    return (
+        f"Run: {human_duration(elapsed_ms)} ({elapsed_ms:,} ms) from collection "
+        f"to report · {item_count} items, {cards} cards · "
+        f"forecast {cost} on {model} (estimate, not measured usage)"
+    )
+
 # The shares SKILL.md's lens table targets, in the order the report shows them.
 # Rendered as got/target so a short lens is legible without knowing the table:
 # "engineering 9/10" says on its own that the day came up one short.
@@ -348,6 +414,17 @@ def main() -> int:
     parser.add_argument("--in", dest="src", required=True, help="digest.json")
     parser.add_argument("--out", default="-", help="payload file, or - for stdout")
     parser.add_argument(
+        "--run-note",
+        default="",
+        metavar="ITEMS_JSON",
+        help="print the report footer's run note (measured time, forecast cost) and exit",
+    )
+    parser.add_argument(
+        "--model",
+        default=DEFAULT_MODEL,
+        help=f"model the run used, for the cost forecast (default {DEFAULT_MODEL})",
+    )
+    parser.add_argument(
         "--try-list",
         action="store_true",
         help="print the report's 'Worth Trying' section body and exit",
@@ -407,6 +484,10 @@ def main() -> int:
     # --preview used to return here, which silently threw away an --out the
     # caller had asked for: a scheduled run passed both, got no card.json, and
     # the next step died on a missing file. Both now do what they say.
+    if args.run_note:
+        print(run_note(args.run_note, len(digest["cards"]), args.model))
+        return 0
+
     if args.lens_mix:
         print(lens_mix(digest["cards"]))
         return 0

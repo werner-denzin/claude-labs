@@ -265,6 +265,10 @@ python3 evals/run_script_evals.py --offline  # skips the one that hits the netwo
 - **Retire a source, don't delete it.** `"enabled": false` keeps the entry and
   the reasoning that took work to establish; the collector skips it and counts it
   under `sources_disabled`, so `28/28` is never quietly `28/30`.
+- **The footer says what the run cost, and admits what it does not know.**
+  `build_card.py --run-note` prints measured elapsed time and a *forecast* in
+  USD, calibrated on a real measurement and labelled an estimate — a run has no
+  access to its own usage, and a number presented as a bill would be a lie.
 - **`Worth Trying` recommends, it does not summarise.** At most three cards an
   edition carry a `try_it` with a concrete first step; most days carry none and
   the section says so. Available now, a first step that exists, a verdict in

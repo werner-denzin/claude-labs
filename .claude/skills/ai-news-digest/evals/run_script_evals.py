@@ -329,6 +329,43 @@ def eval_card_size_limit(tmp: str) -> None:
         (proc.stdout + proc.stderr)[-160:],
     )
 
+    # The run note: measured time, forecast cost. The forecast is anchored on a
+    # real measurement, so the anchor is what the test pins -- if someone
+    # retunes the coefficients, this says whether the known runs still land.
+    sys.path.insert(0, os.path.join(SKILL, "scripts"))
+    import build_card as bc  # noqa: E402
+
+    check(
+        "the cost model reproduces the measured Sonnet 5 run ($0.31)",
+        abs(bc.forecast_usd(44, 20, "claude-sonnet-5") - 0.31) < 0.01,
+        f"got {bc.forecast_usd(44, 20, 'claude-sonnet-5'):.4f}",
+    )
+    check(
+        "and the measured Opus 5 run ($0.78)",
+        abs(bc.forecast_usd(44, 20, "claude-opus-5") - 0.78) < 0.01,
+        f"got {bc.forecast_usd(44, 20, 'claude-opus-5'):.4f}",
+    )
+    check(
+        "an unpriced model forecasts nothing rather than guessing",
+        bc.forecast_usd(44, 20, "claude-imaginary-9") is None,
+    )
+
+    items_for_note = os.path.join(tmp, "note-items.json")
+    json.dump(
+        {"generated_at": "2026-09-04T00:00:00+00:00", "counts": {"items_deduped": 43}},
+        open(items_for_note, "w", encoding="utf-8"),
+    )
+    proc = run(["scripts/build_card.py", "--in", src, "--run-note", items_for_note])
+    note = proc.stdout.strip()
+    check(
+        "the run note carries elapsed ms, the counts, and says the cost is an estimate",
+        proc.returncode == 0
+        and "ms)" in note
+        and "43 items, 20 cards" in note
+        and "estimate, not measured usage" in note,
+        f"got: {note!r}",
+    )
+
     proc = run(["scripts/build_card.py", "--in", src, "--lens-mix"])
     mix = proc.stdout.strip()
     check(
