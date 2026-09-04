@@ -44,6 +44,16 @@ ALIASES = {"ALTA": "HIGH", "MEDIA": "MEDIUM", "MÉDIA": "MEDIUM", "BAIXA": "LOW"
 LABEL_MAX_WORDS = 2
 LABEL_MAX_CHARS = 24
 
+# The shares SKILL.md's lens table targets, in the order the report shows them.
+# Rendered as got/target so a short lens is legible without knowing the table:
+# "engineering 9/10" says on its own that the day came up one short.
+LENS_TARGETS = (
+    ("engineering", 10),
+    ("strategy", 5),
+    ("research", 3),
+    ("regulation", 2),
+)
+
 WEEKDAYS = [
     "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
 ]
@@ -80,6 +90,24 @@ def normalize_label(value: str) -> str:
             f"(use at most {LABEL_MAX_CHARS})"
         )
     return label
+
+
+def lens_mix(cards: list[dict]) -> str:
+    """The report header's lens line: got against target, per lens.
+
+    Computed rather than counted by hand -- a number a human tallies every
+    morning is a number that goes wrong quietly, which is the whole reason this
+    line exists.
+    """
+    counted = [c.get("lens", "").strip().lower() for c in cards]
+    parts = [
+        f"{lens} {counted.count(lens)}/{target}" for lens, target in LENS_TARGETS
+    ]
+    known = {lens for lens, _ in LENS_TARGETS}
+    unclassified = sum(1 for lens in counted if lens not in known)
+    if unclassified:
+        parts.append(f"unclassified {unclassified}")
+    return " · ".join(parts)
 
 
 def format_date(iso: str) -> str:
@@ -278,6 +306,11 @@ def main() -> int:
     parser.add_argument("--in", dest="src", required=True, help="digest.json")
     parser.add_argument("--out", default="-", help="payload file, or - for stdout")
     parser.add_argument(
+        "--lens-mix",
+        action="store_true",
+        help="print the report header's lens line (got/target per lens) and exit",
+    )
+    parser.add_argument(
         "--preview",
         action="store_true",
         help="print the newsletter as readable text; with --out, also write the payload",
@@ -317,6 +350,10 @@ def main() -> int:
     # --preview used to return here, which silently threw away an --out the
     # caller had asked for: a scheduled run passed both, got no card.json, and
     # the next step died on a missing file. Both now do what they say.
+    if args.lens_mix:
+        print(lens_mix(digest["cards"]))
+        return 0
+
     if args.preview:
         print(preview(digest))
         if args.out == "-":

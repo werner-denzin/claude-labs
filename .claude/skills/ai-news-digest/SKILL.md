@@ -280,6 +280,19 @@ Write the markdown version to `reports/YYYY-MM-DD-ai-radar.md` following
 from `digest.json`, including any the Teams card left off for size. It is the
 searchable record, and the card links back to it.
 
+**The header carries the lens mix as got/target.** Generate it, never count it:
+
+```bash
+python3 .claude/skills/ai-news-digest/scripts/build_card.py --in digest.json --lens-mix
+# engineering 9/10 · strategy 6/5 · research 3/3 · regulation 2/2
+```
+
+That line is how a short lens becomes visible to the reader and to whoever reads
+the archive later. It is the only place the shortfall is recorded: step 4 tells
+you to say when the day was thin on engineering, and this is where it gets said —
+without prose, on every edition, so a run of `engineering 5/10` is a pattern
+somebody can see rather than something nobody thought to mention.
+
 **Always render the `Blocked / Unexpected Behaviors` section**, from `anomalies`,
 with "None." when the run was clean. A missing section is indistinguishable from
 a clean run, and this section is what the catalog decisions are made from — the

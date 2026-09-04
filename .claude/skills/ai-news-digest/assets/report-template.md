@@ -3,6 +3,8 @@
 > {{HEADLINE: one line on what the story of the day was}}
 
 {{N}} highlights · 🔴 {{N_HIGH}} high · 🟠 {{N_MEDIUM}} medium · 🔵 {{N_LOW}} low
+Lenses: {{LENS_MIX -- got/target per lens. Do not count by hand:
+python3 scripts/build_card.py --in digest.json --lens-mix}}
 Window: last {{HOURS}}h · {{ITEMS}} items from {{SOURCES_OK}}/{{SOURCES_TOTAL}} sources
 
 ---

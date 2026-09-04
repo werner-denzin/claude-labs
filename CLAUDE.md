@@ -65,6 +65,11 @@ Rules that hold for any change to the skill:
   environment's allowlist, one without it is the source refusing us — because
   this is the evidence a source gets disabled or removed on. Never write
   "expected" without saying why.
+- **Every report header carries the lens mix as got/target**, generated with
+  `build_card.py --lens-mix`, never counted by hand. That line is the only place
+  a shortfall against the 10/5/3/2 target is recorded, so a run of
+  `engineering 5/10` becomes a pattern that can be seen rather than something
+  nobody thought to mention.
 - **Two artifacts, deliberately different lengths.** `reports/*.md` is the
   complete and detailed edition — every card the editorial step selected. The
   Teams card is the short version of it: if the payload would exceed what Teams

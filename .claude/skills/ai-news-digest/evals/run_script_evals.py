@@ -284,6 +284,22 @@ def eval_card_size_limit(tmp: str) -> None:
         f"footer: {[t for t in footer if t.startswith(chr(0x2702))]}",
     )
 
+    proc = run(["scripts/build_card.py", "--in", src, "--lens-mix"])
+    mix = proc.stdout.strip()
+    check(
+        "--lens-mix reports got/target for all four lenses",
+        proc.returncode == 0
+        and all(f"{lens} " in mix for lens in ("engineering", "strategy", "research", "regulation"))
+        and "/10" in mix,
+        f"got: {mix!r}",
+    )
+    counted = sum(1 for c in before["cards"] if c.get("lens") == "engineering")
+    check(
+        "and the engineering count matches the digest",
+        f"engineering {counted}/10" in mix,
+        f"digest has {counted}, line says {mix!r}",
+    )
+
     both = os.path.join(tmp, "preview-and-out.json")
     proc = run([
         "scripts/build_card.py", "--in", "evals/fixtures/digest-20.json",
