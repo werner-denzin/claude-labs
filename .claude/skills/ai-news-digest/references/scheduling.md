@@ -96,7 +96,7 @@ Claude asks for the rest and saves it. You can also create it at
 | Repository | `werner-denzin/claude-labs` — the skill has to be committed, since the routine clones the repo on every run |
 | Trigger | Schedule, **weekdays** preset, 08:00 |
 | Timezone | **Convert nothing.** The time is entered in your local zone and converted automatically; the routine runs at 08:00 Brasilia time. |
-| Environment | One with **Network access = Custom or Full** (see below) |
+| Environment | **`Full Access`** — created 2026-09-03 with **Network access = Custom**. The name says Full; the setting is Custom, which means an allowlist, which means a host missing from it fails silently. Keep the list in sync with `assets/sources.json`. |
 | Connectors | Remove the ones the routine does not use — during a run it can call any tool from an included connector, writes included, without asking permission |
 
 The routine's prompt, roughly:
@@ -133,7 +133,29 @@ source's `site`, and LangChain is exactly that case: `site` is
 silently loses LangChain; with it, 31.
 
 Add the Teams webhook's domain too (`*.logic.azure.com`, or whatever host your
-URL uses).
+URL uses). **This is the easy one to miss**, because the webhook is usually
+configured after the environment: collection succeeds, the newsletter builds, and
+only the POST fails. If publishing fails with a network error rather than a
+missing-credential error, the webhook host is not on the allowlist.
+
+The 31 hosts as of 2026-09-03:
+
+```
+a16z.com                arstechnica.com          arxiv.org
+bcherny.github.io       blog.google              blog.langchain.com
+blog.samaltman.com      blogs.nvidia.com         deepmind.google
+export.arxiv.org        feed.infoq.com           github.blog
+huggingface.co          karpathy.bearblog.dev    martinfowler.com
+nvidianews.nvidia.com   openai.com               simonwillison.net
+sourcegraph.com         techcrunch.com           thariq.io
+the-decoder.com         www.anthropic.com        www.cursor.com
+www.deeplearning.ai     www.infoq.com            www.langchain.com
+www.latent.space        www.sequoiacap.com       www.ycombinator.com
+zed.dev
+```
+
+Every source added to the catalog needs its host added here, or it fails with
+`403 host_not_allowed` and shows up in the newsletter's failure line.
 
 ### The webhook secret
 
