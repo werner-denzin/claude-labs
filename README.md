@@ -115,8 +115,8 @@ flowchart TD
 
     CATALOG[("assets/sources.json<br>30 sources<br>12 engineering · 4 labs · 5 people<br>3 investors · 3 press · hardware · research")]
     FETCH["scripts/fetch_feeds.py<br>parallel RSS/Atom, 24h window<br>topic + pre-release filters<br>deduplication"]
-    ITEMS[("items.json<br>~12 candidates a day<br>+ failures + duplicate hints")]
-    SITEMAP["sitemap.xml<br>sources with no feed:<br>Anthropic, a16z, The Batch"]
+    ITEMS[("items.json<br>~44 candidates a day<br>+ failures + duplicate hints")]
+    SITEMAP["sitemap.xml<br>the 5 sources with no feed:<br>Anthropic News + Engineering<br>a16z · The Batch · LangChain"]
 
     TRIAGE{"Claude triage<br>consolidate duplicates<br>score temperature<br>select 20: 10 engineering · 5 strategy<br>3 research · 2 regulation<br>write label + description"}
     DIGEST[("digest.json<br>the editorial product")]

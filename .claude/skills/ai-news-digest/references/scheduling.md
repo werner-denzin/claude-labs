@@ -122,9 +122,15 @@ with the domains from `assets/sources.json`. To extract the list:
 python3 -c "
 import json,urllib.parse
 s=json.load(open('.claude/skills/ai-news-digest/assets/sources.json'))['sources']
-d={urllib.parse.urlsplit(u).netloc for x in s for u in (x.get('feed'),x.get('site')) if u}
-print('\n'.join(sorted(d)))"
+urls=[u for x in s for u in (x.get('feed'), x.get('site'), (x.get('sitemap') or {}).get('url')) if u]
+print('\n'.join(sorted({urllib.parse.urlsplit(u).netloc for u in urls})))"
 ```
+
+**The `sitemap.url` matters.** A sitemap can live on a different host than the
+source's `site`, and LangChain is exactly that case: `site` is
+`blog.langchain.com`, while both the sitemap and the articles it points to are on
+`www.langchain.com`. An allowlist built without that line has 30 hosts and
+silently loses LangChain; with it, 31.
 
 Add the Teams webhook's domain too (`*.logic.azure.com`, or whatever host your
 URL uses).

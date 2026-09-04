@@ -32,9 +32,9 @@ The file the triage step writes and `build_card.py` consumes. UTF-8 JSON.
     { "name": "Sequoia Capital", "error": "HTTP 403" }
   ],
   "stats": {
-    "items_considered": 40,
-    "sources_ok": 19,
-    "sources_total": 20
+    "items_considered": 44,
+    "sources_ok": 30,
+    "sources_total": 30
   }
 }
 ```
