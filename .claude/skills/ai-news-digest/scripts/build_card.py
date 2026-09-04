@@ -44,6 +44,12 @@ ALIASES = {"ALTA": "HIGH", "MEDIA": "MEDIUM", "MÉDIA": "MEDIUM", "BAIXA": "LOW"
 LABEL_MAX_WORDS = 2
 LABEL_MAX_CHARS = 24
 
+# "Worth Trying": the cards an engineer could pick up and evaluate this week.
+# Capped on purpose -- if every edition nominates six things, the section is a
+# list nobody acts on. Three is a week's worth of curiosity for one team.
+TRY_MAX_PER_EDITION = 3
+TRY_EFFORT_MAX_CHARS = 32
+
 # The shares SKILL.md's lens table targets, in the order the report shows them.
 # Rendered as got/target so a short lens is legible without knowing the table:
 # "engineering 9/10" says on its own that the day came up one short.
@@ -90,6 +96,42 @@ def normalize_label(value: str) -> str:
             f"(use at most {LABEL_MAX_CHARS})"
         )
     return label
+
+
+def try_list(cards: list[dict]) -> str:
+    """The report's "Worth Trying" body, built from the cards that carry try_it."""
+    lines = []
+    for index, card in enumerate(cards, start=1):
+        suggestion = card.get("try_it")
+        if not suggestion:
+            continue
+        effort = (suggestion.get("effort") or "").strip()
+        lines.append(
+            f"- **{card['title']}** (card {index})"
+            + (f" — *{effort}*" if effort else "")
+            + f"\n  {suggestion['what'].strip()}"
+        )
+    return "\n".join(lines) if lines else "Nothing this edition."
+
+
+def validate_try_it(card: dict) -> None:
+    """A suggestion with no concrete first step is not a suggestion."""
+    suggestion = card.get("try_it")
+    if suggestion is None:
+        return
+    if not isinstance(suggestion, dict):
+        raise ValueError("try_it must be an object with a 'what'")
+    what = (suggestion.get("what") or "").strip()
+    if not what:
+        raise ValueError(
+            "try_it needs a 'what': the concrete first step, not a topic"
+        )
+    effort = (suggestion.get("effort") or "").strip()
+    if len(effort) > TRY_EFFORT_MAX_CHARS:
+        raise ValueError(
+            f"try_it effort {effort!r} is {len(effort)} characters "
+            f"(use at most {TRY_EFFORT_MAX_CHARS}, e.g. 'an afternoon')"
+        )
 
 
 def lens_mix(cards: list[dict]) -> str:
@@ -306,6 +348,11 @@ def main() -> int:
     parser.add_argument("--in", dest="src", required=True, help="digest.json")
     parser.add_argument("--out", default="-", help="payload file, or - for stdout")
     parser.add_argument(
+        "--try-list",
+        action="store_true",
+        help="print the report's 'Worth Trying' section body and exit",
+    )
+    parser.add_argument(
         "--lens-mix",
         action="store_true",
         help="print the report header's lens line (got/target per lens) and exit",
@@ -327,6 +374,12 @@ def main() -> int:
             raise SystemExit(f"error: digest.json is missing the required field '{field}'")
     if not digest["cards"]:
         raise SystemExit("error: digest.json contains no cards")
+    nominated = sum(1 for c in digest["cards"] if c.get("try_it"))
+    if nominated > TRY_MAX_PER_EDITION:
+        raise SystemExit(
+            f"error: {nominated} cards carry try_it "
+            f"(at most {TRY_MAX_PER_EDITION} per edition — pick the best ones)"
+        )
     for card in digest["cards"]:
         for field in ("title", "label", "description", "temperature", "source_name", "source_url"):
             if not card.get(field):
@@ -341,6 +394,10 @@ def main() -> int:
             normalize_label(card["label"])
         except ValueError as exc:
             raise SystemExit(f"error: card {card['title']!r}: {exc}")
+        try:
+            validate_try_it(card)
+        except ValueError as exc:
+            raise SystemExit(f"error: card {card['title']!r}: {exc}")
         if not str(card["source_url"]).startswith("http"):
             raise SystemExit(
                 f"error: card {card['title']!r} has an invalid source_url: "
@@ -352,6 +409,10 @@ def main() -> int:
     # the next step died on a missing file. Both now do what they say.
     if args.lens_mix:
         print(lens_mix(digest["cards"]))
+        return 0
+
+    if args.try_list:
+        print(try_list(digest["cards"]))
         return 0
 
     if args.preview:

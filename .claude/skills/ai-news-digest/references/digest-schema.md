@@ -19,6 +19,10 @@ The file the triage step writes and `build_card.py` consumes. UTF-8 JSON.
       "lens": "engineering",          // engineering (~10 of 20) | strategy (~5) | research (~3) | regulation (~2)
       "source_name": "NVIDIA Blog",   // main source: prefer the primary one
       "source_url": "https://blogs.nvidia.com/...",
+      "try_it": {                     // optional; at most 3 cards per edition carry it
+        "what": "pip install 'langchain[mcp]>=1.4.0' and point one existing agent at an internal MCP server; the elicitation-as-interrupt path is what to judge.",
+        "effort": "an afternoon"      // optional, max 32 chars
+      },
       "also_covered_by": [            // optional; the card shows up to 3
         { "source": "TechCrunch AI", "url": "https://..." }
       ]
@@ -69,6 +73,7 @@ so capitalisation in the digest does not matter.
   `source_url`;
 - `temperature` is not one of the accepted values;
 - `label` is empty, runs past two words, or past 24 characters;
+- a `try_it` has no `what`, or more than three cards carry one;
 - `source_url` does not start with `http`.
 
 Run `build_card.py --in digest.json --preview` to read the newsletter as text
@@ -84,6 +89,12 @@ before generating the payload.
 - `label` renders under the title, uppercased. It is required and cannot be left
   empty: a card with nothing to categorise it is a card the reader has to open
   the description to place.
+- `try_it` marks a card as something the team could evaluate, and feeds the
+  report's `Worth Trying` section. `what` is required and must be the concrete
+  first step — what to install, flip or measure — not a topic; `build_card.py`
+  refuses a `try_it` without one, and refuses more than three per edition, since
+  a list of six is a list nobody acts on. `build_card.py --try-list` renders the
+  section. Zero nominations is normal: most days produce news, not experiments.
 - `anomalies` is what a human reviews to decide whether a source should be
   disabled or removed. It is wider than `sources_failed`: a source that answered
   `200` and returned nothing it normally would, a sitemap re-stamping old posts

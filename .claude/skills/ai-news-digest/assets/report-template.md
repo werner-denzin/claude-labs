@@ -40,6 +40,18 @@ Brazilian one, in which case it stays in Portuguese.}}
 
 ---
 
+## Worth Trying
+
+{{An initial recommendation for the AI strategy team: which of the cards above
+someone could pick up and evaluate, and what the first step is. At most three,
+and "Nothing this edition." is a valid and frequent answer. Generate the body,
+do not retype it:
+python3 scripts/build_card.py --in digest.json --try-list}}
+
+- **{{CARD TITLE}}** (card {{N}}) — *{{how long a verdict would take}}*
+  {{The concrete first step: what to install, flip, or measure -- and what the
+  verdict would turn on.}}
+
 ## Left out
 
 {{What dominated the day's volume and does not deserve the committee's

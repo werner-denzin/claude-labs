@@ -230,6 +230,25 @@ rules:
   `counts.items_already_published` is non-zero, say so here — "N items already
   covered in the <date> edition" — so a short newsletter is legible as
   deduplicated rather than as a thin day.
+- `try_it`: **at most three cards**, and often none. Mark a card when someone on
+  the team could pick the thing up and reach a verdict, and write the first step:
+  `{"what": "...", "effort": "an afternoon"}`. This is the section the AI
+  strategy team reads for "what should we look at", so the bar is whether a real
+  experiment exists, not whether the news is interesting.
+
+  Qualifies: it is **available now**, not announced or waitlisted; there is a
+  concrete first step (a package to install, a flag to flip, a benchmark to run);
+  it touches what the teams actually build; and a verdict is reachable in bounded
+  time. `what` says what to do *and what the verdict turns on* — "measure our
+  longest system prompt against a gisted version; the claim is 38%, the number
+  that matters is ours".
+
+  Does not qualify: funding, acquisitions and market moves — there is nothing to
+  try; a paper with no code or artifact; a model or feature we cannot access; a
+  vendor case study whose only evidence is the vendor's own number; and anything
+  the teams already use. When nothing qualifies, nominate nothing and let the
+  section say so. A section that nominates three things every single day trains
+  the reader to skip it.
 - `sources_failed`: copy from `items.json` and add the blocks from step 2.
 - `anomalies`: **every source that was blocked, refused us, moved, or behaved in
   a way you had to work around.** This is the record used to decide whether a
@@ -285,6 +304,13 @@ searchable record, and the card links back to it.
 ```bash
 python3 .claude/skills/ai-news-digest/scripts/build_card.py --in digest.json --lens-mix
 # engineering 9/10 · strategy 6/5 · research 3/3 · regulation 2/2
+```
+
+**The `Worth Trying` section is generated too**, from the cards carrying
+`try_it`:
+
+```bash
+python3 .claude/skills/ai-news-digest/scripts/build_card.py --in digest.json --try-list
 ```
 
 That line is how a short lens becomes visible to the reader and to whoever reads

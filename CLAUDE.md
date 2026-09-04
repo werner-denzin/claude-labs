@@ -65,6 +65,12 @@ Rules that hold for any change to the skill:
   environment's allowlist, one without it is the source refusing us — because
   this is the evidence a source gets disabled or removed on. Never write
   "expected" without saying why.
+- **`Worth Trying` is a recommendation, not a summary.** At most three cards an
+  edition may nominate something the team could evaluate, each with a concrete
+  first step; most days nominate none, and the section says so. The bar is
+  whether a real experiment exists — available now, a first step that exists, a
+  verdict reachable in bounded time — not whether the news was interesting. A
+  section that nominates three things every day trains the reader to skip it.
 - **Every report header carries the lens mix as got/target**, generated with
   `build_card.py --lens-mix`, never counted by hand. That line is the only place
   a shortfall against the 10/5/3/2 target is recorded, so a run of
@@ -121,6 +127,8 @@ Rules that hold for any change to the skill:
   Nothing in the catalog covers regulation directly today; it arrives only when
   Ars Technica or TechCrunch reports it.
 - Run the `type: judgment` evals with an LLM judge over the published newsletter.
+  Add a case for `Worth Trying`: does a nomination name a real first step, and
+  does the section stay empty on a day with nothing to try?
 
 ## User preferences
 

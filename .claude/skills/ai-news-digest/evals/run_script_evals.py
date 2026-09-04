@@ -284,6 +284,51 @@ def eval_card_size_limit(tmp: str) -> None:
         f"footer: {[t for t in footer if t.startswith(chr(0x2702))]}",
     )
 
+    # Worth Trying: the section only earns its place if a nomination is a real
+    # experiment, so the shape is enforced rather than trusted.
+    nominated = os.path.join(tmp, "with-try.json")
+    digest = json.load(open(src, encoding="utf-8"))
+    digest["cards"][0]["try_it"] = {"what": "install it and point one agent at it", "effort": "an afternoon"}
+    json.dump(digest, open(nominated, "w", encoding="utf-8"), ensure_ascii=False)
+    proc = run(["scripts/build_card.py", "--in", nominated, "--try-list"])
+    check(
+        "--try-list renders the nominated card, its number and its first step",
+        proc.returncode == 0
+        and "card 1" in proc.stdout
+        and "an afternoon" in proc.stdout
+        and "point one agent at it" in proc.stdout,
+        f"got: {proc.stdout[:120]!r}",
+    )
+    proc = run(["scripts/build_card.py", "--in", src, "--try-list"])
+    check(
+        "with no nominations it says so, rather than rendering nothing",
+        proc.returncode == 0 and "Nothing this edition" in proc.stdout,
+        f"got: {proc.stdout[:80]!r}",
+    )
+
+    bad = os.path.join(tmp, "try-no-what.json")
+    digest = json.load(open(src, encoding="utf-8"))
+    digest["cards"][0]["try_it"] = {"effort": "an hour"}
+    json.dump(digest, open(bad, "w", encoding="utf-8"), ensure_ascii=False)
+    proc = run(["scripts/build_card.py", "--in", bad, "--out", os.path.devnull])
+    check(
+        "a suggestion with no concrete first step is rejected",
+        proc.returncode != 0 and "concrete first step" in (proc.stdout + proc.stderr),
+        (proc.stdout + proc.stderr)[-160:],
+    )
+
+    bad = os.path.join(tmp, "try-too-many.json")
+    digest = json.load(open(src, encoding="utf-8"))
+    for card in digest["cards"][:4]:
+        card["try_it"] = {"what": "try it"}
+    json.dump(digest, open(bad, "w", encoding="utf-8"), ensure_ascii=False)
+    proc = run(["scripts/build_card.py", "--in", bad, "--out", os.path.devnull])
+    check(
+        "more than three nominations per edition is rejected",
+        proc.returncode != 0 and "at most 3" in (proc.stdout + proc.stderr),
+        (proc.stdout + proc.stderr)[-160:],
+    )
+
     proc = run(["scripts/build_card.py", "--in", src, "--lens-mix"])
     mix = proc.stdout.strip()
     check(
