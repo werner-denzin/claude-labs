@@ -33,9 +33,14 @@ from email.utils import parsedate_to_datetime
 HERE = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_SOURCES = os.path.join(HERE, "..", "assets", "sources.json")
 
+# We identify ourselves honestly. This used to send a spoofed Chrome string,
+# which got past bearblog's user-agent filter; measured on 2026-09-04, the
+# honest string costs nothing -- 30/30 sources still answer. If a source ever
+# blocks this UA, the answer is a declared failure in the newsletter or dropping
+# the source, never a disguise.
 USER_AGENT = (
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/124.0.0.0 Safari/537.36"
+    "ai-news-digest/1.0 "
+    "(+https://github.com/werner-denzin/claude-labs; SiDi AI Radar feed reader)"
 )
 
 # Network and cleanup knobs the skill author may want to tune.
@@ -435,7 +440,22 @@ def collect_source(source: dict, cutoff: datetime, max_per_source: int, timeout:
                 tuple(sitemap.get("excludes", ())),
             )
     except urllib.error.HTTPError as exc:
-        result["error"] = f"HTTP {exc.code}"
+        # A 403 has two very different causes and they look identical from here:
+        # the sandbox's network allowlist refusing the host, or the source
+        # refusing us. The sandbox marks its own with x-deny-reason, so read it
+        # -- otherwise a dead source gets explained away as a policy block, or
+        # the reverse.
+        detail = ""
+        if exc.code == 403:
+            deny = (exc.headers or {}).get("x-deny-reason")
+            detail = (
+                f" (x-deny-reason: {deny} — blocked by the environment's network "
+                "allowlist, not by the source)"
+                if deny
+                else " (no x-deny-reason header, so the source refused the "
+                "request rather than the sandbox)"
+            )
+        result["error"] = f"HTTP {exc.code}{detail}"
         return result
     except ET.ParseError as exc:
         result["error"] = f"invalid XML: {exc}"

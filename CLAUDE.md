@@ -56,6 +56,10 @@ Rules that hold for any change to the skill:
   the cloud environment may not either. No new dependencies.
 - **A source that failed goes into the newsletter as a declared failure**, never
   as silence. The reader has to know the collection was partial.
+- **The collector identifies itself honestly** and never disguises itself to get
+  past a block. If a source refuses `ai-news-digest/1.0`, it becomes a declared
+  failure or it leaves the catalog — no spoofed user agent, rotated IP or proxy.
+  Details and the measurement in `references/sources.md`.
 - **The model is pinned to Claude Sonnet 5** in `.claude/settings.json`, which
   covers both an interactive session here and the cloud routine that clones the
   repo. A measured run costs $0.31 metered, against $0.78 on Opus 5 — the

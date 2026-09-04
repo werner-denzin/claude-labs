@@ -169,8 +169,38 @@ python3 scripts/fetch_feeds.py --hours 168 --out /tmp/check.json
 ```
 
 `HTTP 404` or `410` = the address moved; find the new one and fix the JSON.
-`HTTP 403` = a WAF is blocking; usually only the site is left.
 `invalid XML` = the source returned an HTML error page.
+
+`HTTP 403` has two causes that look identical from the collector, so it now
+reports which one it saw. `x-deny-reason: host_not_allowed` in the message means
+the sandbox's network allowlist refused the host — add it to the environment
+(`references/scheduling.md`). No `x-deny-reason` means the source itself refused
+us. Without that distinction a dead source gets explained away as a policy block,
+or a missing allowlist entry gets blamed on the source: the 2026-09-04 routine
+run reported Karpathy's 403 as "expected — no fetchable feed" when the feed
+answers `200` from a laptop.
+
+## How we identify ourselves
+
+The collector sends `ai-news-digest/1.0 (+<repo url>; SiDi AI Radar feed reader)`
+— a real name and a link an operator can follow to find out who is fetching.
+
+It used to send a spoofed Chrome string, and that spoof was load-bearing:
+`karpathy.bearblog.dev` answers `403` to a plain client and `200` to anything
+that looks like a browser. Two things made the swap easy. Its `robots.txt` says
+`User-agent: *` / `Allow: /` and disallows only `/hit`, `/upvote` and `/email` —
+so the feed is explicitly permitted, and the UA filter is a blunt bot screen that
+contradicts the site's own stated policy (it blocks `robots.txt` itself for
+non-browser clients, so a crawler cannot read the rule that allows it). And it
+costs nothing: measured on 2026-09-04, 30/30 sources answer with the honest
+string, 135 items against 136.
+
+What this project reads is public RSS and Atom that sites publish to be read, one
+request per source per run, once a day, no authentication and no paywall. That is
+feed consumption, not scraping. The line is at disguise: **if a source blocks
+this user agent, it goes into the newsletter as a declared failure or it leaves
+the catalog. Never a rotated IP, a spoofed UA, or a proxy to get around a block.**
+A source that does not want to be read is entitled to that.
 
 To test a single source: `--only techcrunch-ai`.
 
