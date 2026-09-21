@@ -23,7 +23,7 @@ Edit `assets/sources.json`. Each entry:
 
 ## The catalog today
 
-Thirty sources, in the two tiers the `_comment` in `sources.json` describes, plus
+Thirty-one sources, in the two tiers the `_comment` in `sources.json` describes, plus
 an engineering core that is the reason the radar exists.
 
 **Engineering — twelve sources, the largest group.** The agenda EVOLV
@@ -50,8 +50,10 @@ Sequoia) and NVIDIA. The announcement is born here; when an item appears both at
 the source and in the press, the card carries the source's link.
 
 **Supporting press.** TechCrunch AI for funding and M&A, The Decoder for what
-the founders say, Ars Technica AI for depth and for legal and policy. The
-primary tier cannot report on itself.
+the founders say, Ars Technica AI for depth and for legal and policy, O'Reilly
+Radar Trends for monthly industry-trend analysis when it can be read at all —
+the origin blocks most direct requests. The primary tier cannot report on
+itself.
 
 **Research.** arXiv cs.SE, capped at 10 items a day.
 
@@ -100,7 +102,8 @@ Batch, NVIDIA, TechCrunch AI, The Decoder, Ars Technica AI, Latent Space,
 LangChain, GitHub AI, Cursor.
 
 **3 — context and volume.** The three investor blogs, GitHub Changelog, InfoQ,
-Hugging Face, Zed, Sourcegraph, Martin Fowler and arXiv cs.SE.
+Hugging Face, Zed, Sourcegraph, Martin Fowler, O'Reilly Radar Trends and arXiv
+cs.SE.
 
 ## Sources with no feed
 
@@ -145,10 +148,11 @@ trains the reader to ignore failure lines.
 
 Some entries carry `"feed": null` because the source publishes no RSS at all.
 Where a sitemap exists the collector uses it and the source behaves like any
-other; where it does not, the entry shows up in `sources_failed` with "no RSS
-feed declared", which is not a defect — it is the catalog telling you to read it
-from the site. All three feedless entries in the catalog today have a sitemap, so
-none of them reports a failure.
+other, and reports no failure. Where neither exists, the entry shows up in
+`sources_failed` with "no RSS feed declared", which is not a defect — it is the
+catalog telling you to read it from the site. O'Reilly Radar Trends is the one
+entry in that second case today, and its site blocks most direct requests too
+(next table), so expect it in the failure line on most runs.
 
 | Source | In the catalog | Situation as of 2026-09-03 |
 | --- | --- | --- |
@@ -159,6 +163,7 @@ none of them reports a failure.
 | DeepLearning.AI | yes, `the-batch` | `/feed/`, `/rss.xml` and `/the-batch/rss.xml` all 404. Read from `/sitemap.xml`, excluding tag and issue pages. `andrewng.org` has neither feed nor sitemap, so Andrew Ng is covered here rather than as a source of his own. |
 | Meta AI Blog | no, left in `deeec82` | `ai.meta.com` returned 400 for every feed path. `engineering.fb.com` (ML Applications) does publish one, if the source is ever wanted back. |
 | MarkTechPost | no, never added | The feed returns 403 even with a browser User-Agent (WAF). |
+| O'Reilly Radar Trends | yes, `oreilly-radar-trends` | No RSS or sitemap at any conventional path (checked 2026-09-20). The page itself is bot-gated: of 20 honest-UA requests, 19 came back `403 Akamai Bot Manager` with no `x-deny-reason` (the origin's own block, not the sandbox's allowlist) and 1 came back `200`. Read via `site` with WebFetch; add `www.oreilly.com` to the routine environment's allowlist or every attempt fails as `host_not_allowed` instead of reaching the origin at all. |
 
 ## Validating the feeds
 

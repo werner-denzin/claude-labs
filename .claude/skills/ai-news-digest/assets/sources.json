@@ -205,6 +205,17 @@
       "note": "Depth and scepticism; strongest on legal and policy."
     },
     {
+      "id": "oreilly-radar-trends",
+      "name": "O'Reilly Radar Trends",
+      "enabled": true,
+      "feed": null,
+      "site": "https://www.oreilly.com/radar/topics/radar-trends/",
+      "lang": "en",
+      "category": "press",
+      "weight": 3,
+      "note": "Monthly industry-trend analysis from O'Reilly's own team, roughly one long post a month -- worth a card when it lands. No RSS or sitemap at any conventional path (checked 2026-09-20). The site itself is heavily bot-gated: of 20 honest-UA requests to the page, 19 returned 403 Akamai Bot Manager with no x-deny-reason header (the origin's own block, not the sandbox's network allowlist) and 1 returned 200. Read via WebFetch on 'site'; expect it in sources_failed most days. Needs www.oreilly.com added to the routine environment's network allowlist (references/scheduling.md) or every attempt fails as host_not_allowed instead."
+    },
+    {
       "id": "latent-space",
       "name": "Latent Space",
       "enabled": true,

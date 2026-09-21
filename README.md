@@ -4,7 +4,7 @@ A lab for Claude Code experiments. It currently holds one thing: **`ai-news-dige
 a daily radar on **software engineering with AI**, written for SiDi's AI strategy
 committee.
 
-Every weekday morning it collects the last 24 hours from a catalog of 30 sources, judges how
+Every weekday morning it collects the last 24 hours from a catalog of 31 sources, judges how
 much each item matters, keeps the 20 that matter most, and publishes them as a
 card newsletter in a Microsoft Teams channel.
 
@@ -43,6 +43,7 @@ times here and becomes one card.
 | `techcrunch-ai`         | TechCrunch AI                           | press       | RSS/Atom                | 7      | 19      |
 | `the-decoder`           | The Decoder                             | press       | RSS/Atom                | 8      | 10      |
 | `arstechnica-ai`        | Ars Technica AI                         | press       | RSS/Atom                | 2      | 10      |
+| `oreilly-radar-trends` ‡ | O'Reilly Radar Trends                  | press       | WebFetch on site — blocked most days | —      | —       |
 | `latent-space`          | Latent Space                            | engineering | RSS/Atom                | 2      | 7       |
 | `anthropic-engineering` | Anthropic Engineering                   | engineering | Sitemap                 | 0      | 0       |
 | `langchain`             | LangChain Blog                          | engineering | Sitemap                 | 3      | 3       |
@@ -56,9 +57,17 @@ times here and becomes one card.
 | `martin-fowler`         | Martin Fowler                           | engineering | RSS/Atom + topic filter | 0      | 3       |
 | `arxiv-se`              | arXiv cs.SE (Software Engineering)      | research    | RSS/Atom                | 10*    | 10*     |
 | `github-changelog`      | GitHub Changelog                        | engineering | RSS/Atom + topic filter | 3      | 5       |
-| **Total**               | **30 sources**, 29 enabled              |             |                         | **46** | **136** |
+| **Total**               | **31 sources**, 30 enabled              |             |                         | **46** | **136** |
 
 `*` capped by the source's own `max_items`.
+
+`‡` **added 2026-09-20**, after the 2026-09-03 measurement pass this table
+otherwise reports, so its d-1/d-7 are not counted in the totals above. It has
+neither a feed nor a sitemap and reads through WebFetch on `site` instead — and
+that site itself answered `200` to an honest user agent only once in 20 tries
+that day (Akamai Bot Manager, no `x-deny-reason`, so the block is the origin's,
+not the sandbox's). Expect it in the failure line most runs; see its `note` in
+`sources.json` and `references/sources.md`.
 
 `†` **retired 2026-09-04**, the first use of `"enabled": false`, and a worked
 example of what the mechanism is for. Karpathy's feed returned `403` on two
@@ -128,7 +137,7 @@ flowchart TD
         MANUAL["Manual run<br>ask Claude for the AI radar"]
     end
 
-    CATALOG[("assets/sources.json<br>30 sources<br>12 engineering · 4 labs · 5 people<br>3 investors · 3 press · hardware · research")]
+    CATALOG[("assets/sources.json<br>31 sources<br>12 engineering · 4 labs · 5 people<br>3 investors · 4 press · hardware · research")]
     FETCH["scripts/fetch_feeds.py<br>reads only enabled sources<br>parallel, 24h window<br>topic + pre-release filters<br>deduplication<br>drops what the last report published"]
     ITEMS[("items.json<br>~41 candidates a day<br>+ failures + disabled<br>+ duplicate hints<br>+ returning-story flags")]
     SITEMAP["sitemap.xml<br>the 5 sources with no feed:<br>Anthropic News + Engineering<br>a16z · The Batch · LangChain"]

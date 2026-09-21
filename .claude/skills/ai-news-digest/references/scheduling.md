@@ -154,7 +154,7 @@ configured after the environment: collection succeeds, the newsletter builds, an
 only the POST fails. If publishing fails with a network error rather than a
 missing-credential error, the webhook host is not on the allowlist.
 
-The 31 hosts as of 2026-09-03:
+The 32 hosts as of 2026-09-20:
 
 ```
 a16z.com                arstechnica.com          arxiv.org
@@ -166,12 +166,15 @@ nvidianews.nvidia.com   openai.com               simonwillison.net
 sourcegraph.com         techcrunch.com           thariq.io
 the-decoder.com         www.anthropic.com        www.cursor.com
 www.deeplearning.ai     www.infoq.com            www.langchain.com
-www.latent.space        www.sequoiacap.com       www.ycombinator.com
-zed.dev
+www.latent.space        www.oreilly.com          www.sequoiacap.com
+www.ycombinator.com     zed.dev
 ```
 
 Every source added to the catalog needs its host added here, or it fails with
-`403 host_not_allowed` and shows up in the newsletter's failure line.
+`403 host_not_allowed` and shows up in the newsletter's failure line. The newest
+addition, `www.oreilly.com` (O'Reilly Radar Trends), still needs to be added to
+the routine's own **Full Access** environment allowlist by hand — this file
+documents the list, it does not configure the environment.
 
 ### The webhook secret
 

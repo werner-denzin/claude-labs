@@ -50,7 +50,7 @@ falls in the middle — Mondays usually want `--hours 72`.
 Only sources marked `"enabled": true` in the catalog are read. A retired one
 stays in the file with `"enabled": false`, keeping its note and the reason it
 was dropped, and appears in `counts.sources_disabled` and the `sources_disabled`
-list — so `29/30` never silently counts a source nobody meant to read. To test
+list — so `30/31` never silently counts a source nobody meant to read. To test
 one that is disabled, name it with `--only`, which overrides the filter.
 
 **The last edition is not published twice.** Before you see them, items are
@@ -96,7 +96,30 @@ headline.
 
 If a source ever appears in `sources_failed` with "no RSS feed declared", it has
 neither a feed nor a sitemap configured — read its `site` with WebFetch and note
-any that the environment blocks.
+any that the environment blocks. O'Reilly Radar Trends is the one source in the
+catalog like this today: it also blocks most direct requests at the origin
+(Akamai), so expect it to show up as a declared failure most days — that is the
+catalog telling the truth about a source that does not want to be read, not a
+bug to chase.
+
+**When it does answer, `site` is the topic's listing page, not one dated
+post.** WebFetch returns a page of links, not an article. Extract the article
+URLs from it, take the newest one, and check whether it belongs to the current
+month before doing anything else: if it doesn't, nothing has published since
+last time — stop there and let the day be quiet for this source, same as any
+other source with nothing new. Only when the newest link is from the current
+month do you follow it and read the article itself.
+
+Even then, check its URL and title against **every report already published
+this month** (`grep -l "oreilly\|radar-trends" reports/YYYY-MM-*-ai-radar.md`),
+not just the newest one. The "anchor is the newest report" rule elsewhere in
+this file works because a rolling feed stops re-offering an old item once it
+ages out of the collection window — but this listing page has no window at
+all: it keeps showing the same post as "the latest" for the whole month, so by
+day fifteen the newest report will not mention a post covered on day one, and
+checking only that file would let it resurface as news. Skip it if any report
+from the current month already carries it; only a post you have not covered
+yet this month is a real candidate.
 
 ### 3. Triage and assign temperature
 
@@ -116,7 +139,7 @@ Then classify each candidate against the committee's four lenses:
 | **Regulation** | EU AI Act, LGPD/ANPD, NIST, court rulings, compliance requirements, security incidents. What the committee has to take to the table. | ~2 |
 
 The shares are a target, not a quota, and **engineering is the one to fight
-for**. Twelve of the thirty sources exist for it, and on a measured day 19 of 44
+for**. Twelve of the thirty-one sources exist for it, and on a measured day 19 of 44
 candidates touched that agenda — enough for ten cards without reaching.
 
 Judge by what the item *does*, not by which source carried it: a pricing change

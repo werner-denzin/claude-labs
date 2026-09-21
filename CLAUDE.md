@@ -5,7 +5,7 @@ A lab for Claude Code experiments.
 ## The `ai-news-digest` skill
 
 A daily radar on **software engineering with AI** for SiDi's AI strategy
-committee: it collects the last 24h from 30 sources, classifies each item by
+committee: it collects the last 24h from 31 sources, classifies each item by
 temperature (HIGH/MEDIUM/LOW), selects 20, and publishes a card-format newsletter
 to a Teams channel.
 
@@ -16,7 +16,7 @@ The lens shares are engineering 10, strategy 5, research 3, regulation 2 of the
 agent frameworks, harness engineering, context engineering, prompt engineering,
 MCP, agent memory, guardrails, evals and observability, tool use, and the coding
 agents themselves (Claude Code, Codex, Cursor, Copilot, Zed). Twelve of the
-thirty sources exist for it, led by Anthropic Engineering, LangChain, Simon
+thirty-one sources exist for it, led by Anthropic Engineering, LangChain, Simon
 Willison, GitHub AI, InfoQ and Hugging Face. On a measured day, 19 of 44
 candidates touch that agenda.
 
