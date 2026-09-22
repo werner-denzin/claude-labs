@@ -50,7 +50,7 @@ falls in the middle — Mondays usually want `--hours 72`.
 Only sources marked `"enabled": true` in the catalog are read. A retired one
 stays in the file with `"enabled": false`, keeping its note and the reason it
 was dropped, and appears in `counts.sources_disabled` and the `sources_disabled`
-list — so `30/31` never silently counts a source nobody meant to read. To test
+list — so `29/31` never silently counts a source nobody meant to read. To test
 one that is disabled, name it with `--only`, which overrides the filter.
 
 **The last edition is not published twice.** Before you see them, items are

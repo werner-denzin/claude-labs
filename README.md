@@ -31,7 +31,7 @@ times here and becomes one card.
 | `deepmind`              | Google DeepMind Blog                    | lab         | RSS/Atom                | 1      | 4       |
 | `google-ai`             | Google - The Keyword (AI)               | lab         | RSS/Atom                | 0      | 3       |
 | `karpathy` †            | Andrej Karpathy                         | people      | RSS/Atom — retired      | 0      | 0       |
-| `boris-cherny`          | Boris Cherny                            | people      | RSS/Atom                | 0      | 0       |
+| `boris-cherny` §        | Boris Cherny                            | people      | RSS/Atom — retired      | 0      | 0       |
 | `thariq`                | Thariq Shihipar                         | people      | RSS/Atom                | 0      | 0       |
 | `the-batch`             | The Batch (Andrew Ng / DeepLearning.AI) | people      | Sitemap                 | 0      | 7       |
 | `sam-altman`            | Sam Altman                              | people      | RSS/Atom                | 0      | 0       |
@@ -57,7 +57,7 @@ times here and becomes one card.
 | `martin-fowler`         | Martin Fowler                           | engineering | RSS/Atom + topic filter | 0      | 3       |
 | `arxiv-se`              | arXiv cs.SE (Software Engineering)      | research    | RSS/Atom                | 10*    | 10*     |
 | `github-changelog`      | GitHub Changelog                        | engineering | RSS/Atom + topic filter | 3      | 5       |
-| **Total**               | **31 sources**, 30 enabled              |             |                         | **46** | **136** |
+| **Total**               | **31 sources**, 29 enabled              |             |                         | **46** | **136** |
 
 `*` capped by the source's own `max_items`.
 
@@ -80,6 +80,19 @@ newsletter for a source that had never contributed an item, which is exactly how
 readers learn to ignore failure lines. The row stays, with the evidence in its
 `note`, so re-enabling is one word if either fact changes; `--only karpathy`
 still reads it for testing.
+
+`§` **retired 2026-09-22**, and the opposite failure mode from Karpathy's: this
+one *is* the environment's fault. `bcherny.github.io` returned `403` with
+`x-deny-reason: host_not_allowed` — our own allowlist refusing the host, not
+the source — and stayed refused across four separate environment
+configurations, including a brand-new environment built from scratch and a
+`*.github.io` wildcard entry, which is evidence of a platform-level
+restriction on generic multi-tenant hosting domains rather than a fixable
+allowlist gap. No feed-friendly alternative exists either: Boris Cherny's own
+writing lives on X (no fetchable feed) and this now-unreachable blog; every
+other appearance is press coverage already reachable through `infoq-ai` and
+the rest of the catalog, and X's official API has had no free read tier since
+February 2026. `--only boris-cherny` still reads it for testing.
 
 The counts are a snapshot and drift. To take a fresh one:
 

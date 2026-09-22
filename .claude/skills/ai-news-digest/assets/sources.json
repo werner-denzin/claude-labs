@@ -60,13 +60,13 @@
     {
       "id": "boris-cherny",
       "name": "Boris Cherny",
-      "enabled": true,
+      "enabled": false,
       "feed": "https://bcherny.github.io/feed.xml",
       "site": "https://bcherny.github.io/",
       "lang": "en",
       "category": "people",
       "weight": 5,
-      "note": "Claude Code. Low volume; most output is on X, which cannot be fetched."
+      "note": "RETIRED 2026-09-22: unlike Karpathy, this is not the source refusing us. bcherny.github.io returns HTTP 403 with x-deny-reason: host_not_allowed, meaning the routine's own cloud environment is blocking the host, confirmed across four separate configurations on 2026-09-21/22 -- the original 'Full Access' environment (edited twice), a brand-new 'Full Access v2' built from scratch with the same allowlist, and a *.github.io wildcard entry in that fresh environment. All four failed identically, pointing to a platform-level restriction on generic multi-tenant hosting domains (github.io) rather than anything fixable through the Custom allowlist UI. Researched the same day: Boris Cherny's own writing lives on X (no fetchable feed) and this blog; everything else about him is third-party coverage (Fortune, InfoQ, Lenny's Newsletter, Developing.dev) already reachable through infoq-ai and the other press sources in this catalog. X's official API has had no free read tier since February 2026 (pay-per-use, $0.005/read, tied to the developer app regardless of whose account authenticates) -- not worth becoming this catalog's first paid source for one low-volume person the press already covers. Kept rather than deleted so re-enabling is one word if the platform restriction ever lifts; --only boris-cherny still reads it for testing."
     },
     {
       "id": "thariq",
