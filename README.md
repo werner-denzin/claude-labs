@@ -241,6 +241,36 @@ the card will render. The Teams layout is still to be designed; until then
 | `evals/run_script_evals.py` | Runs the six mechanical cases as 45 assertions over collection, the enabled filter, the previous-report filter, size trimming, digest validation, and secret handling. |
 | `evals/fixtures/` | Sample `digest.json` and `card.json` used by those assertions. |
 
+## Getting Started
+
+Reprovisioning the routine after a Claude account migration (it lives on
+Anthropic's side, so a migration wipes it but never touches this repo):
+
+1. **Check what's left**: `/schedule list`. Usually empty after a migration.
+2. **Connect GitHub**: `claude.ai/customize` → **Connectors** → **Yours** →
+   **GitHub Integration**. Without it the routine can't clone the repo. Not
+   listed there? GitHub access for cloud sessions needs to be enabled by your
+   org's Claude admin first — it's an org-level setting, not a per-account
+   one.
+3. **Set the environment's network access**: `claude.ai/code` → **Environments**
+   → open `Default` → **Network access** → **Full**, or **Limited** with the
+   hosts in `references/scheduling.md` added to its allowlist.
+4. **No GitHub connector available?** There's no workaround for this one —
+   claude.ai refuses to attach a network secret to a GitHub host at all
+   ("Secrets can't be added for this GitHub host, because sessions already
+   sign in to GitHub"). A PAT can't substitute for the connector. Connecting
+   GitHub properly (step 2) is the only path for a cloud routine; if your org
+   blocks it, that has to be resolved by an org admin. Until then, run the
+   skill on a schedule from your own machine instead — see **Alternative A:
+   local timer on WSL** in `references/scheduling.md`, which uses your
+   machine's own git credentials and needs no cloud GitHub connector.
+5. **Deploy**: `make deploy-routines`. Approve the permission prompt it raises
+   (routine changes run under your account). It prints any steps still
+   missing.
+6. **Verify**: open the routine at `claude.ai/code/routines`, run it once, and
+   check `reports/` for a new file with a clean `Blocked / Unexpected
+   Behaviors` section.
+
 ## Running it by hand
 
 ```bash

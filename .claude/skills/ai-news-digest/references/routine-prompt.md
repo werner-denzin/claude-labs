@@ -10,13 +10,16 @@ meant a thin day, weeks after both had stopped being true.
 **This file is the source of truth. The routine holds a copy.** When this file
 changes, the routine has to be re-synced, or the drift starts again.
 
-- Routine: `AI Radar (archive)`, `trig_01M3gcVsY2GipoQNvYtffPRA`
-- Last synced: **2026-09-04**, applied twice that day with `RemoteTrigger update`
-  and confirmed byte-identical in the response's stored prompt — the second time
-  after the report header became a summary table, which turned out to need no
-  change here: the prompt names `assets/report-template.md` and never describes
-  what is in it. That is the point of keeping it thin. Update this line with the
-  date whenever you apply a change.
+- Routine: `AI Radar (archive)`, `trig_01PR84UMPznHf7kwEXBLcLRp`
+- Last synced: **2026-11-09**, recreated from scratch with `RemoteTrigger
+  create` after a Claude account migration deleted the previous routine
+  (`trig_01M3gcVsY2GipoQNvYtffPRA`, confirmed gone via `RemoteTrigger get` ->
+  404) along with the environment it ran on. The new routine runs on a
+  freshly-created `Default` environment (`env_0168hVV5rmvy3QsULTGEKqWB`), not
+  the old `Full Access` one — its Network access still needs to be set to
+  Full or Custom-with-allowlist per `scheduling.md` before a live run will
+  collect anything. Update this line with the date whenever you apply a
+  change.
 
 ## Keep it thin
 

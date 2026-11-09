@@ -110,7 +110,7 @@ Claude asks for the rest and saves it. You can also create it at
 | Repository | `werner-denzin/claude-labs` — the skill has to be committed, since the routine clones the repo on every run |
 | Trigger | Schedule, **weekdays** preset, 08:00 |
 | Timezone | **Convert nothing.** The time is entered in your local zone and converted automatically; the routine runs at 08:00 Brasilia time. |
-| Environment | **`Full Access`** — created 2026-09-03 with **Network access = Custom**. The name says Full; the setting is Custom, which means an allowlist, which means a host missing from it fails silently. Keep the list in sync with `assets/sources.json`. |
+| Environment | **`Default`** (`env_0168hVV5rmvy3QsULTGEKqWB`), as of the 2026-11-09 reprovision — the original `Full Access` environment was deleted along with the routine in a Claude account migration. Network access is **Limited**, which means an allowlist, which means a host missing from it fails silently. Keep the list in sync with `assets/sources.json`. |
 | Connectors | Remove the ones the routine does not use — during a run it can call any tool from an included connector, writes included, without asking permission |
 
 The routine's prompt is versioned in `references/routine-prompt.md` — the
@@ -126,13 +126,16 @@ explain what is missing.
 
 ### Network: the thing that breaks if forgotten
 
-The **Default** environment ships with *Network access = Trusted*, which allows
-only the default allowlist (package registries, cloud APIs). Every news source
-falls outside it: each request comes back `403` with
-`x-deny-reason: host_not_allowed` and the newsletter comes out empty.
+Network access has three settings: **None**, **Limited** (an allowlist you
+populate) and **Full** (unrestricted). A fresh environment ships with
+*Network access = Limited* and only its own default allowlist (package
+registries, cloud APIs) — every news source falls outside that, so each
+request comes back `403` with `x-deny-reason: host_not_allowed` and the
+newsletter comes out empty.
 
-On the routine's environment, set **Network access** to **Full**, or **Custom**
-with the domains from `assets/sources.json`. To extract the list:
+On the routine's environment, set **Network access** to **Full**, or add the
+domains from `assets/sources.json` to the **Limited** allowlist. To extract
+the list:
 
 ```bash
 python3 -c "
